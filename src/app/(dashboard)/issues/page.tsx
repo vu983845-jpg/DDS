@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { IssuesContent } from '@/components/dashboard/issues-content'
 
+export const dynamic = 'force-dynamic'
+
 export default async function IssuesPage() {
     const supabase = await createClient()
 

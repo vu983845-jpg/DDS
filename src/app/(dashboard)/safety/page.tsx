@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { SafetyContent } from '@/components/dashboard/safety-content'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SafetyPage() {
     const supabase = await createClient()
 
