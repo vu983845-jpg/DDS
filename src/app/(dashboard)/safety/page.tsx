@@ -1,0 +1,15 @@
+import { createClient } from '@/utils/supabase/server'
+import { SafetyContent } from '@/components/dashboard/safety-content'
+
+export default async function SafetyPage() {
+    const supabase = await createClient()
+
+    const { data: safetyDataResponse } = await supabase
+        .from('safety_triggers')
+        .select('*, profiles(name)')
+        .order('created_at', { ascending: false })
+
+    const safetyData = safetyDataResponse || []
+
+    return <SafetyContent safetyData={safetyData} />
+}
