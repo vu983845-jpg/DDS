@@ -16,7 +16,7 @@ interface DashboardContentProps {
 }
 
 export function DashboardContent({ issuesData, safetyData }: DashboardContentProps) {
-    const { isTvMode } = useAppContext()
+    const { isTvMode, t } = useAppContext()
     const router = useRouter()
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
@@ -42,9 +42,9 @@ export function DashboardContent({ issuesData, safetyData }: DashboardContentPro
     return (
         <div className={`p-4 md:p-8 space-y-6 mx-auto ${isTvMode ? 'max-w-full p-8' : 'max-w-7xl'}`}>
             <div className="flex items-center justify-between">
-                <h1 className={`${isTvMode ? 'text-4xl' : 'text-2xl'} font-bold tracking-tight text-slate-900`}>Dashboard</h1>
+                <h1 className={`${isTvMode ? 'text-4xl' : 'text-2xl'} font-bold tracking-tight text-slate-900`}>{t.dashboard}</h1>
                 <div className="text-sm text-slate-500 font-medium">
-                    Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : new Date().toLocaleTimeString()}
+                    {t.lastUpdated} {lastUpdated ? lastUpdated.toLocaleTimeString() : new Date().toLocaleTimeString()}
                 </div>
             </div>
 
@@ -62,22 +62,22 @@ export function DashboardContent({ issuesData, safetyData }: DashboardContentPro
                     <Card className="shadow-sm border-slate-200 h-full">
                         <CardHeader className="border-b bg-slate-50/50 pb-4">
                             <div className="flex items-center justify-between">
-                                <CardTitle className="text-lg">Issues to Review</CardTitle>
+                                <CardTitle className="text-lg">{t.issuesToReview}</CardTitle>
                                 <div className="flex gap-2">
-                                    <Badge variant="outline" className="bg-white">All Depts</Badge>
-                                    <Badge variant="outline" className="bg-white">Open</Badge>
+                                    <Badge variant="outline" className="bg-white">{t.allDepts}</Badge>
+                                    <Badge variant="outline" className="bg-white">{t.open}</Badge>
                                 </div>
                             </div>
-                            <CardDescription>Recent issues logged in the last 24 hours.</CardDescription>
+                            <CardDescription>{t.issuesToReviewDesc}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
                                 <TableHeader className="bg-slate-50 sticky top-0">
                                     <TableRow>
-                                        <TableHead className="w-[100px]">Dept</TableHead>
-                                        <TableHead>Issue</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Downtime</TableHead>
+                                        <TableHead className="w-[100px]">{t.dept}</TableHead>
+                                        <TableHead>{t.issue}</TableHead>
+                                        <TableHead>{t.status}</TableHead>
+                                        <TableHead className="text-right">{t.downtime}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -92,7 +92,7 @@ export function DashboardContent({ issuesData, safetyData }: DashboardContentPro
                                                     {issue.department}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="font-medium text-slate-900">{issue.machine_area || 'General Area'}</div>
+                                                    <div className="font-medium text-slate-900">{issue.machine_area || t.generalArea}</div>
                                                     <div className="text-sm text-slate-500 truncate max-w-[300px]">{issue.description || issue.reason_code}</div>
                                                 </TableCell>
                                                 <TableCell>
@@ -108,7 +108,7 @@ export function DashboardContent({ issuesData, safetyData }: DashboardContentPro
                                     ) : (
                                         <TableRow>
                                             <TableCell colSpan={4} className="h-24 text-center text-slate-500">
-                                                No issues found for the selected date range.
+                                                {t.noIssuesRange}
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -124,9 +124,9 @@ export function DashboardContent({ issuesData, safetyData }: DashboardContentPro
                         <CardHeader className="border-b bg-slate-50/50 pb-4">
                             <CardTitle className="flex items-center gap-2 text-lg text-[#D83140]">
                                 <ShieldAlert className="h-5 w-5" />
-                                Safety Triggers
+                                {t.safetyTriggers}
                             </CardTitle>
-                            <CardDescription>Active safety concerns requiring attention.</CardDescription>
+                            <CardDescription>{t.safetyTriggersDesc}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-4 space-y-4">
                             {safetyData && safetyData.length > 0 ? (
@@ -147,25 +147,25 @@ export function DashboardContent({ issuesData, safetyData }: DashboardContentPro
                                         {safety.action_required && (
                                             <div className="mt-1 flex items-start gap-1">
                                                 <div className="h-4 w-1 bg-red-400 rounded-full mt-0.5"></div>
-                                                <p className="text-xs text-slate-600">Action: {safety.action_required}</p>
+                                                <p className="text-xs text-slate-600">{t.action} {safety.action_required}</p>
                                             </div>
                                         )}
                                     </div>
                                 ))
                             ) : (
-                                <div className="text-center text-sm text-slate-500 py-4">No active safety triggers. Awesome!</div>
+                                <div className="text-center text-sm text-slate-500 py-4">{t.noSafety}</div>
                             )}
                         </CardContent>
                     </Card>
 
                     <Card className="shadow-sm border-slate-200">
                         <CardHeader className="border-b bg-slate-50/50 pb-4">
-                            <CardTitle className="text-lg">DDS Notes & Actions</CardTitle>
+                            <CardTitle className="text-lg">{t.ddsNotes}</CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
                             <div className="text-sm space-y-3">
-                                <p className="text-slate-600 italic">No notes recorded for today yet.</p>
-                                <button className="text-sm text-[#D83140] hover:underline font-medium">+ Add Note</button>
+                                <p className="text-slate-600 italic">{t.noNotes}</p>
+                                <button className="text-sm text-[#D83140] hover:underline font-medium">{t.addNote}</button>
                             </div>
                         </CardContent>
                     </Card>

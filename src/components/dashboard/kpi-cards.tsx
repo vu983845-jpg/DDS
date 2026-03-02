@@ -8,39 +8,43 @@ interface KPICardsProps {
     safetyTriggers: number
 }
 
+import { useAppContext } from '@/components/providers/app-provider'
+
 export function KPICards({
     totalIssues,
     totalDowntime,
     topDept,
     safetyTriggers,
 }: KPICardsProps) {
+    const { t } = useAppContext()
+
     const cards = [
         {
-            title: 'Total Issues',
+            title: t.kpiTotalIssues,
             value: totalIssues.toString(),
             icon: AlertCircle,
-            description: 'Open issues',
+            description: t.kpiTotalIssuesDesc,
             color: 'text-orange-500',
         },
         {
-            title: 'Total Downtime',
+            title: t.kpiDowntime,
             value: `${totalDowntime} min`,
             icon: Clock,
-            description: 'Time lost to issues',
+            description: t.kpiDowntimeDesc,
             color: 'text-red-500',
         },
         {
-            title: 'Top Dept Impacted',
+            title: t.kpiTopDept,
             value: topDept || 'N/A',
             icon: Factory,
-            description: 'Dept with most downtime',
+            description: t.kpiTopDeptDesc,
             color: 'text-blue-500',
         },
         {
-            title: 'Safety Triggers',
+            title: t.kpiSafety,
             value: safetyTriggers.toString(),
             icon: ShieldAlert,
-            description: 'Active safety concerns',
+            description: t.kpiSafetyDesc,
             color: safetyTriggers > 0 ? 'text-[#D83140]' : 'text-green-500',
         },
     ]

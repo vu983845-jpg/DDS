@@ -19,6 +19,7 @@ const SEVERITIES = ['All', 'Low', 'Medium', 'High', 'Critical']
 const STATUSES = ['All', 'Open', 'Closed']
 
 export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
+    const { t } = useAppContext()
     const [data, setData] = useState(initialData)
     const [search, setSearch] = useState('')
     const [severityFilter, setSeverityFilter] = useState('All')
@@ -56,16 +57,16 @@ export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
                         <ShieldAlert className="h-6 w-6 text-[#D83140]" />
-                        Safety Triggers
+                        {t.safetyLogs}
                     </h1>
-                    <p className="text-sm text-slate-500 mt-1">Manage environmental, health, and safety observations.</p>
+                    <p className="text-sm text-slate-500 mt-1">{t.manageSafety}</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
                     <Button variant="outline" className="gap-2">
-                        <Download className="h-4 w-4" /> Export CSV
+                        <Download className="h-4 w-4" /> {t.exportCsv}
                     </Button>
                     <Button className="bg-[#D83140] hover:bg-[#b02733] text-white">
-                        + Report Safety Issue
+                        {t.reportSafety}
                     </Button>
                 </div>
             </div>
@@ -108,12 +109,12 @@ export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
                     <Table>
                         <TableHeader className="bg-slate-50 sticky top-0">
                             <TableRow>
-                                <TableHead className="w-[120px]">Date</TableHead>
-                                <TableHead className="w-[100px]">Severity</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Required Action</TableHead>
-                                <TableHead className="w-[90px]">Status</TableHead>
-                                <TableHead className="text-right w-[150px]">Actions</TableHead>
+                                <TableHead className="w-[120px]">{t.date}</TableHead>
+                                <TableHead className="w-[100px]">{t.severity}</TableHead>
+                                <TableHead>{t.description}</TableHead>
+                                <TableHead>{t.requiredAction}</TableHead>
+                                <TableHead className="w-[90px]">{t.status}</TableHead>
+                                <TableHead className="text-right w-[150px]">{t.actions}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -161,7 +162,7 @@ export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={6} className="h-32 text-center text-slate-500">
-                                        No outstanding safety triggers.
+                                        {t.noOutstandingSafety}
                                     </TableCell>
                                 </TableRow>
                             )}

@@ -15,14 +15,14 @@ import { useState } from 'react'
 export function TopHeader({ user }: { user: any }) {
     const pathname = usePathname()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const { isTvMode, toggleTvMode, dateRange, setDateRange, mode, setMode } = useAppContext()
+    const { isTvMode, toggleTvMode, dateRange, setDateRange, mode, setMode, lang, setLang, t } = useAppContext()
 
     if (isTvMode) return null // Hide in TV Mode
 
     const navItems = [
-        { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-        { name: 'Issues', href: '/issues', icon: ListTodo },
-        { name: 'Safety Trigger', href: '/safety', icon: ShieldAlert },
+        { name: t.dashboard, href: '/', icon: LayoutDashboard },
+        { name: t.issuesList, href: '/issues', icon: ListTodo },
+        { name: t.safetyLogs, href: '/safety', icon: ShieldAlert },
         { name: 'Reports', href: '/reports', icon: BarChart },
     ]
 
@@ -30,12 +30,11 @@ export function TopHeader({ user }: { user: any }) {
         <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
             <div className="flex h-16 items-center px-4 md:px-6 gap-4">
                 <Link href="/" className="flex items-center gap-2 mr-6">
-                    <div className="bg-[#D83140] text-white p-1.5 rounded-md font-bold text-xl leading-none">
-                        DDS
-                    </div>
-                    <span className="font-semibold text-xl tracking-tight hidden sm:inline-block">
-                        Meeting
-                    </span>
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Intersnack_logo.svg"
+                        alt="Intersnack Logo"
+                        className="h-10 w-auto"
+                    />
                 </Link>
 
                 {/* Desktop Navigation */}
@@ -58,7 +57,7 @@ export function TopHeader({ user }: { user: any }) {
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="search"
-                        placeholder="Search issues, safety triggers..."
+                        placeholder={t.searchPlaceholder}
                         className="w-full pl-8 bg-slate-50 border-slate-200 focus-visible:ring-[#D83140]"
                     />
                 </div>
@@ -66,14 +65,24 @@ export function TopHeader({ user }: { user: any }) {
                 {/* Controls */}
                 <div className="flex items-center gap-3">
                     <div className="hidden sm:flex items-center gap-2 border-r pr-3 border-slate-200">
+                        <Select value={lang} onValueChange={(val: any) => setLang(val)}>
+                            <SelectTrigger className="w-[80px] h-9 bg-slate-50 border-slate-200">
+                                <SelectValue placeholder="Lang" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="vi">VI</SelectItem>
+                                <SelectItem value="en">EN</SelectItem>
+                            </SelectContent>
+                        </Select>
+
                         <Select value={dateRange} onValueChange={(val: any) => setDateRange(val)}>
                             <SelectTrigger className="w-[120px] h-9">
                                 <SelectValue placeholder="Date" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Yesterday">Yesterday</SelectItem>
-                                <SelectItem value="Today">Today</SelectItem>
-                                <SelectItem value="Custom">Custom</SelectItem>
+                                <SelectItem value="Yesterday">{t.yesterday}</SelectItem>
+                                <SelectItem value="Today">{t.today}</SelectItem>
+                                <SelectItem value="Custom">{t.customRange}</SelectItem>
                             </SelectContent>
                         </Select>
 
@@ -94,13 +103,13 @@ export function TopHeader({ user }: { user: any }) {
                             className="h-9 gap-2 text-slate-600 hover:text-slate-900"
                         >
                             <MonitorPlay className="h-4 w-4" />
-                            <span className="hidden xl:inline">TV Mode</span>
+                            <span className="hidden xl:inline">{t.tvMode}</span>
                         </Button>
                     </div>
 
                     <Button size="sm" onClick={() => setIsModalOpen(true)} className="h-9 gap-2 bg-[#D83140] hover:bg-[#b02733] text-white">
                         <PlusCircle className="h-4 w-4" />
-                        <span className="hidden sm:inline">Add Issue</span>
+                        <span className="hidden sm:inline">{t.addIssue}</span>
                     </Button>
 
                     <IssueFormModal open={isModalOpen} onOpenChange={setIsModalOpen} user={user} />
@@ -116,7 +125,7 @@ export function TopHeader({ user }: { user: any }) {
                         <DropdownMenuContent align="end" className="w-56">
                             <DropdownMenuLabel>
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">{user?.user_metadata?.name || 'Guest User'}</p>
+                                    <p className="text-sm font-medium leading-none">{user?.user_metadata?.name || t.guest}</p>
                                     <p className="text-xs leading-none text-muted-foreground">
                                         {user?.email || 'View Only'}
                                     </p>
@@ -127,11 +136,11 @@ export function TopHeader({ user }: { user: any }) {
                                 <>
                                     <DropdownMenuItem>
                                         <Settings className="mr-2 h-4 w-4" />
-                                        <span>Settings</span>
+                                        <span>{t.adminSettings}</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => logout()}>
                                         <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Sign out</span>
+                                        <span>{t.logout}</span>
                                     </DropdownMenuItem>
                                 </>
                             )}

@@ -19,6 +19,7 @@ const DEPARTMENTS = ['All', 'Steaming', 'Shelling', 'Borma', 'Peeling MC', 'Colo
 const STATUSES = ['All', 'Open', 'Closed', 'In Progress']
 
 export function IssuesContent({ issuesData }: IssuesContentProps) {
+    const { t } = useAppContext()
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
     const [search, setSearch] = useState('')
     const [deptFilter, setDeptFilter] = useState('All')
@@ -46,11 +47,11 @@ export function IssuesContent({ issuesData }: IssuesContentProps) {
         <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">All Issues</h1>
-                    <p className="text-sm text-slate-500">Filter, search, and export issue records.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t.allIssues}</h1>
+                    <p className="text-sm text-slate-500">{t.issuesDesc}</p>
                 </div>
                 <Button onClick={exportCSV} variant="outline" className="gap-2">
-                    <Download className="h-4 w-4" /> Export CSV
+                    <Download className="h-4 w-4" /> {t.exportCsv}
                 </Button>
             </div>
 
@@ -60,7 +61,7 @@ export function IssuesContent({ issuesData }: IssuesContentProps) {
                         <div className="relative w-full md:w-80">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
                             <Input
-                                placeholder="Search description, machine, reason..."
+                                placeholder={t.searchPlaceholder}
                                 className="pl-8 bg-white"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -96,12 +97,12 @@ export function IssuesContent({ issuesData }: IssuesContentProps) {
                     <Table>
                         <TableHeader className="bg-slate-50 sticky top-0">
                             <TableRow>
-                                <TableHead className="w-[120px]">Date/Time</TableHead>
-                                <TableHead className="w-[120px]">Dept</TableHead>
-                                <TableHead>Machine / Area</TableHead>
-                                <TableHead>Reason</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Downtime</TableHead>
+                                <TableHead className="w-[120px]">{t.dateTime}</TableHead>
+                                <TableHead className="w-[120px]">{t.dept}</TableHead>
+                                <TableHead>{t.machineArea}</TableHead>
+                                <TableHead>{t.reason}</TableHead>
+                                <TableHead>{t.status}</TableHead>
+                                <TableHead className="text-right">{t.downtime}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -138,7 +139,7 @@ export function IssuesContent({ issuesData }: IssuesContentProps) {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={6} className="h-32 text-center text-slate-500">
-                                        No issues found matching your filters.
+                                        {t.noFilteredIssues}
                                     </TableCell>
                                 </TableRow>
                             )}
