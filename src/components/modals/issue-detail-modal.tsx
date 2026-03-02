@@ -132,10 +132,20 @@ export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetai
                                 <div className="text-sm text-slate-600 space-y-2 p-3 border rounded-md">
                                     <div className="grid grid-cols-2 gap-2">
                                         <span className="text-slate-500">Started:</span>
-                                        <span className="font-medium text-slate-800">{new Date(issue.start_time).toLocaleString()}</span>
+                                        <span className="font-medium text-slate-800">
+                                            {new Date(issue.start_time).toLocaleString(undefined, {
+                                                year: 'numeric', month: '2-digit', day: '2-digit',
+                                                hour: '2-digit', minute: '2-digit'
+                                            })}
+                                        </span>
 
                                         <span className="text-slate-500">Ended:</span>
-                                        <span className="font-medium text-slate-800">{issue.end_time ? new Date(issue.end_time).toLocaleString() : 'Ongoing'}</span>
+                                        <span className="font-medium text-slate-800">
+                                            {issue.end_time ? new Date(issue.end_time).toLocaleString(undefined, {
+                                                year: 'numeric', month: '2-digit', day: '2-digit',
+                                                hour: '2-digit', minute: '2-digit'
+                                            }) : 'Ongoing'}
+                                        </span>
 
                                         <span className="text-slate-500">Downtime:</span>
                                         <span className="font-medium text-slate-800">{issue.duration_mins ? `${issue.duration_mins} mins` : '-'}</span>
@@ -229,7 +239,10 @@ export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetai
                                             <span className="font-medium text-right">
                                                 {issue.closed_by?.name || 'Unknown'} <br />
                                                 <span className="text-xs text-slate-400 font-normal">
-                                                    {issue.closed_at ? new Date(issue.closed_at).toLocaleString() : ''}
+                                                    {issue.closed_at ? new Date(issue.closed_at).toLocaleString(undefined, {
+                                                        year: 'numeric', month: '2-digit', day: '2-digit',
+                                                        hour: '2-digit', minute: '2-digit'
+                                                    }) : ''}
                                                 </span>
                                             </span>
                                         </div>

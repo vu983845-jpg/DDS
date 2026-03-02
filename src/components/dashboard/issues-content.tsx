@@ -114,7 +114,10 @@ export function IssuesContent({ issuesData }: IssuesContentProps) {
                                         onClick={() => setSelectedIssue(issue)}
                                     >
                                         <TableCell className="text-sm text-slate-600">
-                                            {new Date(issue.start_time).toLocaleString()}
+                                            {new Date(issue.start_time).toLocaleString(undefined, {
+                                                year: 'numeric', month: '2-digit', day: '2-digit',
+                                                hour: '2-digit', minute: '2-digit'
+                                            })}
                                         </TableCell>
                                         <TableCell className="font-medium text-slate-600">
                                             {issue.department}

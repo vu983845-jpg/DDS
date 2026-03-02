@@ -23,9 +23,17 @@ export default async function DashboardPage() {
         .order('created_at', { ascending: false })
         .limit(10)
 
+    const today = new Date().toISOString().split('T')[0]
+    const { data: ddsNotesResponse } = await supabase
+        .from('dds_notes')
+        .select('*')
+        .eq('date', today)
+        .single() // Use single mapped since date is UNIQUE
+
     // Use empty arrays for MVP testing if DB empty or errors out
     const issuesData = issuesDataResponse || []
     const safetyData = safetyDataResponse || []
+    const ddsNote = ddsNotesResponse || null
 
-    return <DashboardContent issuesData={issuesData} safetyData={safetyData} />
+    return <DashboardContent issuesData={issuesData} safetyData={safetyData} ddsNote={ddsNote} />
 }

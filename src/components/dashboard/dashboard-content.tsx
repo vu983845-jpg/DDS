@@ -9,17 +9,50 @@ import { useAppContext } from '@/components/providers/app-provider'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { createClient } from '@/utils/supabase/client'
+import { toast } from 'sonner'
 
 interface DashboardContentProps {
     issuesData: any[]
     safetyData: any[]
+    ddsNote: any
 }
 
-export function DashboardContent({ issuesData, safetyData }: DashboardContentProps) {
+export function DashboardContent({ issuesData, safetyData, ddsNote }: DashboardContentProps) {
     const { isTvMode, t } = useAppContext()
     const router = useRouter()
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
+    const [isEditingNote, setIsEditingNote] = useState(false)
+    const [noteText, setNoteText] = useState(ddsNote?.notes || '')
+    const [isSavingNote, setIsSavingNote] = useState(false)
+
+    const handleSaveNote = async () => {
+        setIsSavingNote(true)
+        try {
+            const supabase = createClient()
+            const today = new Date().toISOString().split('T')[0]
+
+            const { error } = await supabase.from('dds_notes').upsert({
+                date: today,
+                notes: noteText
+            }, { onConflict: 'date' })
+
+            if (error) throw error
+
+            toast.success('Note saved successfully.')
+            setIsEditingNote(false)
+            // redirect/refresh to fetch new server data
+            window.location.reload()
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to save note.')
+        } finally {
+            setIsSavingNote(false)
+        }
+    }
 
     useEffect(() => {
         setLastUpdated(new Date())
@@ -163,10 +196,31 @@ export function DashboardContent({ issuesData, safetyData }: DashboardContentPro
                             <CardTitle className="text-lg">{t.ddsNotes}</CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
-                            <div className="text-sm space-y-3">
-                                <p className="text-slate-600 italic">{t.noNotes}</p>
-                                <button className="text-sm text-[#D83140] hover:underline font-medium">{t.addNote}</button>
-                            </div>
+                            {isEditingNote ? (
+                                <div className="space-y-3">
+                                    <Textarea
+                                        value={noteText}
+                                        onChange={(e) => setNoteText(e.target.value)}
+                                        placeholder="Enter today's DDS meeting notes..."
+                                        rows={4}
+                                    />
+                                    <div className="flex gap-2 justify-end">
+                                        <Button variant="outline" size="sm" onClick={() => setIsEditingNote(false)}>Cancel</Button>
+                                        <Button size="sm" onClick={handleSaveNote} disabled={isSavingNote} className="bg-[#D83140] hover:bg-[#b02733] text-white">Save</Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-sm space-y-3">
+                                    {ddsNote?.notes ? (
+                                        <div className="text-slate-700 whitespace-pre-wrap">{ddsNote.notes}</div>
+                                    ) : (
+                                        <p className="text-slate-600 italic">{t.noNotes}</p>
+                                    )}
+                                    <button onClick={() => setIsEditingNote(true)} className="text-sm text-[#D83140] hover:underline font-medium">
+                                        {ddsNote?.notes ? 'Edit Note' : t.addNote}
+                                    </button>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
