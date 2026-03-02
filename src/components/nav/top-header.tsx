@@ -31,9 +31,9 @@ export function TopHeader({ user }: { user: any }) {
             <div className="flex h-16 items-center px-4 md:px-6 gap-4">
                 <Link href="/" className="flex items-center gap-2 mr-6">
                     <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Intersnack_logo.svg"
+                        src="/logo.jpg"
                         alt="Intersnack Logo"
-                        className="h-10 w-auto"
+                        className="h-12 w-auto object-contain"
                     />
                 </Link>
 
