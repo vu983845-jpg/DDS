@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
 
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
@@ -83,17 +84,35 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
     const onSubmit = async (data: IssueFormData) => {
         setLoading(true)
         try {
-            // API call to Supabase would go here
-            // const supabase = createBrowserClient(...)
-            // await supabase.from('issues').insert({...data, duration_mins: duration})
+            const supabase = createClient()
 
-            await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate network
+            // Format data for insert
+            const insertData = {
+                ...data,
+                end_time: data.is_ongoing ? null : data.end_time,
+                duration_mins: data.is_ongoing ? null : duration,
+                reporter_id: user?.id,
+            }
+
+            const { error } = await supabase.from('issues').insert(insertData)
+
+            if (error) {
+                console.error('Supabase raw error:', error)
+                throw new Error("Failed to insert issue")
+            }
+
             toast.success('Issue logged successfully', {
                 description: 'The issue has been added to the dashboard.'
             })
+
             onOpenChange(false)
             form.reset()
+
+            // Force a hard refresh to get new server data
+            window.location.reload()
+
         } catch (error) {
+            console.error(error)
             toast.error('Failed to save issue')
         } finally {
             setLoading(false)
@@ -141,7 +160,7 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Start Time</Label>
-                            <Input type="datetime-local" {...form.register('start_time')} className={errors.start_time ? 'border-red-500' : ''} />
+                            <Input type="datetime-local" step="60" {...form.register('start_time')} className={errors.start_time ? 'border-red-500' : ''} />
                         </div>
 
                         <div className="space-y-2">
@@ -152,7 +171,7 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                                     Ongoing
                                 </label>
                             </div>
-                            <Input type="datetime-local" {...form.register('end_time')} disabled={isOngoing} />
+                            <Input type="datetime-local" step="60" {...form.register('end_time')} disabled={isOngoing} />
                         </div>
                     </div>
 

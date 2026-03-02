@@ -6,7 +6,11 @@ export default async function IssuesPage() {
 
     const { data: issuesDataResponse } = await supabase
         .from('issues')
-        .select('*, profiles(name)')
+        .select(`
+            *,
+            profiles!reporter_id(name),
+            closed_by:profiles!closed_by_id(name)
+        `)
         .order('created_at', { ascending: false })
 
     const issuesData = issuesDataResponse || []

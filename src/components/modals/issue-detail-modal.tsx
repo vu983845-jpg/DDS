@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { Clock, CheckCircle, Edit, Trash2, UserPlus, FileText, Factory } from 'lucide-react'
 import { toast } from 'sonner'
 import { IssueFormModal } from './issue-form-modal' // Reuse for editing
+import { createClient } from '@/utils/supabase/client'
 
 interface IssueDetailModalProps {
     open: boolean
@@ -34,13 +35,47 @@ export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetai
     const handleAction = async (action: string) => {
         setLoading(true)
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 800))
+            const supabase = createClient()
+
+            if (action === 'Close Issue') {
+                const { error } = await supabase
+                    .from('issues')
+                    .update({
+                        status: 'Closed',
+                        closed_at: new Date().toISOString(),
+                        closed_by_id: user?.id,
+                        end_time: issue.end_time || new Date().toISOString() // auto set end time if ongoing
+                    })
+                    .eq('id', issue.id)
+
+                if (error) throw error
+            }
+
+            if (action === 'Reopen') {
+                const { error } = await supabase
+                    .from('issues')
+                    .update({
+                        status: 'Open',
+                        closed_at: null,
+                        closed_by_id: null
+                    })
+                    .eq('id', issue.id)
+
+                if (error) throw error
+            }
+
+            if (action === 'Delete') {
+                const { error } = await supabase.from('issues').delete().eq('id', issue.id)
+                if (error) throw error
+            }
+
             toast.success(`Action "${action}" completed successfully.`)
-            if (action === 'Close Issue' || action === 'Delete') {
-                onOpenChange(false)
+
+            if (action === 'Close Issue' || action === 'Delete' || action === 'Reopen') {
+                window.location.reload()
             }
         } catch (e) {
+            console.error(e)
             toast.error('Failed to perform action.')
         } finally {
             setLoading(false)
@@ -179,15 +214,26 @@ export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetai
 
                             <div className="space-y-2 pt-4 border-t">
                                 <h3 className="font-medium text-sm text-slate-500 uppercase tracking-wide">Details</h3>
-                                <div className="text-sm space-y-1">
+                                <div className="text-sm space-y-2">
                                     <div className="flex justify-between">
                                         <span className="text-slate-500">Impact</span>
                                         <span className="font-medium">{issue.impact_level || 'Medium'}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-slate-500">Reported By</span>
-                                        <span className="font-medium">{issue.profiles?.name || 'Unknown'}</span>
+                                        <span className="font-medium text-right">{issue.profiles?.name || 'Unknown'}</span>
                                     </div>
+                                    {issue.status === 'Closed' && issue.closed_by && (
+                                        <div className="flex justify-between border-t border-slate-100 pt-2 mt-2">
+                                            <span className="text-slate-500">Closed By</span>
+                                            <span className="font-medium text-right">
+                                                {issue.closed_by?.name || 'Unknown'} <br />
+                                                <span className="text-xs text-slate-400 font-normal">
+                                                    {issue.closed_at ? new Date(issue.closed_at).toLocaleString() : ''}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
