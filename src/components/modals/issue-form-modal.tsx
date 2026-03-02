@@ -44,12 +44,18 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
     const isDeptUser = user?.user_metadata?.role === 'dept_user'
     const userDept = user?.user_metadata?.department
 
+    const formatDateTimeLocal = (date: Date) => {
+        const d = new Date(date)
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
+        return d.toISOString().slice(0, 16)
+    }
+
     const form = useForm<IssueFormData>({
         resolver: zodResolver(issueSchema),
         defaultValues: {
             department: userDept || '',
-            start_time: '',
-            end_time: '',
+            start_time: formatDateTimeLocal(new Date()),
+            end_time: formatDateTimeLocal(new Date()),
             is_ongoing: false,
             machine_area: '',
             reason_code: '',
@@ -59,7 +65,7 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
         },
     })
 
-    const { watch, setValue, control, handleSubmit, formState: { errors } } = form
+    const { watch, control, handleSubmit, formState: { errors } } = form
     const isOngoing = watch('is_ongoing')
     const startTime = watch('start_time')
     const endTime = watch('end_time')
@@ -160,7 +166,11 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Start Time</Label>
-                            <Input type="datetime-local" step="60" {...form.register('start_time')} className={errors.start_time ? 'border-red-500' : ''} />
+                            <Input
+                                type="datetime-local"
+                                {...form.register('start_time')}
+                                className={`w-full ${errors.start_time ? 'border-red-500' : ''}`}
+                            />
                         </div>
 
                         <div className="space-y-2">
@@ -171,7 +181,12 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                                     Ongoing
                                 </label>
                             </div>
-                            <Input type="datetime-local" step="60" {...form.register('end_time')} disabled={isOngoing} />
+                            <Input
+                                type="datetime-local"
+                                {...form.register('end_time')}
+                                disabled={isOngoing}
+                                className="w-full"
+                            />
                         </div>
                     </div>
 
