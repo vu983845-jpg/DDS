@@ -12,6 +12,7 @@ import { Clock, CheckCircle, Edit, Trash2, UserPlus, FileText, Factory } from 'l
 import { toast } from 'sonner'
 import { IssueFormModal } from './issue-form-modal' // Reuse for editing
 import { createClient } from '@/utils/supabase/client'
+import { useAppContext } from '@/components/providers/app-provider'
 
 interface IssueDetailModalProps {
     open: boolean
@@ -22,6 +23,7 @@ interface IssueDetailModalProps {
 }
 
 export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: IssueDetailModalProps) {
+    const { t } = useAppContext()
     const [loading, setLoading] = useState(false)
     const [note, setNote] = useState('')
     const [isEditOpen, setIsEditOpen] = useState(false)
@@ -86,6 +88,13 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
             const finalEndTimeStr = closeEndTime ? new Date(closeEndTime).toISOString() : new Date().toISOString()
             const startTimeMs = new Date(issue.start_time).getTime()
             const endTimeMs = new Date(finalEndTimeStr).getTime()
+
+            if (endTimeMs > new Date().getTime()) {
+                toast.error(t.futureTimeError || 'Cannot close an issue in the future.')
+                setLoading(false)
+                return
+            }
+
             const durationMins = Math.max(0, Math.round((endTimeMs - startTimeMs) / 60000))
 
             const { error } = await supabase

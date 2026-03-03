@@ -17,7 +17,17 @@ import { useAppContext } from '@/components/providers/app-provider'
 
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
-const REASON_CODES = ['Machine Breakdown', 'Belt Snapped', 'Power Outage', 'Raw Material Shortage', 'Quality Hold']
+const REASON_CODES = [
+    'Machine Breakdown',
+    'Belt Snapped',
+    'Power Outage',
+    'Raw Material Shortage',
+    'Quality Hold',
+    'Operator Error',
+    'Sensor Malfunction',
+    'Jamming/Blockage',
+    'Other'
+]
 const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
 
 const getReasonKey = (code: string) => {
@@ -27,6 +37,10 @@ const getReasonKey = (code: string) => {
         case 'Power Outage': return 'reasonPowerOutage'
         case 'Raw Material Shortage': return 'reasonRawMaterial'
         case 'Quality Hold': return 'reasonQualityHold'
+        case 'Operator Error': return 'reasonOperatorError'
+        case 'Sensor Malfunction': return 'reasonSensorMalfunction'
+        case 'Jamming/Blockage': return 'reasonJamming'
+        case 'Other': return 'reasonOther'
         default: return 'reasonMachineBreakdown'
     }
 }
@@ -51,6 +65,7 @@ const issueSchema = z.object({
     description: z.string().optional().nullable(),
     impact_level: z.string().min(1, 'Impact level is required'),
     notes: z.string().optional().nullable(),
+    other_reason: z.string().optional().nullable(),
 })
 
 type IssueFormData = z.infer<typeof issueSchema>
@@ -88,6 +103,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
             description: '',
             impact_level: 'Medium',
             notes: '',
+            other_reason: '',
         },
     })
 
@@ -95,6 +111,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
     const isOngoing = watch('is_ongoing')
     const startTime = watch('start_time')
     const endTime = watch('end_time')
+    const selectedReason = watch('reason_code')
 
     // Calculate duration
     const [duration, setDuration] = useState<number>(0)
@@ -121,13 +138,39 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
             return
         }
 
+        const nowMs = new Date().getTime()
+        if (new Date(data.start_time).getTime() > nowMs) {
+            toast.error(t.futureTimeError)
+            return
+        }
+        if (!data.is_ongoing && data.end_time && new Date(data.end_time).getTime() > nowMs) {
+            toast.error(t.futureTimeError)
+            return
+        }
+
+        if (data.reason_code === 'Other' && !data.other_reason?.trim()) {
+            toast.error(t.typeOtherReason)
+            return
+        }
+
         setLoading(true)
         try {
             const supabase = createClient()
+            let finalReason = data.reason_code
+            if (finalReason === 'Other' && data.other_reason) {
+                finalReason = data.other_reason
+            }
 
             // Format data for insert
             const insertData = {
-                ...data,
+                department: data.department,
+                start_time: data.start_time,
+                is_ongoing: data.is_ongoing,
+                machine_area: data.machine_area,
+                reason_code: finalReason,
+                description: data.description,
+                impact_level: data.impact_level,
+                notes: data.notes,
                 end_time: data.is_ongoing ? null : data.end_time,
                 duration_mins: data.is_ongoing ? null : duration,
                 reporter_id: user?.id,
@@ -188,6 +231,13 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                                     </Select>
                                 )}
                             />
+                            {selectedReason === 'Other' && (
+                                <Input
+                                    {...form.register('other_reason')}
+                                    placeholder={t.typeOtherReason}
+                                    className="mt-2"
+                                />
+                            )}
                         </div>
 
                         <div className="space-y-2">
