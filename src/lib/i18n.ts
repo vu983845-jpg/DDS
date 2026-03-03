@@ -107,6 +107,8 @@ export const dictionaries = {
         issueLogged: 'Ghi nhận sự cố thành công',
         issueLoggedDesc: 'Sự cố đã được thêm vào bảng điều khiển.',
         failedSaveIssue: 'Không thể lưu sự cố',
+        deptAccessTitle: 'Không hợp lệ: Sai Phòng Ban',
+        deptAccessDesc: 'Bạn không có quyền báo cáo sự cố thay cho phòng ban khác. Vui lòng chọn đúng phòng ban mà bạn đang trực thuộc.',
 
         // Select Options
         reasonMachineBreakdown: 'Hỏng Máy',
@@ -239,6 +241,8 @@ export const dictionaries = {
         issueLogged: 'Issue logged successfully',
         issueLoggedDesc: 'The issue has been added to the dashboard.',
         failedSaveIssue: 'Failed to save issue',
+        deptAccessTitle: 'Invalid: Wrong Department',
+        deptAccessDesc: 'You do not have permission to report issues for another department. Please select the department you belong to.',
 
         // Select Options
         reasonMachineBreakdown: 'Machine Breakdown',

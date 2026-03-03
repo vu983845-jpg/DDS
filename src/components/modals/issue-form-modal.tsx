@@ -80,7 +80,7 @@ interface IssueFormModalProps {
 export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormModalProps) {
     const { t } = useAppContext()
     const [loading, setLoading] = useState(false)
-    const [isConfirmDeptOpen, setIsConfirmDeptOpen] = useState(false)
+    const [isBlockDeptOpen, setIsBlockDeptOpen] = useState(false)
     const [pendingData, setPendingData] = useState<IssueFormData | null>(null)
     const isDeptUser = user?.user_metadata?.role === 'dept_user' || profile?.role === 'dept_user'
     const userDept = user?.user_metadata?.department || profile?.department
@@ -130,11 +130,11 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
         }
     }, [startTime, endTime, isOngoing])
 
-    const onSubmit = async (data: IssueFormData, bypassConfirm = false) => {
-        // Validation: If dept user selects different dept, confirm first
-        if (!bypassConfirm && isDeptUser && userDept && data.department !== userDept) {
+    const onSubmit = async (data: IssueFormData) => {
+        // Validation: If dept user selects different dept, block them
+        if (isDeptUser && userDept && data.department !== userDept) {
             setPendingData(data)
-            setIsConfirmDeptOpen(true)
+            setIsBlockDeptOpen(true)
             return
         }
 
@@ -211,7 +211,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit((data) => onSubmit(data, false))} className="space-y-6 pt-4">
+                <form onSubmit={handleSubmit((data) => onSubmit(data))} className="space-y-6 pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>{t.departmentFull}</Label>
@@ -345,26 +345,20 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                 </form>
             </DialogContent>
 
-            {/* Department Confirmation Dialog */}
-            <Dialog open={isConfirmDeptOpen} onOpenChange={setIsConfirmDeptOpen}>
+            {/* Department Access Denied Dialog */}
+            <Dialog open={isBlockDeptOpen} onOpenChange={setIsBlockDeptOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle className="text-amber-600 flex items-center gap-2">
-                            <span className="text-2xl">⚠️</span> Warning: Different Department
+                        <DialogTitle className="text-red-600 flex items-center gap-2">
+                            <span className="text-2xl">⛔</span> {(t as any).deptAccessTitle || 'Access Denied'}
                         </DialogTitle>
                         <DialogDescription className="mt-2 text-slate-700">
-                            You belong to the <span className="font-semibold">{userDept}</span> department, but you've selected <span className="font-semibold">{pendingData?.department}</span>. Are you sure you want to report an issue for a different department?
+                            {(t as any).deptAccessDesc || 'You do not have permission to report issues for another department.'}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="mt-4">
-                        <Button variant="outline" onClick={() => setIsConfirmDeptOpen(false)} disabled={loading}>
-                            Cancel
-                        </Button>
-                        <Button onClick={() => {
-                            setIsConfirmDeptOpen(false)
-                            if (pendingData) onSubmit(pendingData, true)
-                        }} disabled={loading} className="bg-amber-600 hover:bg-amber-700 text-white">
-                            {loading ? 'Submitting...' : 'Yes, Continue'}
+                        <Button onClick={() => setIsBlockDeptOpen(false)} className="bg-slate-900 hover:bg-slate-800 text-white w-full">
+                            OK
                         </Button>
                     </DialogFooter>
                 </DialogContent>
