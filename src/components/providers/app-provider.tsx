@@ -22,7 +22,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export function AppProvider({ children }: { children: ReactNode }) {
     const [isTvMode, setIsTvMode] = useState(false)
-    const [dateRange, setDateRange] = useState<DateRangeType>('Yesterday')
+    const [dateRange, setDateRange] = useState<DateRangeType>('24h')
     const [mode, setMode] = useState<ModeType>('DDS')
 
     // Default language is Vietnamese
