@@ -7,11 +7,13 @@ export default async function ReportsPage() {
     const supabase = await createClient()
 
     // Fetch the latest 500 issues for the MVP reporting
-    const { data: issuesDataResponse } = await supabase
+    const { data: issuesDataResponse, error } = await supabase
         .from('issues')
-        .select('*, profiles(name)')
+        .select('*, profiles!reporter_id(name)')
         .order('created_at', { ascending: false })
         .limit(500)
+
+    if (error) console.error("Reports Issue Query Error:", error)
 
     const issuesData = issuesDataResponse || []
 

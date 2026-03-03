@@ -19,7 +19,20 @@ export function TopHeader({ user }: { user: any }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const { isTvMode, toggleTvMode, dateRange, setDateRange, mode, setMode, lang, setLang, t } = useAppContext()
 
-    if (isTvMode) return null // Hide in TV Mode
+    if (isTvMode) {
+        return (
+            <div className="fixed bottom-6 right-6 z-[100]">
+                <Button
+                    size="lg"
+                    onClick={toggleTvMode}
+                    className="shadow-2xl rounded-full bg-slate-900 hover:bg-slate-800 text-white gap-2 font-medium border border-slate-700"
+                >
+                    <MonitorPlay className="w-5 h-5" />
+                    Exit TV Mode
+                </Button>
+            </div>
+        )
+    }
 
     const navItems = [
         { name: t.dashboard, href: '/', icon: LayoutDashboard },
