@@ -18,24 +18,24 @@ import { useAppContext } from '@/components/providers/app-provider'
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 const REASON_CODES = [
-    'Equipment',
-    'Operation',
-    'Quality',
-    'Environment',
+    'Man',
+    'Machine',
     'Material',
+    'Method',
+    'Measurement',
     'Other'
 ]
 const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
 
 const getReasonKey = (code: string) => {
     switch (code) {
-        case 'Equipment': return 'reasonEquipment'
-        case 'Operation': return 'reasonOperation'
-        case 'Quality': return 'reasonQuality'
-        case 'Environment': return 'reasonEnvironment'
+        case 'Man': return 'reasonMan'
+        case 'Machine': return 'reasonMachine'
         case 'Material': return 'reasonMaterial'
+        case 'Method': return 'reasonMethod'
+        case 'Measurement': return 'reasonMeasurement'
         case 'Other': return 'reasonOther'
-        default: return 'reasonEquipment'
+        default: return 'reasonMachine'
     }
 }
 

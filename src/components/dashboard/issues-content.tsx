@@ -22,6 +22,7 @@ interface IssuesContentProps {
 
 const DEPARTMENTS = ['All', 'Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 const STATUSES = ['All', 'Open', 'Closed', 'In Progress']
+const REASONS = ['All', 'Man', 'Machine', 'Material', 'Method', 'Measurement', 'Other']
 
 export function IssuesContent({ issuesData, user, profile }: IssuesContentProps) {
     const { t, dateRange } = useAppContext()
@@ -30,6 +31,7 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
     const [search, setSearch] = useState('')
     const [deptFilter, setDeptFilter] = useState('All')
     const [statusFilter, setStatusFilter] = useState('All')
+    const [reasonFilter, setReasonFilter] = useState('All')
 
     const dateFilteredData = filterByDateRange(issuesData, dateRange, 'created_at')
 
@@ -42,8 +44,9 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
 
         const matchesDept = deptFilter === 'All' || issue.department === deptFilter
         const matchesStatus = statusFilter === 'All' || issue.status === statusFilter
+        const matchesReason = reasonFilter === 'All' || issue.reason_code === reasonFilter
 
-        return matchesSearch && matchesDept && matchesStatus
+        return matchesSearch && matchesDept && matchesStatus && matchesReason
     })
 
     const exportCSV = () => {
@@ -163,7 +166,16 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                                 </SelectContent>
                             </Select>
 
-                            <Button variant="ghost" size="icon" className="shrink-0 text-slate-500" onClick={() => { setSearch(''); setDeptFilter('All'); setStatusFilter('All'); }}>
+                            <Select value={reasonFilter} onValueChange={setReasonFilter}>
+                                <SelectTrigger className="w-[140px] bg-white">
+                                    <SelectValue placeholder="Reason" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {REASONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+
+                            <Button variant="ghost" size="icon" className="shrink-0 text-slate-500" onClick={() => { setSearch(''); setDeptFilter('All'); setStatusFilter('All'); setReasonFilter('All'); }}>
                                 <Filter className="h-4 w-4" />
                             </Button>
                         </div>
