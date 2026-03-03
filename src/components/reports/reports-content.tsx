@@ -50,6 +50,15 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
             } else if (dateRange === '7days') {
                 const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
                 if (!isAfter(issueDate, sevenDaysAgo)) return false
+            } else if (dateRange === '30days') {
+                const thirtyDaysAgo = startOfDay(subDays(new Date(), 30))
+                if (!isAfter(issueDate, thirtyDaysAgo)) return false
+            } else if (dateRange === '60days') {
+                const sixtyDaysAgo = startOfDay(subDays(new Date(), 60))
+                if (!isAfter(issueDate, sixtyDaysAgo)) return false
+            } else if (dateRange === '90days') {
+                const ninetyDaysAgo = startOfDay(subDays(new Date(), 90))
+                if (!isAfter(issueDate, ninetyDaysAgo)) return false
             }
             // Custom isn't strictly implemented for global yet via a DatePicker in TopHeader, so treat as all or implement custom range
 

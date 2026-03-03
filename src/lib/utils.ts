@@ -27,6 +27,15 @@ export function filterByDateRange(data: any[], range: string, dateField: string 
     case '7days':
       startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
       break
+    case '30days':
+      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+      break
+    case '60days':
+      startDate = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
+      break
+    case '90days':
+      startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
+      break
     case 'Custom':
     default:
       return data

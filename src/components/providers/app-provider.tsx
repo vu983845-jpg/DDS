@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
 import { Language, Dictionary, dictionaries } from '@/lib/i18n'
 
-type DateRangeType = 'Yesterday' | 'Today' | '24h' | '7days' | 'Custom'
+type DateRangeType = 'Yesterday' | 'Today' | '24h' | '7days' | '30days' | '60days' | '90days' | 'Custom'
 type ModeType = 'DDS' | 'Standard'
 
 interface AppContextType {
