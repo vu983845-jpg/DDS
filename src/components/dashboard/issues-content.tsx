@@ -68,6 +68,7 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
         // Aggregation Maps
         const yearlyMap: Record<string, { count: number, downtime: number }> = {}
         const monthlyMap: Record<string, { count: number, downtime: number }> = {}
+        const reasonMap: Record<string, { count: number, downtime: number }> = {}
 
         dateFilteredData.forEach(i => {
             if (!i.created_at) return
@@ -75,18 +76,24 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
             const yearStr = date.getFullYear().toString()
             const monthStr = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${yearStr}`
             const dept = i.department || 'Unknown'
+            const reason = i.reason_code || 'Unknown'
 
             const yKey = `${dept} (${yearStr})`
             const mKey = `${dept} (${monthStr})`
+            const rKey = reason
 
             if (!yearlyMap[yKey]) yearlyMap[yKey] = { count: 0, downtime: 0 }
             if (!monthlyMap[mKey]) monthlyMap[mKey] = { count: 0, downtime: 0 }
+            if (!reasonMap[rKey]) reasonMap[rKey] = { count: 0, downtime: 0 }
 
             yearlyMap[yKey].count += 1
             yearlyMap[yKey].downtime += (i.duration_mins || 0)
 
             monthlyMap[mKey].count += 1
             monthlyMap[mKey].downtime += (i.duration_mins || 0)
+
+            reasonMap[rKey].count += 1
+            reasonMap[rKey].downtime += (i.duration_mins || 0)
         })
 
         // 2. Yearly Overview
@@ -103,6 +110,13 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
             'Total Downtime (mins)': val.downtime
         }))
 
+        // 4. By Reason Overview
+        const reasonData = Object.entries(reasonMap).map(([key, val]) => ({
+            'Reason': key,
+            'Total Incidents': val.count,
+            'Total Downtime (mins)': val.downtime
+        }))
+
         const wb = XLSX.utils.book_new()
 
         const wsRaw = XLSX.utils.json_to_sheet(rawData)
@@ -113,6 +127,9 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
 
         const wsMonthly = XLSX.utils.json_to_sheet(monthlyData)
         XLSX.utils.book_append_sheet(wb, wsMonthly, "Monthly Overview")
+
+        const wsReason = XLSX.utils.json_to_sheet(reasonData)
+        XLSX.utils.book_append_sheet(wb, wsReason, "By Reason Overview")
 
         XLSX.writeFile(wb, `Issues_Report_${new Date().toISOString().slice(0, 10)}.xlsx`)
     }

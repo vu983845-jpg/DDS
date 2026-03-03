@@ -65,6 +65,7 @@ export const dictionaries = {
         overviewReportDesc: 'Số liệu tổng hợp sự cố theo Bộ phận.',
         yearlyView: 'Theo Năm',
         monthlyView: 'Theo Tháng',
+        byReasonView: 'Theo Lý do',
         totalIncidents: 'Tổng sự cố',
         noDataFlow: 'Không có dữ liệu cho giai đoạn này.',
         month: 'Tháng',
@@ -122,7 +123,7 @@ export const dictionaries = {
         // Select Options
         reasonMan: 'Man (Con người): Vận hành sai, thiếu kỹ năng, cẩu thả.',
         reasonMachine: 'Machine (Máy móc): Máy cũ, linh kiện mòn, hỏng hóc nội tại.',
-        reasonMaterial: 'Material (Vật tư): Nguyên liệu đầu vào kém, dầu bôi trơn sai.',
+        reasonMaterial: 'Material (Vật tư): Nguyên liệu đầu vào kém, sai quy cách.',
         reasonMethod: 'Method (Phương pháp): Quy trình vận hành hoặc bảo trì sai.',
         reasonMeasurement: 'Measurement (Đo lường): Sai số dụng cụ đo kiểm.',
         reasonOther: 'Khác',
@@ -226,6 +227,7 @@ export const dictionaries = {
         overviewReportDesc: 'Aggregated issue metrics by Department.',
         yearlyView: 'Yearly Overview',
         monthlyView: 'Monthly Overview',
+        byReasonView: 'By Reason Overview',
         totalIncidents: 'Total Incidents',
         noDataFlow: 'No data generated for this period.',
         month: 'Month',
@@ -283,7 +285,7 @@ export const dictionaries = {
         // Select Options
         reasonMan: 'Man: Operational error, lack of skill, negligence.',
         reasonMachine: 'Machine: Old equipment, worn parts, internal breakdown.',
-        reasonMaterial: 'Material: Poor input materials, wrong lubricant.',
+        reasonMaterial: 'Material: Poor input materials, wrong specifications.',
         reasonMethod: 'Method: Incorrect operating or maintenance procedures.',
         reasonMeasurement: 'Measurement: Instrument error, incorrect inspection.',
         reasonOther: 'Other',

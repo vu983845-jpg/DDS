@@ -15,7 +15,7 @@ interface OverviewReportModalProps {
 
 export function OverviewReportModal({ open, onOpenChange, issuesData }: OverviewReportModalProps) {
     const { t } = useAppContext()
-    const [viewMode, setViewMode] = useState<'Yearly' | 'Monthly'>('Yearly')
+    const [viewMode, setViewMode] = useState<'Yearly' | 'Monthly' | 'ByReason'>('Yearly')
     const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString())
 
     // Extract unique years from data
@@ -49,8 +49,10 @@ export function OverviewReportModal({ open, onOpenChange, issuesData }: Overview
 
             if (viewMode === 'Yearly') {
                 key = dept
-            } else {
+            } else if (viewMode === 'Monthly') {
                 key = `${dept} - ${monthStr}/${yearStr}`
+            } else if (viewMode === 'ByReason') {
+                key = issue.reason_code || 'Unknown'
             }
 
             if (!dataMap[key]) {
@@ -85,12 +87,13 @@ export function OverviewReportModal({ open, onOpenChange, issuesData }: Overview
 
                 <div className="flex gap-4 mb-4 shrink-0">
                     <Select value={viewMode} onValueChange={(val: any) => setViewMode(val)}>
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-[200px]">
                             <SelectValue placeholder="View Mode" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Yearly">{(t as any).yearlyView || 'Yearly Overview'}</SelectItem>
                             <SelectItem value="Monthly">{(t as any).monthlyView || 'Monthly Overview'}</SelectItem>
+                            <SelectItem value="ByReason">{(t as any).byReasonView || 'By Reason Overview'}</SelectItem>
                         </SelectContent>
                     </Select>
 
@@ -109,7 +112,11 @@ export function OverviewReportModal({ open, onOpenChange, issuesData }: Overview
                         <Table>
                             <TableHeader className="bg-slate-50 sticky top-0 shadow-sm z-10">
                                 <TableRow>
-                                    <TableHead>{viewMode === 'Yearly' ? t.dept : `${t.dept} / ${(t as any).month || 'Month'}`}</TableHead>
+                                    <TableHead>
+                                        {viewMode === 'Yearly' && t.dept}
+                                        {viewMode === 'Monthly' && `${t.dept} / ${(t as any).month || 'Month'}`}
+                                        {viewMode === 'ByReason' && t.reason}
+                                    </TableHead>
                                     <TableHead className="text-right">{(t as any).totalIncidents || 'Total Incidents'}</TableHead>
                                     <TableHead className="text-right">{t.downtime} ({(t as any).mins || 'mins'})</TableHead>
                                 </TableRow>
