@@ -16,19 +16,20 @@ interface IssueDetailModalProps {
     onOpenChange: (open: boolean) => void
     issue: any // The specific issue row
     user: any // Current user context
+    profile?: any
 }
 
-export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetailModalProps) {
+export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: IssueDetailModalProps) {
     const [loading, setLoading] = useState(false)
     const [note, setNote] = useState('')
     const [isEditOpen, setIsEditOpen] = useState(false)
 
-    const isHseAdmin = user?.user_metadata?.role === 'hse_admin'
-    const isDeptUser = user?.user_metadata?.role === 'dept_user'
+    const isHseAdmin = profile?.role === 'hse_admin'
+    const isDeptUser = profile?.role === 'dept_user'
 
     // Can edit if Admin, OR if dept user and issue created within last 24h
     const within24h = issue && new Date().getTime() - new Date(issue.created_at).getTime() < 24 * 60 * 60 * 1000
-    const canEdit = isHseAdmin || (isDeptUser && within24h && issue?.department === user?.user_metadata?.department)
+    const canEdit = isHseAdmin || (isDeptUser && within24h && issue?.department === profile?.department)
 
     if (!issue) return null
 
@@ -258,7 +259,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetai
 
             {/* Nested Edit Modal */}
             {isEditOpen && (
-                <IssueFormModal open={isEditOpen} onOpenChange={setIsEditOpen} user={user} />
+                <IssueFormModal open={isEditOpen} onOpenChange={setIsEditOpen} user={user} profile={profile} />
                 // Normally you'd pass the initial issue data here
             )}
         </>

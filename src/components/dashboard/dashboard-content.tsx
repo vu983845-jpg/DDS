@@ -20,9 +20,10 @@ interface DashboardContentProps {
     safetyData: any[]
     ddsNote: any
     user: any
+    profile: any
 }
 
-export function DashboardContent({ issuesData, safetyData, ddsNote, user }: DashboardContentProps) {
+export function DashboardContent({ issuesData, safetyData, ddsNote, user, profile }: DashboardContentProps) {
     const { isTvMode, t } = useAppContext()
     const router = useRouter()
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -269,6 +270,7 @@ export function DashboardContent({ issuesData, safetyData, ddsNote, user }: Dash
                 onOpenChange={(open) => !open && setSelectedIssue(null)}
                 issue={selectedIssue}
                 user={user}
+                profile={profile}
             />
         </div>
     )

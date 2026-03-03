@@ -41,5 +41,11 @@ export default async function DashboardPage() {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    return <DashboardContent issuesData={issuesData} safetyData={safetyData} ddsNote={ddsNote} user={user} />
+    let profile = null
+    if (user) {
+        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+        profile = profileData
+    }
+
+    return <DashboardContent issuesData={issuesData} safetyData={safetyData} ddsNote={ddsNote} user={user} profile={profile} />
 }

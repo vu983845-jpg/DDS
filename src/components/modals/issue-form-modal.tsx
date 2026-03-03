@@ -38,9 +38,10 @@ interface IssueFormModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     user?: any // Profile data ideally
+    profile?: any
 }
 
-export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps) {
+export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormModalProps) {
     const { t } = useAppContext()
     const [loading, setLoading] = useState(false)
     const isDeptUser = user?.user_metadata?.role === 'dept_user'
