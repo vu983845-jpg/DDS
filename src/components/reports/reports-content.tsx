@@ -55,7 +55,7 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
 
             return true
         })
-    }, [initialIssues, selectedDept, dateRange])
+    }, [initialIssues, selectedDept, selectedReason, dateRange])
 
     // Compute Downtime Chart Data (Group by Department)
     const downtimeByDept = useMemo(() => {
