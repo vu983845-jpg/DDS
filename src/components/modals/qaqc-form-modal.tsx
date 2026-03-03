@@ -54,7 +54,7 @@ export function QaqcFormModal({ open, onOpenChange, user }: QaqcFormModalProps) 
             const insertData = {
                 ...data,
                 status: 'Open',
-                owner: user?.id,
+                owner_id: user?.id,
             }
 
             const { error } = await supabase.from('qa_qc_logs').insert(insertData)
