@@ -54,12 +54,24 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
     // Compute Downtime Chart Data (Group by Department)
     const downtimeByDept = useMemo(() => {
         const acc = {} as Record<string, number>
+
+        const getIssueDuration = (issue: any) => {
+            if (issue.status === 'Closed') return issue.duration_mins || 0
+            if (issue.status === 'Open' && issue.start_time) {
+                const start = new Date(issue.start_time).getTime()
+                const now = new Date().getTime()
+                return Math.max(0, Math.round((now - start) / 60000))
+            }
+            return 0
+        }
+
         if (selectedDept === 'All') {
             DEPARTMENTS.forEach(d => acc[d] = 0)
             filteredIssues.forEach(issue => {
-                if (issue.department && issue.duration_mins) {
+                const duration = getIssueDuration(issue)
+                if (issue.department && duration > 0) {
                     if (!acc[issue.department]) acc[issue.department] = 0
-                    acc[issue.department] += issue.duration_mins
+                    acc[issue.department] += duration
                 }
             })
             return Object.entries(acc).map(([name, duration]) => ({ name, duration })).sort((a, b) => b.duration - a.duration)
@@ -67,9 +79,10 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
             // If a single department is selected, group by Machine Area
             filteredIssues.forEach(issue => {
                 const area = issue.machine_area || t.generalArea
-                if (issue.duration_mins) {
+                const duration = getIssueDuration(issue)
+                if (duration > 0) {
                     if (!acc[area]) acc[area] = 0
-                    acc[area] += issue.duration_mins
+                    acc[area] += duration
                 }
             })
             return Object.entries(acc).map(([name, duration]) => ({ name, duration })).sort((a, b) => b.duration - a.duration)

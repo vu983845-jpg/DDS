@@ -1,7 +1,7 @@
 export const dictionaries = {
     vi: {
         // Top Header
-        appSubtitle: 'Đánh giá hoạt động sản xuất hàng ngày',
+        appSubtitle: 'Thiết lập Hướng đi Hàng ngày (DDS)',
         searchPlaceholder: 'Tìm kiếm máy móc, lý do...',
         today: 'Hôm nay',
         yesterday: 'Hôm qua',
@@ -127,7 +127,7 @@ export const dictionaries = {
     },
     en: {
         // Top Header
-        appSubtitle: 'Daily Manufacturing Standup Review',
+        appSubtitle: 'Daily Direction Setting (DDS)',
         searchPlaceholder: 'Search machine, reason...',
         today: 'Today',
         yesterday: 'Yesterday',

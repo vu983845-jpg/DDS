@@ -83,13 +83,19 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
         setLoading(true)
         try {
             const supabase = createClient()
+            const finalEndTimeStr = closeEndTime ? new Date(closeEndTime).toISOString() : new Date().toISOString()
+            const startTimeMs = new Date(issue.start_time).getTime()
+            const endTimeMs = new Date(finalEndTimeStr).getTime()
+            const durationMins = Math.max(0, Math.round((endTimeMs - startTimeMs) / 60000))
+
             const { error } = await supabase
                 .from('issues')
                 .update({
                     status: 'Closed',
                     closed_at: new Date().toISOString(),
                     closed_by_id: user?.id,
-                    end_time: closeEndTime ? new Date(closeEndTime).toISOString() : new Date().toISOString(),
+                    end_time: finalEndTimeStr,
+                    duration_mins: durationMins,
                 })
                 .eq('id', issue.id)
 
