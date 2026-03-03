@@ -7,7 +7,7 @@ export default async function DashboardPage() {
     const supabase = await createClient()
 
     // Fetch data
-    const { data: issuesDataResponse } = await supabase
+    const { data: issuesDataResponse, error: issuesError } = await supabase
         .from('issues')
         .select(`
             *,
@@ -16,6 +16,10 @@ export default async function DashboardPage() {
         `)
         .order('created_at', { ascending: false })
         .limit(20)
+
+    if (issuesError) {
+        console.error('Dashboard Issues Error:', issuesError)
+    }
 
     const { data: safetyDataResponse } = await supabase
         .from('safety_triggers')
@@ -35,5 +39,7 @@ export default async function DashboardPage() {
     const safetyData = safetyDataResponse || []
     const ddsNote = ddsNotesResponse || null
 
-    return <DashboardContent issuesData={issuesData} safetyData={safetyData} ddsNote={ddsNote} />
+    const { data: { user } } = await supabase.auth.getUser()
+
+    return <DashboardContent issuesData={issuesData} safetyData={safetyData} ddsNote={ddsNote} user={user} />
 }

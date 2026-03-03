@@ -13,18 +13,21 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface DashboardContentProps {
     issuesData: any[]
     safetyData: any[]
     ddsNote: any
+    user: any
 }
 
-export function DashboardContent({ issuesData, safetyData, ddsNote }: DashboardContentProps) {
+export function DashboardContent({ issuesData, safetyData, ddsNote, user }: DashboardContentProps) {
     const { isTvMode, t } = useAppContext()
     const router = useRouter()
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
+    const [selectedAnnouncement, setSelectedAnnouncement] = useState<any | null>(null)
     const [isEditingNote, setIsEditingNote] = useState(false)
     const [noteText, setNoteText] = useState(ddsNote?.notes || '')
     const [isSavingNote, setIsSavingNote] = useState(false)
@@ -176,7 +179,13 @@ export function DashboardContent({ issuesData, safetyData, ddsNote }: DashboardC
                                             </Badge>
                                             <span className="text-xs text-slate-500">{new Date(safety.created_at).toLocaleDateString()}</span>
                                         </div>
-                                        <p className="text-sm font-medium text-slate-800">{safety.description}</p>
+                                        <p className="text-sm font-medium text-slate-800 line-clamp-2">{safety.description}</p>
+                                        <button
+                                            onClick={() => setSelectedAnnouncement(safety)}
+                                            className="text-xs text-blue-600 hover:underline text-left mt-1"
+                                        >
+                                            {t.readMore}
+                                        </button>
                                         {safety.action_required && (
                                             <div className="mt-1 flex items-start gap-1">
                                                 <div className="h-4 w-1 bg-red-400 rounded-full mt-0.5"></div>
@@ -216,9 +225,13 @@ export function DashboardContent({ issuesData, safetyData, ddsNote }: DashboardC
                                     ) : (
                                         <p className="text-slate-600 italic">{t.noNotes}</p>
                                     )}
-                                    <button onClick={() => setIsEditingNote(true)} className="text-sm text-[#D83140] hover:underline font-medium">
-                                        {ddsNote?.notes ? 'Edit Note' : t.addNote}
-                                    </button>
+                                    {user ? (
+                                        <button onClick={() => setIsEditingNote(true)} className="text-sm text-[#D83140] hover:underline font-medium">
+                                            {ddsNote?.notes ? 'Edit Note' : t.addNote}
+                                        </button>
+                                    ) : (
+                                        <div className="text-xs text-slate-400 italic">({t.signIn} to edit notes)</div>
+                                    )}
                                 </div>
                             )}
                         </CardContent>
@@ -227,11 +240,35 @@ export function DashboardContent({ issuesData, safetyData, ddsNote }: DashboardC
 
             </div>
 
+            <Dialog open={!!selectedAnnouncement} onOpenChange={(open) => !open && setSelectedAnnouncement(null)}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <ShieldAlert className="h-5 w-5 text-[#D83140]" />
+                            {selectedAnnouncement?.severity} Announcement
+                        </DialogTitle>
+                        <DialogDescription>
+                            Posted on {selectedAnnouncement ? new Date(selectedAnnouncement.created_at).toLocaleDateString() : ''}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="text-sm text-slate-800 whitespace-pre-wrap">
+                            {selectedAnnouncement?.description}
+                        </div>
+                        {selectedAnnouncement?.action_required && (
+                            <div className="p-3 bg-red-50 text-red-800 border-l-4 border-red-500 text-sm">
+                                <strong>{t.action}</strong> {selectedAnnouncement.action_required}
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <IssueDetailModal
                 open={!!selectedIssue}
                 onOpenChange={(open) => !open && setSelectedIssue(null)}
                 issue={selectedIssue}
-                user={null} // Or pass real user context if available
+                user={user}
             />
         </div>
     )

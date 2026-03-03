@@ -165,16 +165,17 @@ export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetai
                                     )}
                                 </div>
 
-                                {/* Add Note Section */}
-                                <div className="flex gap-2 mt-4 pt-4 border-t">
-                                    <Textarea
-                                        placeholder="Add an update or note..."
-                                        value={note}
-                                        onChange={e => setNote(e.target.value)}
-                                        className="resize-none h-10 min-h-0 py-2"
-                                    />
-                                    <Button onClick={handleAddNote} disabled={loading || !note} className="bg-slate-900">Post</Button>
-                                </div>
+                                {user && (
+                                    <div className="flex gap-2 mt-4 pt-4 border-t">
+                                        <Textarea
+                                            placeholder="Add an update or note..."
+                                            value={note}
+                                            onChange={e => setNote(e.target.value)}
+                                            className="resize-none h-10 min-h-0 py-2"
+                                        />
+                                        <Button onClick={handleAddNote} disabled={loading || !note} className="bg-slate-900">Post</Button>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

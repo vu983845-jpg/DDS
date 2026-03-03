@@ -40,10 +40,12 @@ export const dictionaries = {
         noIssuesRange: 'Không có sự cố nào cho khoảng thời gian này.',
         generalArea: 'Khu vực chung',
 
-        safetyTriggers: 'Cảnh báo An toàn',
-        safetyTriggersDesc: 'Các vấn đề an toàn đang cần chú ý.',
+        safetyTriggers: 'Thông báo HSE',
+        safetyTriggersDesc: 'Các thông báo An toàn - Sức khỏe - Môi trường cần chú ý.',
         action: 'Hành động:',
-        noSafety: 'Không có cảnh báo an toàn nào đang bật. Tuyệt vời!',
+        noSafety: 'Không có thông báo HSE nào. Tuyệt vời!',
+        readMore: 'Đọc chi tiết',
+        signIn: 'Đăng nhập',
 
         // Issues Page
         allIssues: 'Tất cả Sự cố',
@@ -140,10 +142,12 @@ export const dictionaries = {
         noIssuesRange: 'No issues found for the selected date range.',
         generalArea: 'General Area',
 
-        safetyTriggers: 'Safety Triggers',
-        safetyTriggersDesc: 'Active safety concerns requiring attention.',
+        safetyTriggers: 'HSE Announcements',
+        safetyTriggersDesc: 'Health, Safety, and Environment announcements.',
         action: 'Action:',
-        noSafety: 'No active safety triggers. Awesome!',
+        noSafety: 'No active HSE announcements. Awesome!',
+        readMore: 'Read more',
+        signIn: 'Sign In',
 
         // Issues Page
         allIssues: 'All Issues',

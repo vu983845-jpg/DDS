@@ -107,12 +107,15 @@ export function TopHeader({ user }: { user: any }) {
                         </Button>
                     </div>
 
-                    <Button size="sm" onClick={() => setIsModalOpen(true)} className="h-9 gap-2 bg-[#D83140] hover:bg-[#b02733] text-white">
-                        <PlusCircle className="h-4 w-4" />
-                        <span className="hidden sm:inline">{t.addIssue}</span>
-                    </Button>
-
-                    <IssueFormModal open={isModalOpen} onOpenChange={setIsModalOpen} user={user} />
+                    {user && (
+                        <>
+                            <Button size="sm" onClick={() => setIsModalOpen(true)} className="h-9 gap-2 bg-[#D83140] hover:bg-[#b02733] text-white">
+                                <PlusCircle className="h-4 w-4" />
+                                <span className="hidden sm:inline">{t.addIssue}</span>
+                            </Button>
+                            <IssueFormModal open={isModalOpen} onOpenChange={setIsModalOpen} user={user} />
+                        </>
+                    )}
 
                     {/* User Menu */}
                     <DropdownMenu>
