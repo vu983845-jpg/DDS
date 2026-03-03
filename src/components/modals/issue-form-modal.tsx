@@ -44,8 +44,10 @@ interface IssueFormModalProps {
 export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormModalProps) {
     const { t } = useAppContext()
     const [loading, setLoading] = useState(false)
-    const isDeptUser = user?.user_metadata?.role === 'dept_user'
-    const userDept = user?.user_metadata?.department
+    const [isConfirmDeptOpen, setIsConfirmDeptOpen] = useState(false)
+    const [pendingData, setPendingData] = useState<IssueFormData | null>(null)
+    const isDeptUser = user?.user_metadata?.role === 'dept_user' || profile?.role === 'dept_user'
+    const userDept = user?.user_metadata?.department || profile?.department
 
     const formatDateTimeLocal = (date: Date) => {
         const d = new Date(date)
@@ -90,7 +92,14 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
         }
     }, [startTime, endTime, isOngoing])
 
-    const onSubmit = async (data: IssueFormData) => {
+    const onSubmit = async (data: IssueFormData, bypassConfirm = false) => {
+        // Validation: If dept user selects different dept, confirm first
+        if (!bypassConfirm && isDeptUser && userDept && data.department !== userDept) {
+            setPendingData(data)
+            setIsConfirmDeptOpen(true)
+            return
+        }
+
         setLoading(true)
         try {
             const supabase = createClient()
@@ -138,7 +147,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-4">
+                <form onSubmit={handleSubmit((data) => onSubmit(data, false))} className="space-y-6 pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>{t.departmentFull}</Label>
@@ -146,7 +155,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                                 control={control}
                                 name="department"
                                 render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value} disabled={isDeptUser}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                         <SelectTrigger className={errors.department ? 'border-red-500' : ''}>
                                             <SelectValue placeholder={t.selectDept} />
                                         </SelectTrigger>
@@ -260,6 +269,32 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                     </DialogFooter>
                 </form>
             </DialogContent>
+
+            {/* Department Confirmation Dialog */}
+            <Dialog open={isConfirmDeptOpen} onOpenChange={setIsConfirmDeptOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle className="text-amber-600 flex items-center gap-2">
+                            <span className="text-2xl">⚠️</span> Warning: Different Department
+                        </DialogTitle>
+                        <DialogDescription className="mt-2 text-slate-700">
+                            You belong to the <span className="font-semibold">{userDept}</span> department, but you've selected <span className="font-semibold">{pendingData?.department}</span>. Are you sure you want to report an issue for a different department?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="mt-4">
+                        <Button variant="outline" onClick={() => setIsConfirmDeptOpen(false)} disabled={loading}>
+                            Cancel
+                        </Button>
+                        <Button onClick={() => {
+                            setIsConfirmDeptOpen(false)
+                            if (pendingData) onSubmit(pendingData, true)
+                        }} disabled={loading} className="bg-amber-600 hover:bg-amber-700 text-white">
+                            {loading ? 'Submitting...' : 'Yes, Continue'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </Dialog>
     )
 }

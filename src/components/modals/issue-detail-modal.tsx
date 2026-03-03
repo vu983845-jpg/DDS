@@ -26,6 +26,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
     const [note, setNote] = useState('')
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isCloseModalOpen, setIsCloseModalOpen] = useState(false)
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
     const [closeEndTime, setCloseEndTime] = useState('')
 
     const isHseAdmin = profile?.role === 'hse_admin'
@@ -101,6 +102,24 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
         } finally {
             setLoading(false)
             setIsCloseModalOpen(false)
+        }
+    }
+
+    const handleDeleteSubmit = async () => {
+        setLoading(true)
+        try {
+            const supabase = createClient()
+            const { error } = await supabase.from('issues').delete().eq('id', issue.id)
+            if (error) throw error
+
+            toast.success('Issue deleted successfully.')
+            window.location.reload()
+        } catch (e) {
+            console.error(e)
+            toast.error('Failed to delete issue.')
+        } finally {
+            setLoading(false)
+            setIsDeleteConfirmOpen(false)
         }
     }
 
@@ -234,10 +253,10 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                         </Button>
                                     )}
 
-                                    {isHseAdmin && (
+                                    {canEdit && (
                                         <>
                                             <Separator className="my-2" />
-                                            <Button size="sm" variant="ghost" className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleAction('Delete')}>
+                                            <Button size="sm" variant="ghost" className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => setIsDeleteConfirmOpen(true)}>
                                                 <Trash2 className="h-4 w-4" /> Delete Issue
                                             </Button>
                                         </>
@@ -312,6 +331,26 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                         <Button variant="outline" onClick={() => setIsCloseModalOpen(false)} disabled={loading}>Cancel</Button>
                         <Button onClick={handleCloseSubmit} disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
                             Confirm Close
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirmation Modal */}
+            <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle className="text-red-600">Delete Issue</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete this issue? This action cannot be undone and will permanently remove it from the system.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="mt-4">
+                        <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)} disabled={loading}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleDeleteSubmit} disabled={loading} className="bg-red-600">
+                            {loading ? 'Deleting...' : 'Yes, Delete'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
