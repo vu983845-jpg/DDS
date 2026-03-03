@@ -13,12 +13,14 @@ import { useAppContext } from '@/components/providers/app-provider'
 
 interface IssuesContentProps {
     issuesData: any[]
+    user: any
+    profile?: any
 }
 
 const DEPARTMENTS = ['All', 'Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 const STATUSES = ['All', 'Open', 'Closed', 'In Progress']
 
-export function IssuesContent({ issuesData }: IssuesContentProps) {
+export function IssuesContent({ issuesData, user, profile }: IssuesContentProps) {
     const { t } = useAppContext()
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
     const [search, setSearch] = useState('')
@@ -155,7 +157,8 @@ export function IssuesContent({ issuesData }: IssuesContentProps) {
                 open={!!selectedIssue}
                 onOpenChange={(open) => !open && setSelectedIssue(null)}
                 issue={selectedIssue}
-                user={null}
+                user={user}
+                profile={profile}
             />
         </div>
     )
