@@ -11,7 +11,7 @@ export default async function TodoPage() {
         .from('todo_actions')
         .select(`
             *,
-            issue:issues(department, machine_area)
+            issue:issues(department, machine_area, start_time, reason_code, description, impact_level)
         `)
         .order('created_at', { ascending: false })
 

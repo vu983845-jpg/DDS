@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Label } from '@/components/ui/label'
 import { CheckCircle, Trash2, PlusCircle, AlertCircle, Edit2, Clock } from 'lucide-react'
 import { useAppContext } from '@/components/providers/app-provider'
@@ -173,10 +174,44 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                                                             {todo.description}
                                                         </div>
                                                         {todo.issue_id && todo.issue && (
-                                                            <div className="flex items-center gap-1 mt-1 text-xs text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md inline-flex">
-                                                                <AlertCircle className="w-3 h-3" />
-                                                                Linked: {todo.issue.department} - {todo.issue.machine_area || 'Issue'}
-                                                            </div>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <button className="flex items-center gap-1 mt-1 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 transition-colors px-2 py-0.5 rounded-md inline-flex border border-indigo-200">
+                                                                        <AlertCircle className="w-3.5 h-3.5" />
+                                                                        Linked Issue
+                                                                    </button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-80 p-4" align="start">
+                                                                    <div className="space-y-3">
+                                                                        <div>
+                                                                            <h4 className="font-semibold text-slate-900 leading-none">{todo.issue.department}</h4>
+                                                                            <p className="text-sm text-slate-500 mt-1">{todo.issue.machine_area || t.generalArea}</p>
+                                                                        </div>
+                                                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                                                            <div>
+                                                                                <span className="text-slate-500 block text-xs">Date & Time</span>
+                                                                                <span className="font-medium text-slate-800">{formatDateString(todo.issue.start_time)}</span>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="text-slate-500 block text-xs">Impact</span>
+                                                                                <Badge variant="outline" className={`mt-0.5 ${todo.issue.impact_level === 'Critical' ? 'border-red-500 text-red-700 bg-red-50' :
+                                                                                    todo.issue.impact_level === 'High' ? 'border-orange-500 text-orange-700 bg-orange-50' :
+                                                                                        'bg-slate-50 border-slate-200 text-slate-600'
+                                                                                    }`}>{todo.issue.impact_level}</Badge>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className="text-slate-500 block text-xs">Reason</span>
+                                                                            <span className="font-medium text-slate-800 text-sm">{todo.issue.reason_code}</span>
+                                                                        </div>
+                                                                        {todo.issue.description && (
+                                                                            <div className="bg-slate-50 p-2 rounded text-sm text-slate-700">
+                                                                                {todo.issue.description}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </PopoverContent>
+                                                            </Popover>
                                                         )}
                                                     </TableCell>
                                                     <TableCell className="text-sm font-medium">
