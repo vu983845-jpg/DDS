@@ -33,7 +33,7 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
     const [statusFilter, setStatusFilter] = useState('All')
     const [reasonFilter, setReasonFilter] = useState('All')
 
-    const dateFilteredData = filterByDateRange(issuesData, dateRange, 'created_at')
+    const dateFilteredData = filterByDateRange(issuesData, dateRange, 'start_time')
 
     const filteredIssues = dateFilteredData.filter(issue => {
         const matchesSearch =

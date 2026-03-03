@@ -37,8 +37,8 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
             // Apply Reason Filter
             if (selectedReason !== 'All' && issue.reason_code !== selectedReason) return false
 
-            // Apply Date Filter
-            const issueDate = new Date(issue.created_at)
+            // Apply Date Filter (Default to start_time as the actual incident date, fallback to created_at)
+            const issueDate = issue.start_time ? new Date(issue.start_time) : new Date(issue.created_at)
 
             if (dateRange === 'Today') {
                 if (!isToday(issueDate)) return false

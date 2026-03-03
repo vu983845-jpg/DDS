@@ -92,7 +92,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
         }
     }, [isTvMode, router])
 
-    const filteredIssues = useMemo(() => filterByDateRange(issuesData || [], dateRange, 'created_at'), [issuesData, dateRange])
+    const filteredIssues = useMemo(() => filterByDateRange(issuesData || [], dateRange, 'start_time'), [issuesData, dateRange])
     const filteredSafety = useMemo(() => filterByDateRange(safetyData || [], dateRange, 'created_at'), [safetyData, dateRange])
     const filteredQaqc = useMemo(() => filterByDateRange(qaqcData || [], dateRange, 'created_at'), [qaqcData, dateRange])
     const filteredTodo = useMemo(() => filterByDateRange(todoData || [], dateRange, 'created_at'), [todoData, dateRange])
