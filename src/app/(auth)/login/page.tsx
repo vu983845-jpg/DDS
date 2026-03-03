@@ -18,8 +18,9 @@ export default async function LoginPage({
         <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
             <div className="w-full max-w-md">
                 <div className="mb-8 text-center">
+                    <img src="/logo.jpg" alt="Logo" className="h-16 mx-auto mb-4" />
                     <h1 className="text-3xl font-bold tracking-tight text-[#D83140]">DDS Meeting</h1>
-                    <p className="text-sm text-muted-foreground mt-2">Daily Manufacturing Standup Review</p>
+                    <p className="text-sm text-muted-foreground mt-2">Daily Direction Setting (DDS)</p>
                 </div>
 
                 <Card className="shadow-lg border-t-4 border-t-[#D83140]">
