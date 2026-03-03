@@ -6,7 +6,7 @@ import { useAppContext } from '@/components/providers/app-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { PlusCircle, Search, MonitorPlay, LogOut, User, Settings, LayoutDashboard, ListTodo, ShieldAlert, BarChart } from 'lucide-react'
+import { PlusCircle, Search, MonitorPlay, LogOut, User, Settings, LayoutDashboard, ListTodo, ShieldAlert, BarChart, Activity } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { logout } from '@/app/(auth)/login/actions'
 import { IssueFormModal } from '@/components/modals/issue-form-modal'
@@ -23,6 +23,7 @@ export function TopHeader({ user }: { user: any }) {
         { name: t.dashboard, href: '/', icon: LayoutDashboard },
         { name: t.issuesList, href: '/issues', icon: ListTodo },
         { name: t.safetyLogs, href: '/safety', icon: ShieldAlert },
+        { name: t.qaqcLogs, href: '/qaqc', icon: Activity },
         { name: 'Reports', href: '/reports', icon: BarChart },
     ]
 

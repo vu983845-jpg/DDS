@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { Clock, CheckCircle, Edit, Trash2, UserPlus, FileText, Factory } from 'lucide-react'
@@ -23,6 +25,8 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
     const [loading, setLoading] = useState(false)
     const [note, setNote] = useState('')
     const [isEditOpen, setIsEditOpen] = useState(false)
+    const [isCloseModalOpen, setIsCloseModalOpen] = useState(false)
+    const [closeEndTime, setCloseEndTime] = useState('')
 
     const isHseAdmin = profile?.role === 'hse_admin'
     const isDeptUser = profile?.role === 'dept_user'
@@ -39,17 +43,8 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
             const supabase = createClient()
 
             if (action === 'Close Issue') {
-                const { error } = await supabase
-                    .from('issues')
-                    .update({
-                        status: 'Closed',
-                        closed_at: new Date().toISOString(),
-                        closed_by_id: user?.id,
-                        end_time: issue.end_time || new Date().toISOString() // auto set end time if ongoing
-                    })
-                    .eq('id', issue.id)
-
-                if (error) throw error
+                // Now handled by handleCloseSubmit
+                return
             }
 
             if (action === 'Reopen') {
@@ -80,6 +75,32 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
             toast.error('Failed to perform action.')
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleCloseSubmit = async () => {
+        setLoading(true)
+        try {
+            const supabase = createClient()
+            const { error } = await supabase
+                .from('issues')
+                .update({
+                    status: 'Closed',
+                    closed_at: new Date().toISOString(),
+                    closed_by_id: user?.id,
+                    end_time: closeEndTime ? new Date(closeEndTime).toISOString() : new Date().toISOString(),
+                })
+                .eq('id', issue.id)
+
+            if (error) throw error
+            toast.success('Issue closed successfully.')
+            window.location.reload()
+        } catch (e) {
+            console.error(e)
+            toast.error('Failed to close issue.')
+        } finally {
+            setLoading(false)
+            setIsCloseModalOpen(false)
         }
     }
 
@@ -187,7 +208,10 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                 <div className="flex flex-col gap-2">
 
                                     {(isHseAdmin || canEdit) && issue.status === 'Open' && (
-                                        <Button size="sm" variant="outline" className="justify-start gap-2 border-green-500 text-green-700 hover:bg-green-50" onClick={() => handleAction('Close Issue')}>
+                                        <Button size="sm" variant="outline" className="justify-start gap-2 border-green-500 text-green-700 hover:bg-green-50" onClick={() => {
+                                            setCloseEndTime(new Date().toISOString().slice(0, 16)) // Default to now
+                                            setIsCloseModalOpen(true)
+                                        }}>
                                             <CheckCircle className="h-4 w-4" /> Close Issue
                                         </Button>
                                     )}
@@ -262,6 +286,36 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                 <IssueFormModal open={isEditOpen} onOpenChange={setIsEditOpen} user={user} profile={profile} />
                 // Normally you'd pass the initial issue data here
             )}
+
+            {/* Nested Close Modal */}
+            <Dialog open={isCloseModalOpen} onOpenChange={setIsCloseModalOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Close Issue</DialogTitle>
+                        <DialogDescription>
+                            Confirm the exact time the issue was resolved.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="end_time">End Time / Resolved At</Label>
+                            <Input
+                                id="end_time"
+                                type="datetime-local"
+                                step="60"
+                                value={closeEndTime}
+                                onChange={(e) => setCloseEndTime(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsCloseModalOpen(false)} disabled={loading}>Cancel</Button>
+                        <Button onClick={handleCloseSubmit} disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
+                            Confirm Close
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

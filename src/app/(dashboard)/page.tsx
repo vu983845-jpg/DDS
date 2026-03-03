@@ -27,6 +27,12 @@ export default async function DashboardPage() {
         .order('created_at', { ascending: false })
         .limit(10)
 
+    const { data: qaqcDataResponse } = await supabase
+        .from('qa_qc_logs')
+        .select('*, profiles(name)')
+        .order('created_at', { ascending: false })
+        .limit(10)
+
     const today = new Date().toISOString().split('T')[0]
     const { data: ddsNotesResponse } = await supabase
         .from('dds_notes')
@@ -37,6 +43,7 @@ export default async function DashboardPage() {
     // Use empty arrays for MVP testing if DB empty or errors out
     const issuesData = issuesDataResponse || []
     const safetyData = safetyDataResponse || []
+    const qaqcData = qaqcDataResponse || []
     const ddsNote = ddsNotesResponse || null
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -47,5 +54,5 @@ export default async function DashboardPage() {
         profile = profileData
     }
 
-    return <DashboardContent issuesData={issuesData} safetyData={safetyData} ddsNote={ddsNote} user={user} profile={profile} />
+    return <DashboardContent issuesData={issuesData} safetyData={safetyData} qaqcData={qaqcData} ddsNote={ddsNote} user={user} profile={profile} />
 }

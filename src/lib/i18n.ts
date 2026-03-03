@@ -10,6 +10,7 @@ export const dictionaries = {
         dashboard: 'Bảng điều khiển',
         issuesList: 'Danh sách Sự cố',
         safetyLogs: 'Cảnh báo An toàn',
+        qaqcLogs: 'Thông báo QA/QC',
         adminSettings: 'Cài đặt Quản trị',
         logout: 'Đăng xuất',
         guest: 'Khách',
@@ -44,6 +45,11 @@ export const dictionaries = {
         safetyTriggersDesc: 'Các thông báo An toàn - Sức khỏe - Môi trường cần chú ý.',
         action: 'Hành động:',
         noSafety: 'Không có thông báo HSE nào. Tuyệt vời!',
+
+        qaqcInfo: 'Thông báo QA/QC',
+        qaqcInfoDesc: 'Các cảnh báo Chất lượng, Đánh giá, và Lỗi.',
+        noQaqc: 'Không có thông báo QA/QC nào.',
+
         readMore: 'Đọc chi tiết',
         signIn: 'Đăng nhập',
 
@@ -58,13 +64,18 @@ export const dictionaries = {
 
         // Safety Page
         manageSafety: 'Quản lý các quan sát về môi trường, sức khỏe và an toàn.',
-        reportSafety: '+ Báo cáo An toàn',
+        reportSafety: '+ Báo cáo An toàn / Thông báo',
         date: 'Ngày',
         severity: 'Mức độ',
         description: 'Mô tả',
         requiredAction: 'Hành động yêu cầu',
         actions: 'Tùy chọn',
-        noOutstandingSafety: 'Không có cảnh báo an toàn nào còn tồn đọng.',
+        noOutstandingSafety: 'Không có vấn đề An toàn nổi cộm nào.',
+
+        // QA/QC Page
+        manageQaqc: 'Quản lý các vấn đề và thông báo về Chất lượng.',
+        reportQaqc: '+ Đăng thông báo QA/QC',
+        noOutstandingQaqc: 'Không có thông báo Chất lượng mới.',
 
         ddsNotes: 'Ghi chú DDS & Hành động',
         noNotes: 'Chưa có ghi chú nào được lưu hôm nay.',
@@ -112,6 +123,7 @@ export const dictionaries = {
         dashboard: 'Dashboard',
         issuesList: 'Issues List',
         safetyLogs: 'Safety Logs',
+        qaqcLogs: 'QA/QC Logs',
         adminSettings: 'Admin Settings',
         logout: 'Log out',
         guest: 'Guest',
@@ -145,7 +157,12 @@ export const dictionaries = {
         safetyTriggers: 'HSE Announcements',
         safetyTriggersDesc: 'Health, Safety, and Environment announcements.',
         action: 'Action:',
-        noSafety: 'No active HSE announcements. Awesome!',
+        noSafety: 'No HSE Announcements. Great job!',
+
+        qaqcInfo: 'QA/QC Information',
+        qaqcInfoDesc: 'Quality alerts, Audits, and Defect notices.',
+        noQaqc: 'No QA/QC notices at this time.',
+
         readMore: 'Read more',
         signIn: 'Sign In',
 
@@ -160,13 +177,18 @@ export const dictionaries = {
 
         // Safety Page
         manageSafety: 'Manage environmental, health, and safety observations.',
-        reportSafety: '+ Report Safety Issue',
+        reportSafety: '+ Report Safety / Add Notice',
         date: 'Date',
         severity: 'Severity',
         description: 'Description',
         requiredAction: 'Required Action',
         actions: 'Actions',
-        noOutstandingSafety: 'No outstanding safety triggers.',
+        noOutstandingSafety: 'No outstanding safety issues found.',
+
+        // QAQC Page
+        manageQaqc: 'Manage Quality Control issues and notifications.',
+        reportQaqc: '+ Post QA/QC Notice',
+        noOutstandingQaqc: 'No recent quality notices found.',
 
         ddsNotes: 'DDS Notes & Actions',
         noNotes: 'No notes recorded for today yet.',

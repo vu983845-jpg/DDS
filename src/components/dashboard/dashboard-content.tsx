@@ -4,7 +4,7 @@ import { KPICards } from '@/components/dashboard/kpi-cards'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { ShieldAlert } from 'lucide-react'
+import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronDown, ShieldAlert } from 'lucide-react'
 import { useAppContext } from '@/components/providers/app-provider'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -18,17 +18,19 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 interface DashboardContentProps {
     issuesData: any[]
     safetyData: any[]
+    qaqcData: any[]
     ddsNote: any
     user: any
     profile: any
 }
 
-export function DashboardContent({ issuesData, safetyData, ddsNote, user, profile }: DashboardContentProps) {
+export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, user, profile }: DashboardContentProps) {
     const { isTvMode, t } = useAppContext()
     const router = useRouter()
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<any | null>(null)
+    const [selectedQaqc, setSelectedQaqc] = useState<any | null>(null)
     const [isEditingNote, setIsEditingNote] = useState(false)
     const [noteText, setNoteText] = useState(ddsNote?.notes || '')
     const [isSavingNote, setIsSavingNote] = useState(false)
@@ -203,6 +205,45 @@ export function DashboardContent({ issuesData, safetyData, ddsNote, user, profil
 
                     <Card className="shadow-sm border-slate-200">
                         <CardHeader className="border-b bg-slate-50/50 pb-4">
+                            <CardTitle className="flex items-center gap-2 text-lg text-blue-600">
+                                <Activity className="h-5 w-5" />
+                                {t.qaqcInfo || 'QA/QC Information'}
+                            </CardTitle>
+                            <CardDescription>{t.qaqcInfoDesc || 'Quality alerts and notices.'}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 space-y-4">
+                            {qaqcData && qaqcData.length > 0 ? (
+                                qaqcData.map((qaqc: any) => (
+                                    <div key={qaqc.id} className="p-3 border rounded-lg bg-blue-50/50 border-blue-100 flex flex-col gap-2">
+                                        <div className="flex justify-between items-start">
+                                            <Badge variant="outline" className="border-blue-500 text-blue-700 bg-blue-50">
+                                                {qaqc.type}
+                                            </Badge>
+                                            <span className="text-xs text-slate-500">{new Date(qaqc.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-800 line-clamp-2">{qaqc.description}</p>
+                                        <button
+                                            onClick={() => setSelectedQaqc(qaqc)}
+                                            className="text-xs text-blue-600 hover:underline text-left mt-1"
+                                        >
+                                            {t.readMore}
+                                        </button>
+                                        {qaqc.action_required && (
+                                            <div className="mt-1 flex items-start gap-1">
+                                                <div className="h-4 w-1 bg-red-400 rounded-full mt-0.5"></div>
+                                                <p className="text-xs text-slate-600">{t.action} {qaqc.action_required}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center text-sm text-slate-500 py-4">{t.noQaqc || 'No notices'}</div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card className="shadow-sm border-slate-200">
+                        <CardHeader className="border-b bg-slate-50/50 pb-4">
                             <CardTitle className="text-lg">{t.ddsNotes}</CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
@@ -259,6 +300,30 @@ export function DashboardContent({ issuesData, safetyData, ddsNote, user, profil
                         {selectedAnnouncement?.action_required && (
                             <div className="p-3 bg-red-50 text-red-800 border-l-4 border-red-500 text-sm">
                                 <strong>{t.action}</strong> {selectedAnnouncement.action_required}
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!selectedQaqc} onOpenChange={(open) => !open && setSelectedQaqc(null)}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Activity className="h-5 w-5 text-blue-600" />
+                            {selectedQaqc?.type} Notice
+                        </DialogTitle>
+                        <DialogDescription>
+                            Posted on {selectedQaqc ? new Date(selectedQaqc.created_at).toLocaleDateString() : ''}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="text-sm text-slate-800 whitespace-pre-wrap">
+                            {selectedQaqc?.description}
+                        </div>
+                        {selectedQaqc?.action_required && (
+                            <div className="p-3 bg-red-50 text-red-800 border-l-4 border-red-500 text-sm">
+                                <strong>{t.action}</strong> {selectedQaqc.action_required}
                             </div>
                         )}
                     </div>
