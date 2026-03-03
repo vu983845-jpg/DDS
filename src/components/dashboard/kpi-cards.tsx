@@ -30,7 +30,7 @@ export function KPICards({
         },
         {
             title: t.kpiDowntime,
-            value: `${totalDowntime} min`,
+            value: `${Math.round((totalDowntime / 60) * 10) / 10}h`,
             icon: Clock,
             description: t.kpiDowntimeDesc,
             color: 'text-red-500',
@@ -74,3 +74,4 @@ export function KPICards({
         </div>
     )
 }
+
