@@ -18,30 +18,24 @@ import { useAppContext } from '@/components/providers/app-provider'
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 const REASON_CODES = [
-    'Machine Breakdown',
-    'Belt Snapped',
-    'Power Outage',
-    'Raw Material Shortage',
-    'Quality Hold',
-    'Operator Error',
-    'Sensor Malfunction',
-    'Jamming/Blockage',
+    'Equipment',
+    'Operation',
+    'Quality',
+    'Environment',
+    'Material',
     'Other'
 ]
 const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
 
 const getReasonKey = (code: string) => {
     switch (code) {
-        case 'Machine Breakdown': return 'reasonMachineBreakdown'
-        case 'Belt Snapped': return 'reasonBeltSnapped'
-        case 'Power Outage': return 'reasonPowerOutage'
-        case 'Raw Material Shortage': return 'reasonRawMaterial'
-        case 'Quality Hold': return 'reasonQualityHold'
-        case 'Operator Error': return 'reasonOperatorError'
-        case 'Sensor Malfunction': return 'reasonSensorMalfunction'
-        case 'Jamming/Blockage': return 'reasonJamming'
+        case 'Equipment': return 'reasonEquipment'
+        case 'Operation': return 'reasonOperation'
+        case 'Quality': return 'reasonQuality'
+        case 'Environment': return 'reasonEnvironment'
+        case 'Material': return 'reasonMaterial'
         case 'Other': return 'reasonOther'
-        default: return 'reasonMachineBreakdown'
+        default: return 'reasonEquipment'
     }
 }
 
@@ -73,11 +67,12 @@ type IssueFormData = z.infer<typeof issueSchema>
 interface IssueFormModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    user?: any // Profile data ideally
+    user?: any
     profile?: any
+    initialData?: any
 }
 
-export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormModalProps) {
+export function IssueFormModal({ open, onOpenChange, user, profile, initialData }: IssueFormModalProps) {
     const { t } = useAppContext()
     const [loading, setLoading] = useState(false)
     const [isBlockDeptOpen, setIsBlockDeptOpen] = useState(false)
@@ -91,19 +86,23 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
         return d.toISOString().slice(0, 16)
     }
 
+    // Determine initial reason code. If it's a previously custom typed "Other" reason, we set reason_code to 'Other' and populate other_reason
+    const initialReasonCode = initialData?.reason_code || ''
+    const isStandardReason = REASON_CODES.includes(initialReasonCode)
+
     const form = useForm<IssueFormData>({
         resolver: zodResolver(issueSchema),
         defaultValues: {
-            department: userDept || '',
-            start_time: formatDateTimeLocal(new Date()),
-            end_time: formatDateTimeLocal(new Date()),
-            is_ongoing: false,
-            machine_area: '',
-            reason_code: '',
-            description: '',
-            impact_level: 'Medium',
-            notes: '',
-            other_reason: '',
+            department: initialData?.department || userDept || '',
+            start_time: initialData?.start_time ? formatDateTimeLocal(new Date(initialData.start_time)) : formatDateTimeLocal(new Date()),
+            end_time: initialData?.end_time ? formatDateTimeLocal(new Date(initialData.end_time)) : formatDateTimeLocal(new Date()),
+            is_ongoing: initialData ? initialData.is_ongoing : false,
+            machine_area: initialData?.machine_area || '',
+            reason_code: isStandardReason ? initialReasonCode : (initialData ? 'Other' : ''),
+            description: initialData?.description || '',
+            impact_level: initialData?.impact_level || 'Medium',
+            notes: initialData?.notes || '',
+            other_reason: !isStandardReason && initialData ? initialReasonCode : '',
         },
     })
 
@@ -139,13 +138,22 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
         }
 
         const nowMs = new Date().getTime()
-        if (new Date(data.start_time).getTime() > nowMs) {
-            toast.error(t.futureTimeError)
+        const startMs = new Date(data.start_time).getTime()
+        const endMs = data.end_time ? new Date(data.end_time).getTime() : 0
+
+        if (startMs > nowMs) {
+            toast.error(t.futureTimeError || 'Start time cannot be in the future')
             return
         }
-        if (!data.is_ongoing && data.end_time && new Date(data.end_time).getTime() > nowMs) {
-            toast.error(t.futureTimeError)
-            return
+        if (!data.is_ongoing && data.end_time) {
+            if (endMs > nowMs) {
+                toast.error(t.futureTimeError || 'End time cannot be in the future')
+                return
+            }
+            if (endMs < startMs) {
+                toast.error('End time cannot be earlier than start time')
+                return
+            }
         }
 
         if (data.reason_code === 'Other' && !data.other_reason?.trim()) {
@@ -161,8 +169,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                 finalReason = data.other_reason
             }
 
-            // Format data for insert
-            const insertData = {
+            const submitData = {
                 department: data.department,
                 start_time: data.start_time,
                 is_ongoing: data.is_ongoing,
@@ -173,14 +180,27 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                 notes: data.notes,
                 end_time: data.is_ongoing ? null : data.end_time,
                 duration_mins: data.is_ongoing ? null : duration,
-                reporter_id: user?.id,
             }
 
-            const { error } = await supabase.from('issues').insert(insertData)
+            let error;
+            if (initialData) {
+                // Update
+                const { error: updateError } = await supabase
+                    .from('issues')
+                    .update(submitData)
+                    .eq('id', initialData.id)
+                error = updateError
+            } else {
+                // Insert
+                const { error: insertError } = await supabase
+                    .from('issues')
+                    .insert({ ...submitData, reporter_id: user?.id })
+                error = insertError
+            }
 
             if (error) {
                 console.error('Supabase raw error:', error)
-                throw new Error("Failed to insert issue")
+                throw new Error("Failed to save issue")
             }
 
             toast.success(t.issueLogged, {
@@ -205,7 +225,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[600px] h-[90vh] overflow-y-auto w-11/12 max-w-full">
                 <DialogHeader>
-                    <DialogTitle>{t.logNewIssue}</DialogTitle>
+                    <DialogTitle>{initialData ? 'Edit Issue' : t.logNewIssue}</DialogTitle>
                     <DialogDescription>
                         {t.logIssueDesc}
                     </DialogDescription>
@@ -231,13 +251,6 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                                     </Select>
                                 )}
                             />
-                            {selectedReason === 'Other' && (
-                                <Input
-                                    {...form.register('other_reason')}
-                                    placeholder={t.typeOtherReason}
-                                    className="mt-2"
-                                />
-                            )}
                         </div>
 
                         <div className="space-y-2">
@@ -292,13 +305,20 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                                         <SelectContent>
                                             {REASON_CODES.map(code => (
                                                 <SelectItem key={code} value={code}>
-                                                    {t[getReasonKey(code)] as string || code}
+                                                    {(t as any)[getReasonKey(code)] as string || code}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 )}
                             />
+                            {selectedReason === 'Other' && (
+                                <Input
+                                    {...form.register('other_reason')}
+                                    placeholder={t.typeOtherReason || 'Specify reason...'}
+                                    className="mt-2"
+                                />
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label>{t.impactLevel}</Label>

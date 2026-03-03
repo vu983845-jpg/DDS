@@ -95,6 +95,11 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                 setLoading(false)
                 return
             }
+            if (endTimeMs < startTimeMs) {
+                toast.error('End time cannot be earlier than start time.')
+                setLoading(false)
+                return
+            }
 
             const durationMins = Math.max(0, Math.round((endTimeMs - startTimeMs) / 60000))
 
@@ -143,9 +148,24 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
         if (!note.trim()) return
         setLoading(true)
         try {
-            await new Promise(resolve => setTimeout(resolve, 800))
+            const supabase = createClient()
+            const existingNotes = issue.notes ? issue.notes + '\n\n' : ''
+            const timestamp = new Date().toLocaleString(undefined, {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit'
+            })
+            const userName = profile?.name || 'User'
+            const addedNote = `${existingNotes}[${timestamp}] ${userName}: ${note.trim()}`
+
+            const { error } = await supabase.from('issues').update({ notes: addedNote }).eq('id', issue.id)
+            if (error) throw error
+
             toast.success('Note added successfully.')
             setNote('')
+            window.location.reload()
+        } catch (e) {
+            console.error(e)
+            toast.error('Failed to add note.')
         } finally {
             setLoading(false)
         }
@@ -239,7 +259,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                 </h3>
                                 <div className="space-y-4">
                                     {issue.notes && (
-                                        <div className="bg-blue-50/50 p-3 rounded-md text-sm text-slate-700 border border-blue-100">
+                                        <div className="bg-blue-50/50 p-3 rounded-md text-sm text-slate-700 border border-blue-100 whitespace-pre-wrap">
                                             {issue.notes}
                                         </div>
                                     )}
@@ -283,12 +303,6 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                     {canEdit && (
                                         <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => setIsEditOpen(true)}>
                                             <Edit className="h-4 w-4" /> Edit Issue
-                                        </Button>
-                                    )}
-
-                                    {isHseAdmin && (
-                                        <Button size="sm" variant="outline" className="justify-start gap-2" onClick={() => handleAction('Assign Owner')}>
-                                            <UserPlus className="h-4 w-4" /> Assign Owner
                                         </Button>
                                     )}
 
@@ -364,8 +378,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
 
             {/* Nested Edit Modal */}
             {isEditOpen && (
-                <IssueFormModal open={isEditOpen} onOpenChange={setIsEditOpen} user={user} profile={profile} />
-                // Normally you'd pass the initial issue data here
+                <IssueFormModal open={isEditOpen} onOpenChange={setIsEditOpen} user={user} profile={profile} initialData={issue} />
             )}
 
             {/* Nested Close Modal */}
