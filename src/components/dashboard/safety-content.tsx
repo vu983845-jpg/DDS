@@ -10,17 +10,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Download, Search, ShieldAlert, CheckCircle, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAppContext } from '@/components/providers/app-provider'
+import { SafetyFormModal } from '@/components/modals/safety-form-modal'
+import { createClient } from '@/utils/supabase/client'
 
 interface SafetyContentProps {
     safetyData: any[]
+    user: any
 }
 
 const SEVERITIES = ['All', 'Low', 'Medium', 'High', 'Critical']
 const STATUSES = ['All', 'Open', 'Closed']
 
-export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
+export function SafetyContent({ safetyData: initialData, user }: SafetyContentProps) {
     const { t } = useAppContext()
     const [data, setData] = useState(initialData)
+    const [isModalOpen, setIsModalOpen] = useState(false)
     const [search, setSearch] = useState('')
     const [severityFilter, setSeverityFilter] = useState('All')
     const [statusFilter, setStatusFilter] = useState('All')
@@ -36,18 +40,24 @@ export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
         return matchesSearch && matchesSev && matchesStatus
     })
 
+    const isHseAdmin = user?.user_metadata?.role === 'hse_admin'
+
     const handleAction = async (id: string, action: string) => {
         try {
-            await new Promise(r => setTimeout(r, 500))
+            const supabase = createClient()
             if (action === 'Close') {
+                const { error } = await supabase.from('safety_triggers').update({ status: 'Closed' }).eq('id', id)
+                if (error) throw error
                 setData(prev => prev.map(s => s.id === id ? { ...s, status: 'Closed' } : s))
-                toast.success('Safety Trigger Closed')
+                toast.success('Announcement Closed')
             } else if (action === 'Delete') {
+                const { error } = await supabase.from('safety_triggers').delete().eq('id', id)
+                if (error) throw error
                 setData(prev => prev.filter(s => s.id !== id))
-                toast.success('Safety Trigger Deleted')
+                toast.success('Announcement Deleted')
             }
         } catch (e) {
-            toast.error('Failed to update trigger')
+            toast.error('Failed to update announcement')
         }
     }
 
@@ -65,11 +75,15 @@ export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
                     <Button variant="outline" className="gap-2">
                         <Download className="h-4 w-4" /> {t.exportCsv}
                     </Button>
-                    <Button className="bg-[#D83140] hover:bg-[#b02733] text-white">
-                        {t.reportSafety}
-                    </Button>
+                    {isHseAdmin && (
+                        <Button className="bg-[#D83140] hover:bg-[#b02733] text-white" onClick={() => setIsModalOpen(true)}>
+                            {t.reportSafety}
+                        </Button>
+                    )}
                 </div>
             </div>
+
+            <SafetyFormModal open={isModalOpen} onOpenChange={setIsModalOpen} user={user} />
 
             <Card className="shadow-sm border-slate-200">
                 <CardHeader className="border-b bg-slate-50/50 pb-4">
@@ -146,16 +160,18 @@ export function SafetyContent({ safetyData: initialData }: SafetyContentProps) {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <div className="flex justify-end gap-1 relative z-10">
-                                                {safety.status === 'Open' && (
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => handleAction(safety.id, 'Close')} title="Close Issue">
-                                                        <CheckCircle className="h-4 w-4" />
+                                            {isHseAdmin && (
+                                                <div className="flex justify-end gap-1 relative z-10">
+                                                    {safety.status === 'Open' && (
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => handleAction(safety.id, 'Close')} title="Close Issue">
+                                                            <CheckCircle className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleAction(safety.id, 'Delete')} title="Delete">
+                                                        <Trash2 className="h-4 w-4" />
                                                     </Button>
-                                                )}
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => handleAction(safety.id, 'Delete')} title="Delete">
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
+                                                </div>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))

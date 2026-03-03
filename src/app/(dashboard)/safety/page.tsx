@@ -13,5 +13,7 @@ export default async function SafetyPage() {
 
     const safetyData = safetyDataResponse || []
 
-    return <SafetyContent safetyData={safetyData} />
+    const { data: { user } } = await supabase.auth.getUser()
+
+    return <SafetyContent safetyData={safetyData} user={user} />
 }

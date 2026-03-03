@@ -185,7 +185,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user }: IssueDetai
                                 <h3 className="font-medium text-sm text-slate-500 uppercase tracking-wide">Quick Actions</h3>
                                 <div className="flex flex-col gap-2">
 
-                                    {isHseAdmin && issue.status === 'Open' && (
+                                    {(isHseAdmin || canEdit) && issue.status === 'Open' && (
                                         <Button size="sm" variant="outline" className="justify-start gap-2 border-green-500 text-green-700 hover:bg-green-50" onClick={() => handleAction('Close Issue')}>
                                             <CheckCircle className="h-4 w-4" /> Close Issue
                                         </Button>
