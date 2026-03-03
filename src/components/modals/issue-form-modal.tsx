@@ -180,6 +180,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                 notes: data.notes,
                 end_time: data.is_ongoing ? null : data.end_time,
                 duration_mins: data.is_ongoing ? null : duration,
+                status: data.is_ongoing ? 'Open' : 'Closed'
             }
 
             let error;
