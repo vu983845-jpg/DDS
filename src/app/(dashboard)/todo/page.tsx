@@ -7,16 +7,31 @@ export default async function TodoPage() {
     const supabase = await createClient()
 
     // Fetch all todo items
-    const { data: todoDataResponse } = await supabase
+    const { data: todoDataResponse, error } = await supabase
         .from('todo_actions')
         .select(`
             *,
-            creator:profiles!created_by_id(name),
             issue:issues(department, machine_area)
         `)
         .order('created_at', { ascending: false })
 
-    const todoData = todoDataResponse || []
+    if (error) {
+        console.error("TODO Query Error:", error)
+    }
+
+    let todoData = todoDataResponse || []
+
+    // Manually fetch profiles and map them to avoid foreign key PostgREST issues
+    const { data: profiles } = await supabase.from('profiles').select('id, name')
+    if (profiles) {
+        todoData = todoData.map(todo => {
+            const match = profiles.find(p => p.id === todo.created_by_id)
+            return {
+                ...todo,
+                creator: match ? { name: match.name } : null
+            }
+        })
+    }
 
     // Fetch user for row-level permissions
     const { data: { user } } = await supabase.auth.getUser()
