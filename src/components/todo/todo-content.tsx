@@ -29,8 +29,11 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
 
     // Edit Modal State
     const [selectedTodo, setSelectedTodo] = useState<any>(null)
-    const [editPicId, setEditPicId] = useState<string>('none')
+    const [editPicName, setEditPicName] = useState<string>('')
+    const [editPicDept, setEditPicDept] = useState<string>('none')
     const [editDeadline, setEditDeadline] = useState<string>('')
+
+    const CONST_DEPTS = ['QA', 'Pro', 'Maint', 'Warehouse', 'HSE']
 
     const isHseAdmin = profile?.role === 'hse_admin'
 
@@ -89,7 +92,8 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
         try {
             const supabase = createClient()
             const { error } = await supabase.from('todo_actions').update({
-                pic_id: editPicId === 'none' ? null : editPicId,
+                pic_name: editPicName.trim() === '' ? null : editPicName.trim(),
+                pic_department: editPicDept === 'none' ? null : editPicDept,
                 deadline: editDeadline ? new Date(editDeadline).toISOString() : null
             }).eq('id', selectedTodo.id)
 
@@ -107,7 +111,8 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
 
     const openEditModal = (todo: any) => {
         setSelectedTodo(todo)
-        setEditPicId(todo.pic_id || 'none')
+        setEditPicName(todo.pic_name || '')
+        setEditPicDept(todo.pic_department || 'none')
 
         // Format date for datetime-local input
         if (todo.deadline) {
@@ -175,7 +180,14 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                                                         )}
                                                     </TableCell>
                                                     <TableCell className="text-sm font-medium">
-                                                        {todo.pic ? todo.pic.name : <span className="text-slate-400 italic">{t.unassigned || 'Unassigned'}</span>}
+                                                        {todo.pic_name ? (
+                                                            <div className="flex flex-col">
+                                                                <span className="text-slate-900">{todo.pic_name}</span>
+                                                                {todo.pic_department && <span className="text-xs text-slate-500">{todo.pic_department}</span>}
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-slate-400 italic">{t.unassigned || 'Unassigned'}</span>
+                                                        )}
                                                     </TableCell>
                                                     <TableCell className="text-sm">
                                                         {todo.deadline ? (
@@ -269,17 +281,25 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
                             <Label>{t.pic || 'Person In Charge (PIC)'}</Label>
-                            <Select value={editPicId} onValueChange={setEditPicId}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select PIC..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="none">-- {t.unassigned || 'Unassigned'} --</SelectItem>
-                                    {allProfiles.map(p => (
-                                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="Enter Name..."
+                                    value={editPicName}
+                                    onChange={(e) => setEditPicName(e.target.value)}
+                                    className="flex-1"
+                                />
+                                <Select value={editPicDept} onValueChange={setEditPicDept}>
+                                    <SelectTrigger className="w-[140px]">
+                                        <SelectValue placeholder="Department" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">-- Select --</SelectItem>
+                                        {CONST_DEPTS.map(d => (
+                                            <SelectItem key={d} value={d}>{d}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <Label>{t.deadline || 'Deadline'}</Label>

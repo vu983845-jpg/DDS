@@ -343,8 +343,9 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                             </div>
                                             <p className="text-sm font-medium text-slate-800">{todo.description}</p>
                                             <div className="flex justify-between items-center mt-1">
-                                                <span className="text-xs text-slate-500">
-                                                    PIC: {todo.pic ? todo.pic.name : (t.unassigned || 'Unassigned')}
+                                                <span className="text-xs text-slate-500 flex flex-col">
+                                                    <span>PIC: {todo.pic_name || (t.unassigned || 'Unassigned')}</span>
+                                                    {todo.pic_department && <span className="font-medium text-slate-600">{todo.pic_department}</span>}
                                                 </span>
                                             </div>
                                         </div>
