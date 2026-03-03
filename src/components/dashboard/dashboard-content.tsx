@@ -24,6 +24,23 @@ interface DashboardContentProps {
     profile: any
 }
 
+function LiveDuration({ startTime }: { startTime: string }) {
+    const [elapsed, setElapsed] = useState<number>(0)
+
+    useEffect(() => {
+        const calc = () => {
+            const start = new Date(startTime).getTime()
+            const now = new Date().getTime()
+            setElapsed(Math.round(Math.max(0, now - start) / 60000))
+        }
+        calc()
+        const interval = setInterval(calc, 60000)
+        return () => clearInterval(interval)
+    }, [startTime])
+
+    return <span className="text-[#D83140] font-bold animate-pulse">{elapsed}m</span>
+}
+
 export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, user, profile }: DashboardContentProps) {
     const { isTvMode, t } = useAppContext()
     const router = useRouter()
@@ -115,6 +132,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, us
                                     <TableRow>
                                         <TableHead className="w-[100px]">{t.dept}</TableHead>
                                         <TableHead>{t.issue}</TableHead>
+                                        <TableHead>{t.dateTime}</TableHead>
+                                        <TableHead>{t.impactLevel}</TableHead>
                                         <TableHead>{t.status}</TableHead>
                                         <TableHead className="text-right">{t.downtime}</TableHead>
                                     </TableRow>
@@ -132,15 +151,30 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, us
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="font-medium text-slate-900">{issue.machine_area || t.generalArea}</div>
-                                                    <div className="text-sm text-slate-500 truncate max-w-[300px]">{issue.description || issue.reason_code}</div>
+                                                    <div className="text-sm text-slate-500 truncate max-w-[200px]">{issue.description || issue.reason_code}</div>
+                                                </TableCell>
+                                                <TableCell className="text-sm text-slate-600 whitespace-nowrap">
+                                                    {new Date(issue.start_time).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className={`
+                                                        ${issue.impact_level === 'Critical' ? 'border-red-500 text-red-700 bg-red-50' : ''}
+                                                        ${issue.impact_level === 'High' ? 'border-orange-500 text-orange-700 bg-orange-50' : ''}
+                                                        ${issue.impact_level === 'Medium' ? 'border-yellow-500 text-yellow-700 bg-yellow-50' : ''}
+                                                        ${issue.impact_level === 'Low' ? 'border-blue-500 text-blue-700 bg-blue-50' : ''}
+                                                    `}>{issue.impact_level}</Badge>
                                                 </TableCell>
                                                 <TableCell>
                                                     <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#D83140]' : ''}>
                                                         {issue.status}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell className="text-right font-medium">
-                                                    {issue.duration_mins ? `${issue.duration_mins}m` : '-'}
+                                                <TableCell className="text-right font-medium text-slate-700">
+                                                    {issue.status === 'Closed' ? (
+                                                        `${issue.duration_mins || 0}m`
+                                                    ) : (
+                                                        <LiveDuration startTime={issue.start_time} />
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))

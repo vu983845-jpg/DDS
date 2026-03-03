@@ -108,6 +108,17 @@ export const dictionaries = {
         issueLoggedDesc: 'Sự cố đã được thêm vào bảng điều khiển.',
         failedSaveIssue: 'Không thể lưu sự cố',
 
+        // Select Options
+        reasonMachineBreakdown: 'Hỏng Máy',
+        reasonBeltSnapped: 'Đứt Đai',
+        reasonPowerOutage: 'Mất Điện',
+        reasonRawMaterial: 'Thiếu Nguyên Liệu',
+        reasonQualityHold: 'Lỗi Chất Lượng',
+        impactLow: 'Thấp',
+        impactMedium: 'Trung bình',
+        impactHigh: 'Cao',
+        impactCritical: 'Nghiêm trọng cực kỳ',
+
         // Global
         close: 'Đóng',
         cancel: 'Hủy',
@@ -222,6 +233,17 @@ export const dictionaries = {
         issueLogged: 'Issue logged successfully',
         issueLoggedDesc: 'The issue has been added to the dashboard.',
         failedSaveIssue: 'Failed to save issue',
+
+        // Select Options
+        reasonMachineBreakdown: 'Machine Breakdown',
+        reasonBeltSnapped: 'Belt Snapped',
+        reasonPowerOutage: 'Power Outage',
+        reasonRawMaterial: 'Raw Material Shortage',
+        reasonQualityHold: 'Quality Hold',
+        impactLow: 'Low',
+        impactMedium: 'Medium',
+        impactHigh: 'High',
+        impactCritical: 'Critical',
 
         // Global
         close: 'Close',

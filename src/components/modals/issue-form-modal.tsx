@@ -20,6 +20,27 @@ const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter
 const REASON_CODES = ['Machine Breakdown', 'Belt Snapped', 'Power Outage', 'Raw Material Shortage', 'Quality Hold']
 const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
 
+const getReasonKey = (code: string) => {
+    switch (code) {
+        case 'Machine Breakdown': return 'reasonMachineBreakdown'
+        case 'Belt Snapped': return 'reasonBeltSnapped'
+        case 'Power Outage': return 'reasonPowerOutage'
+        case 'Raw Material Shortage': return 'reasonRawMaterial'
+        case 'Quality Hold': return 'reasonQualityHold'
+        default: return 'reasonMachineBreakdown'
+    }
+}
+
+const getImpactKey = (level: string) => {
+    switch (level) {
+        case 'Low': return 'impactLow'
+        case 'Medium': return 'impactMedium'
+        case 'High': return 'impactHigh'
+        case 'Critical': return 'impactCritical'
+        default: return 'impactLow'
+    }
+}
+
 const issueSchema = z.object({
     department: z.string().min(1, 'Department is required'),
     start_time: z.string().min(1, 'Start time is required'),
@@ -220,7 +241,9 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                                         </SelectTrigger>
                                         <SelectContent>
                                             {REASON_CODES.map(code => (
-                                                <SelectItem key={code} value={code}>{code}</SelectItem>
+                                                <SelectItem key={code} value={code}>
+                                                    {t[getReasonKey(code)] as string || code}
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -239,7 +262,9 @@ export function IssueFormModal({ open, onOpenChange, user, profile }: IssueFormM
                                         </SelectTrigger>
                                         <SelectContent>
                                             {IMPACT_LEVELS.map(level => (
-                                                <SelectItem key={level} value={level}>{level}</SelectItem>
+                                                <SelectItem key={level} value={level}>
+                                                    {t[getImpactKey(level)] as string || level}
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
