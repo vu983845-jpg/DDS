@@ -115,6 +115,32 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
         return { openCount, closedCount }
     }, [filteredIssues])
 
+    // Compute Reason Chart Data
+    const downtimeByReason = useMemo(() => {
+        const acc = {} as Record<string, number>
+
+        const getIssueDuration = (issue: any) => {
+            if (issue.status === 'Closed') return issue.duration_mins || 0
+            if (issue.status === 'Open' && issue.start_time) {
+                const start = new Date(issue.start_time).getTime()
+                const now = new Date().getTime()
+                return Math.max(0, Math.round((now - start) / 60000))
+            }
+            return 0
+        }
+
+        filteredIssues.forEach(issue => {
+            const reason = issue.reason_code || 'Other'
+            const duration = getIssueDuration(issue)
+            if (duration > 0) {
+                if (!acc[reason]) acc[reason] = 0
+                acc[reason] += duration
+            }
+        })
+
+        return Object.entries(acc).map(([name, duration]) => ({ name, duration })).sort((a, b) => b.duration - a.duration)
+    }, [filteredIssues])
+
     const totalDowntime = downtimeByDept.reduce((sum, item) => sum + item.duration, 0)
     const totalIssues = filteredIssues.length
 
@@ -194,6 +220,17 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                         closedCount={statusData.closedCount}
                         title="Issue Resolution Status"
                         description="Ratio of Open vs Closed issues."
+                    />
+                </div>
+            </div>
+
+            {/* Reason Chart Row */}
+            <div className="grid grid-cols-1 gap-6">
+                <div className="shadow-sm rounded-xl">
+                    <DowntimeChart
+                        data={downtimeByReason}
+                        title="Downtime by Reason Code"
+                        description="Total accumulated downtime separated by 5M methodology codes."
                     />
                 </div>
             </div>
