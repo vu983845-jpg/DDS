@@ -40,11 +40,20 @@ export default async function DashboardPage() {
         .eq('date', today)
         .single() // Use single mapped since date is UNIQUE
 
+    // Fetch pending TO-DOs for the dashboard
+    const { data: todoDataResponse } = await supabase
+        .from('todo_actions')
+        .select('*')
+        .eq('status', 'Pending')
+        .order('deadline', { ascending: true, nullsFirst: false })
+        .limit(10)
+
     // Use empty arrays for MVP testing if DB empty or errors out
     const issuesData = issuesDataResponse || []
     const safetyData = safetyDataResponse || []
     const qaqcData = qaqcDataResponse || []
     const ddsNote = ddsNotesResponse || null
+    let todoData = todoDataResponse || []
 
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -54,5 +63,19 @@ export default async function DashboardPage() {
         profile = profileData
     }
 
-    return <DashboardContent issuesData={issuesData} safetyData={safetyData} qaqcData={qaqcData} ddsNote={ddsNote} user={user} profile={profile} />
+    // Process todoData profile matching
+    if (todoData.length > 0) {
+        const { data: profiles } = await supabase.from('profiles').select('id, name')
+        if (profiles) {
+            todoData = todoData.map(todo => {
+                const picMatch = todo.pic_id ? profiles.find(p => p.id === todo.pic_id) : null
+                return {
+                    ...todo,
+                    pic: picMatch ? { name: picMatch.name } : null
+                }
+            })
+        }
+    }
+
+    return <DashboardContent issuesData={issuesData} safetyData={safetyData} qaqcData={qaqcData} ddsNote={ddsNote} todoData={todoData} user={user} profile={profile} />
 }

@@ -20,6 +20,7 @@ interface DashboardContentProps {
     safetyData: any[]
     qaqcData: any[]
     ddsNote: any
+    todoData?: any[]
     user: any
     profile: any
 }
@@ -41,7 +42,7 @@ function LiveDuration({ startTime }: { startTime: string }) {
     return <span className="text-[#D83140] font-bold animate-pulse">{elapsed}m</span>
 }
 
-export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, user, profile }: DashboardContentProps) {
+export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, todoData, user, profile }: DashboardContentProps) {
     const { isTvMode, t } = useAppContext()
     const router = useRouter()
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -303,6 +304,45 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, us
                                 ))
                             ) : (
                                 <div className="text-center text-sm text-slate-500 py-4">{t.noQaqc || 'No notices'}</div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card className="shadow-sm border-slate-200">
+                        <CardHeader className="border-b bg-slate-50/50 pb-4">
+                            <CardTitle className="flex items-center gap-2 text-lg text-slate-800">
+                                <Clock className="h-5 w-5 text-orange-500" />
+                                {t.todoList || 'Pending Actions'}
+                            </CardTitle>
+                            <CardDescription>Overdue and upcoming follow-ups.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
+                            {todoData && todoData.length > 0 ? (
+                                todoData.map((todo: any) => {
+                                    const isOverdue = todo.deadline && new Date(todo.deadline) < new Date()
+                                    return (
+                                        <div key={todo.id} className={`p-3 border rounded-lg flex flex-col gap-2 ${isOverdue ? 'bg-red-50/50 border-red-100' : 'bg-slate-50 border-slate-100'}`}>
+                                            <div className="flex justify-between items-start">
+                                                <Badge variant="outline" className={isOverdue ? "border-red-500 text-red-700 bg-red-50" : "bg-slate-100"}>
+                                                    {isOverdue ? (t.overdue || 'Overdue') : 'Pending'}
+                                                </Badge>
+                                                {todo.deadline && (
+                                                    <span className={`text-xs ${isOverdue ? 'text-red-500 font-semibold' : 'text-slate-500'}`}>
+                                                        {new Date(todo.deadline).toLocaleDateString()}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-800">{todo.description}</p>
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-xs text-slate-500">
+                                                    PIC: {todo.pic ? todo.pic.name : (t.unassigned || 'Unassigned')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            ) : (
+                                <div className="text-center text-sm text-slate-500 py-4">{t.noTasks || 'No pending tasks'}</div>
                             )}
                         </CardContent>
                     </Card>

@@ -147,6 +147,13 @@ export const dictionaries = {
         taskCompleted: 'Đã đánh dấu hoàn thành',
         taskDeleted: 'Đã xóa nhiệm vụ',
         taskActionFailed: 'Không thể thực hiện hành động này',
+        pic: 'Người rước việc (PIC)',
+        deadline: 'Hạn chót',
+        overdue: 'Quá hạn',
+        editTask: 'Cập nhật Nhiệm vụ',
+        unassigned: 'Chưa giao',
+        noDeadline: 'Chưa có hạn',
+        update: 'Cập nhật',
     },
     en: {
         // Top Header
@@ -296,6 +303,13 @@ export const dictionaries = {
         taskCompleted: 'Task marked as done',
         taskDeleted: 'Task deleted',
         taskActionFailed: 'Failed to complete action',
+        pic: 'Person In Charge (PIC)',
+        deadline: 'Deadline',
+        overdue: 'Overdue',
+        editTask: 'Edit Task',
+        unassigned: 'Unassigned',
+        noDeadline: 'No deadline',
+        update: 'Update',
     }
 };
 

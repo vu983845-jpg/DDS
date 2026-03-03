@@ -25,10 +25,13 @@ export default async function TodoPage() {
     const { data: profiles } = await supabase.from('profiles').select('id, name')
     if (profiles) {
         todoData = todoData.map(todo => {
-            const match = profiles.find(p => p.id === todo.created_by_id)
+            const creatorMatch = profiles.find(p => p.id === todo.created_by_id)
+            const picMatch = todo.pic_id ? profiles.find(p => p.id === todo.pic_id) : null
+
             return {
                 ...todo,
-                creator: match ? { name: match.name } : null
+                creator: creatorMatch ? { name: creatorMatch.name } : null,
+                pic: picMatch ? { name: picMatch.name } : null
             }
         })
     }
@@ -42,5 +45,5 @@ export default async function TodoPage() {
         profile = profileData
     }
 
-    return <TodoContent todoData={todoData} user={user} profile={profile} />
+    return <TodoContent todoData={todoData} user={user} profile={profile} allProfiles={profiles || []} />
 }
