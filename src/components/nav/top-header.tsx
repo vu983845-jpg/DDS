@@ -17,7 +17,7 @@ export function TopHeader({ user }: { user: any }) {
     const pathname = usePathname()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const { isTvMode, toggleTvMode, dateRange, setDateRange, mode, setMode, lang, setLang, t } = useAppContext()
+    const { isTvMode, toggleTvMode, dateRange, setDateRange, lang, setLang, t } = useAppContext()
 
     if (isTvMode) {
         return (
@@ -135,16 +135,6 @@ export function TopHeader({ user }: { user: any }) {
                                 <SelectItem value="60days">{t.last60days}</SelectItem>
                                 <SelectItem value="90days">{t.last90days}</SelectItem>
                                 <SelectItem value="Custom">{t.customRange}</SelectItem>
-                            </SelectContent>
-                        </Select>
-
-                        <Select value={mode} onValueChange={(val: any) => setMode(val)}>
-                            <SelectTrigger className="w-[120px] h-9">
-                                <SelectValue placeholder="Mode" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="DDS">DDS Mode</SelectItem>
-                                <SelectItem value="Standard">Standard</SelectItem>
                             </SelectContent>
                         </Select>
 

@@ -4,15 +4,12 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { Language, Dictionary, dictionaries } from '@/lib/i18n'
 
 type DateRangeType = 'Yesterday' | 'Today' | '7days' | '30days' | '60days' | '90days' | 'Custom'
-type ModeType = 'DDS' | 'Standard'
 
 interface AppContextType {
     isTvMode: boolean
     toggleTvMode: () => void
     dateRange: DateRangeType
     setDateRange: (range: DateRangeType) => void
-    mode: ModeType
-    setMode: (mode: ModeType) => void
     lang: Language
     setLang: (lang: Language) => void
     t: Dictionary
@@ -23,7 +20,6 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 export function AppProvider({ children }: { children: ReactNode }) {
     const [isTvMode, setIsTvMode] = useState(false)
     const [dateRange, setDateRange] = useState<DateRangeType>('Today')
-    const [mode, setMode] = useState<ModeType>('DDS')
 
     // Default language is Vietnamese
     const [lang, setLang] = useState<Language>('vi')
@@ -42,8 +38,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 toggleTvMode,
                 dateRange,
                 setDateRange,
-                mode,
-                setMode,
                 lang,
                 setLang,
                 t

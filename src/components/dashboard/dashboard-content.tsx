@@ -242,7 +242,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                             </CardTitle>
                             <CardDescription>{t.safetyTriggersDesc}</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-4 space-y-4">
+                        <CardContent className="p-4 space-y-3 max-h-[300px] overflow-y-auto">
                             {filteredSafety.length > 0 ? (
                                 filteredSafety.map((safety: any) => (
                                     <div key={safety.id} className="p-3 border rounded-lg bg-orange-50/50 border-orange-100 flex flex-col gap-2">
@@ -286,7 +286,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                             </CardTitle>
                             <CardDescription>{t.qaqcInfoDesc || 'Quality alerts and notices.'}</CardDescription>
                         </CardHeader>
-                        <CardContent className="p-4 space-y-4">
+                        <CardContent className="p-4 space-y-3 max-h-[300px] overflow-y-auto">
                             {filteredQaqc.length > 0 ? (
                                 filteredQaqc.map((qaqc: any) => (
                                     <div key={qaqc.id} className="p-3 border rounded-lg bg-blue-50/50 border-blue-100 flex flex-col gap-2">
