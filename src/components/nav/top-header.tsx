@@ -6,10 +6,11 @@ import { useAppContext } from '@/components/providers/app-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { PlusCircle, Search, MonitorPlay, LogOut, User, Settings, LayoutDashboard, ListTodo, ShieldAlert, BarChart, Activity } from 'lucide-react'
+import { PlusCircle, Search, MonitorPlay, LogOut, User, Settings, LayoutDashboard, ListTodo, ShieldAlert, BarChart, Activity, Menu } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { logout } from '@/app/(auth)/login/actions'
 import { IssueFormModal } from '@/components/modals/issue-form-modal'
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { useState } from 'react'
 
 export function TopHeader({ user }: { user: any }) {
@@ -30,13 +31,43 @@ export function TopHeader({ user }: { user: any }) {
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
             <div className="flex h-16 items-center px-4 md:px-6 gap-4">
-                <Link href="/" className="flex items-center gap-2 mr-6">
-                    <img
-                        src="/logo.jpg"
-                        alt="Intersnack Logo"
-                        className="h-12 w-auto object-contain"
-                    />
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="outline" size="icon" className="lg:hidden shrink-0 bg-white">
+                                <Menu className="h-5 w-5" />
+                                <span className="sr-only">Toggle navigation menu</span>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[300px] sm:w-[350px]">
+                            <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
+                            <nav className="flex flex-col gap-4 mt-6">
+                                <Link href="/" className="flex items-center gap-2 mb-4">
+                                    <img src="/logo.jpg" alt="Logo" className="h-10 w-auto" />
+                                </Link>
+                                {navItems.map((item) => (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors
+                                        ${pathname === item.href ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50'}`}
+                                    >
+                                        <item.icon className="h-5 w-5" />
+                                        {item.name}
+                                    </Link>
+                                ))}
+                            </nav>
+                        </SheetContent>
+                    </Sheet>
+
+                    <Link href="/" className="flex items-center gap-2 mr-6 hidden sm:flex">
+                        <img
+                            src="/logo.jpg"
+                            alt="Intersnack Logo"
+                            className="h-10 w-auto object-contain"
+                        />
+                    </Link>
+                </div>
 
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex items-center space-x-1 lg:space-x-2 mr-auto">
