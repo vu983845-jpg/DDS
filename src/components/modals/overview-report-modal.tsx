@@ -118,7 +118,7 @@ export function OverviewReportModal({ open, onOpenChange, issuesData }: Overview
                                         {viewMode === 'ByReason' && t.reason}
                                     </TableHead>
                                     <TableHead className="text-right">{(t as any).totalIncidents || 'Total Incidents'}</TableHead>
-                                    <TableHead className="text-right">{t.downtime} ({(t as any).mins || 'mins'})</TableHead>
+                                    <TableHead className="text-right">{t.downtime} (h)</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -127,7 +127,7 @@ export function OverviewReportModal({ open, onOpenChange, issuesData }: Overview
                                         <TableRow key={row.label}>
                                             <TableCell className="font-medium text-slate-700">{row.label}</TableCell>
                                             <TableCell className="text-right">{row.incidentCount}</TableCell>
-                                            <TableCell className="text-right text-[#D83140] font-semibold">{row.downtimeMins}</TableCell>
+                                            <TableCell className="text-right text-[#D83140] font-semibold">{Math.round((row.downtimeMins / 60) * 10) / 10}</TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
