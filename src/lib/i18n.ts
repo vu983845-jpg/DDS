@@ -13,6 +13,7 @@ export const dictionaries = {
         issuesList: 'Danh sách Sự cố',
         safetyLogs: 'Cảnh báo An toàn',
         qaqcLogs: 'Thông báo QA/QC',
+        todoList: 'Danh sách TO-DO',
         adminSettings: 'Cài đặt Quản trị',
         logout: 'Đăng xuất',
         guest: 'Khách',
@@ -132,6 +133,20 @@ export const dictionaries = {
         cancel: 'Hủy',
         save: 'Lưu',
         delete: 'Xóa',
+
+        // TO-DO
+        todoDesc: 'Các hành động và nhiệm vụ khắc phục sau các cuộc họp DDS.',
+        actionItems: 'Hành động',
+        createdBy: 'Người tạo',
+        noTasks: 'Không có hành động khắc phục nào.',
+        addQuickTask: 'Thêm nhanh Nhiệm vụ',
+        whatNeedsDone: 'Cần làm những gì?',
+        addTask: 'Thêm Task',
+        taskAdded: 'Đã thêm nhiệm vụ thành công',
+        taskAddFailed: 'Không thể thêm nhiệm vụ',
+        taskCompleted: 'Đã đánh dấu hoàn thành',
+        taskDeleted: 'Đã xóa nhiệm vụ',
+        taskActionFailed: 'Không thể thực hiện hành động này',
     },
     en: {
         // Top Header
@@ -147,6 +162,7 @@ export const dictionaries = {
         issuesList: 'Issues List',
         safetyLogs: 'Safety Logs',
         qaqcLogs: 'QA/QC Logs',
+        todoList: 'TO-DO List',
         adminSettings: 'Admin Settings',
         logout: 'Log out',
         guest: 'Guest',
@@ -266,6 +282,20 @@ export const dictionaries = {
         cancel: 'Cancel',
         save: 'Save',
         delete: 'Delete',
+
+        // TO-DO
+        todoDesc: 'Follow-up actions and tasks from DDS meetings.',
+        actionItems: 'Action Items',
+        createdBy: 'Created By',
+        noTasks: 'No follow-up actions found.',
+        addQuickTask: 'Add Quick Task',
+        whatNeedsDone: 'What needs to be done?',
+        addTask: 'Add Task',
+        taskAdded: 'Task added successfully',
+        taskAddFailed: 'Failed to add task',
+        taskCompleted: 'Task marked as done',
+        taskDeleted: 'Task deleted',
+        taskActionFailed: 'Failed to complete action',
     }
 };
 

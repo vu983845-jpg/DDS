@@ -30,6 +30,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
     const [isCloseModalOpen, setIsCloseModalOpen] = useState(false)
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
     const [closeEndTime, setCloseEndTime] = useState('')
+    const [newTodoText, setNewTodoText] = useState('')
 
     const isHseAdmin = profile?.role === 'hse_admin'
     const isDeptUser = profile?.role === 'dept_user'
@@ -145,6 +146,29 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
             await new Promise(resolve => setTimeout(resolve, 800))
             toast.success('Note added successfully.')
             setNote('')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleAddTodo = async () => {
+        if (!newTodoText.trim() || !user) return
+        setLoading(true)
+        try {
+            const supabase = createClient()
+            const { error } = await supabase.from('todo_actions').insert({
+                issue_id: issue.id,
+                description: newTodoText.trim(),
+                status: 'Pending',
+                created_by_id: user.id
+            })
+
+            if (error) throw error
+            toast.success('Added to TO-DO list.')
+            setNewTodoText('')
+        } catch (e) {
+            console.error(e)
+            toast.error('Failed to add TO-DO.')
         } finally {
             setLoading(false)
         }
@@ -309,6 +333,29 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                     )}
                                 </div>
                             </div>
+
+                            {/* TO-DO Follow up section */}
+                            {user && (
+                                <div className="space-y-3 pt-6 border-t mt-6">
+                                    <h3 className="font-medium text-sm text-slate-500 uppercase tracking-wide">Follow-up Actions</h3>
+                                    <div className="flex flex-col gap-2">
+                                        <Input
+                                            placeholder="What needs to be done?"
+                                            value={newTodoText}
+                                            onChange={(e) => setNewTodoText(e.target.value)}
+                                            className="text-sm bg-slate-50 border-slate-200"
+                                        />
+                                        <Button
+                                            size="sm"
+                                            className="w-full bg-slate-900 justify-start gap-2"
+                                            disabled={loading || !newTodoText.trim()}
+                                            onClick={handleAddTodo}
+                                        >
+                                            <CheckCircle className="h-4 w-4" /> Add to TO-DO List
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
 
                         </div>
                     </div>
