@@ -5,7 +5,8 @@ interface KPICardsProps {
     totalIssues: number
     totalDowntime: number // in minutes
     topDept: string
-    safetyTriggers: number
+    criticalIssuesCount: number
+    criticalDeptsStr: string
 }
 
 import { useAppContext } from '@/components/providers/app-provider'
@@ -14,7 +15,8 @@ export function KPICards({
     totalIssues,
     totalDowntime,
     topDept,
-    safetyTriggers,
+    criticalIssuesCount,
+    criticalDeptsStr,
 }: KPICardsProps) {
     const { t } = useAppContext()
 
@@ -42,10 +44,10 @@ export function KPICards({
         },
         {
             title: t.kpiSafety,
-            value: safetyTriggers.toString(),
+            value: criticalIssuesCount.toString(),
             icon: ShieldAlert,
-            description: t.kpiSafetyDesc,
-            color: safetyTriggers > 0 ? 'text-[#D83140]' : 'text-green-500',
+            description: criticalIssuesCount > 0 ? criticalDeptsStr : t.kpiSafetyDesc,
+            color: criticalIssuesCount > 0 ? 'text-[#D83140]' : 'text-green-500',
         },
     ]
 

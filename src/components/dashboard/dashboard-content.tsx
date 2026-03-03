@@ -91,9 +91,39 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, us
     }, [isTvMode, router])
 
     const totalIssues = issuesData?.filter(i => i.status === 'Open').length || 0
-    const totalDowntime = issuesData?.reduce((acc, curr) => acc + (curr.duration_mins || 0), 0) || 0
-    const topDept = 'Shelling'
-    const safetyTriggersCount = safetyData?.filter(s => s.status === 'Open').length || 0
+
+    // Live Total Downtime calculation
+    const [liveTotalDowntime, setLiveTotalDowntime] = useState(0)
+    useEffect(() => {
+        const calculateDowntime = () => {
+            if (!issuesData) return
+            let total = 0
+            const now = new Date().getTime()
+            issuesData.forEach((issue: any) => {
+                if (issue.status === 'Closed') {
+                    total += (issue.duration_mins || 0)
+                } else if (issue.start_time) {
+                    const start = new Date(issue.start_time).getTime()
+                    total += Math.round(Math.max(0, now - start) / 60000)
+                }
+            })
+            setLiveTotalDowntime(total)
+        }
+        calculateDowntime()
+        const interval = setInterval(calculateDowntime, 60000)
+        return () => clearInterval(interval)
+    }, [issuesData])
+
+    // Find the latest issue department
+    const latestIssue = issuesData && issuesData.length > 0
+        ? [...issuesData].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
+        : null
+    const latestDept = latestIssue ? latestIssue.department : 'N/A'
+
+    // Identify critical issues
+    const criticalIssues = issuesData?.filter(i => i.status === 'Open' && i.impact_level === 'Critical') || []
+    const criticalCount = criticalIssues.length
+    const criticalDepts = Array.from(new Set(criticalIssues.map(i => i.department))).join(', ')
 
     return (
         <div className={`p-4 md:p-8 space-y-6 mx-auto ${isTvMode ? 'max-w-full p-8' : 'max-w-7xl'}`}>
@@ -106,9 +136,10 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, us
 
             <KPICards
                 totalIssues={totalIssues}
-                totalDowntime={totalDowntime}
-                topDept={topDept}
-                safetyTriggers={safetyTriggersCount}
+                totalDowntime={liveTotalDowntime}
+                topDept={latestDept}
+                criticalIssuesCount={criticalCount}
+                criticalDeptsStr={criticalDepts}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
