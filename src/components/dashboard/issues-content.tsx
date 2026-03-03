@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Download, Search, Filter } from 'lucide-react'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
 import { useAppContext } from '@/components/providers/app-provider'
+import { filterByDateRange } from '@/lib/utils'
 
 interface IssuesContentProps {
     issuesData: any[]
@@ -21,13 +22,15 @@ const DEPARTMENTS = ['All', 'Steaming', 'Shelling', 'Borma', 'Peeling MC', 'Colo
 const STATUSES = ['All', 'Open', 'Closed', 'In Progress']
 
 export function IssuesContent({ issuesData, user, profile }: IssuesContentProps) {
-    const { t } = useAppContext()
+    const { t, dateRange } = useAppContext()
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
     const [search, setSearch] = useState('')
     const [deptFilter, setDeptFilter] = useState('All')
     const [statusFilter, setStatusFilter] = useState('All')
 
-    const filteredIssues = issuesData.filter(issue => {
+    const dateFilteredData = filterByDateRange(issuesData, dateRange, 'created_at')
+
+    const filteredIssues = dateFilteredData.filter(issue => {
         const matchesSearch =
             issue.department?.toLowerCase().includes(search.toLowerCase()) ||
             issue.reason_code?.toLowerCase().includes(search.toLowerCase()) ||

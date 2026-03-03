@@ -15,7 +15,7 @@ export default async function DashboardPage() {
             closed_by:profiles!closed_by_id(name)
         `)
         .order('created_at', { ascending: false })
-        .limit(20)
+        .limit(100)
 
     if (issuesError) {
         console.error('Dashboard Issues Error:', issuesError)
@@ -25,13 +25,13 @@ export default async function DashboardPage() {
         .from('safety_triggers')
         .select('*, profiles(name)')
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(100)
 
     const { data: qaqcDataResponse } = await supabase
         .from('qa_qc_logs')
         .select('*, profiles(name)')
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(100)
 
     const today = new Date().toISOString().split('T')[0]
     const { data: ddsNotesResponse } = await supabase
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
         .select('*')
         .eq('status', 'Pending')
         .order('deadline', { ascending: true, nullsFirst: false })
-        .limit(10)
+        .limit(50)
 
     // Use empty arrays for MVP testing if DB empty or errors out
     const issuesData = issuesDataResponse || []

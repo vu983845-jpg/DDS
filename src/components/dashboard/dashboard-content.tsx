@@ -6,8 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronDown, ShieldAlert } from 'lucide-react'
 import { useAppContext } from '@/components/providers/app-provider'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { filterByDateRange } from '@/lib/utils'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -43,7 +44,7 @@ function LiveDuration({ startTime }: { startTime: string }) {
 }
 
 export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, todoData, user, profile }: DashboardContentProps) {
-    const { isTvMode, t } = useAppContext()
+    const { isTvMode, dateRange, t } = useAppContext()
     const router = useRouter()
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
@@ -91,16 +92,24 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
         }
     }, [isTvMode, router])
 
-    const totalIssues = issuesData?.filter(i => i.status === 'Open').length || 0
+    const filteredIssues = useMemo(() => filterByDateRange(issuesData || [], dateRange, 'created_at'), [issuesData, dateRange])
+    const filteredSafety = useMemo(() => filterByDateRange(safetyData || [], dateRange, 'created_at'), [safetyData, dateRange])
+    const filteredQaqc = useMemo(() => filterByDateRange(qaqcData || [], dateRange, 'created_at'), [qaqcData, dateRange])
+    const filteredTodo = useMemo(() => filterByDateRange(todoData || [], dateRange, 'created_at'), [todoData, dateRange])
+
+    const totalIssues = filteredIssues.filter(i => i.status === 'Open').length
 
     // Live Total Downtime calculation
     const [liveTotalDowntime, setLiveTotalDowntime] = useState(0)
     useEffect(() => {
         const calculateDowntime = () => {
-            if (!issuesData) return
+            if (!filteredIssues || filteredIssues.length === 0) {
+                setLiveTotalDowntime(0)
+                return
+            }
             let total = 0
             const now = new Date().getTime()
-            issuesData.forEach((issue: any) => {
+            filteredIssues.forEach((issue: any) => {
                 if (issue.status === 'Closed') {
                     total += (issue.duration_mins || 0)
                 } else if (issue.start_time) {
@@ -113,16 +122,16 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
         calculateDowntime()
         const interval = setInterval(calculateDowntime, 60000)
         return () => clearInterval(interval)
-    }, [issuesData])
+    }, [filteredIssues])
 
     // Find the latest issue department
-    const latestIssue = issuesData && issuesData.length > 0
-        ? [...issuesData].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
+    const latestIssue = filteredIssues.length > 0
+        ? [...filteredIssues].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
         : null
     const latestDept = latestIssue ? latestIssue.department : 'N/A'
 
     // Identify critical issues
-    const criticalIssues = issuesData?.filter(i => i.status === 'Open' && i.impact_level === 'Critical') || []
+    const criticalIssues = filteredIssues.filter(i => i.status === 'Open' && i.impact_level === 'Critical')
     const criticalCount = criticalIssues.length
     const criticalDepts = Array.from(new Set(criticalIssues.map(i => i.department))).join(', ')
 
@@ -171,8 +180,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {issuesData && issuesData.length > 0 ? (
-                                        issuesData.map((issue: any) => (
+                                    {filteredIssues.length > 0 ? (
+                                        filteredIssues.map((issue: any) => (
                                             <TableRow
                                                 key={issue.id}
                                                 className="cursor-pointer hover:bg-slate-50 transition-colors"
@@ -234,8 +243,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                             <CardDescription>{t.safetyTriggersDesc}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-4 space-y-4">
-                            {safetyData && safetyData.length > 0 ? (
-                                safetyData.map((safety: any) => (
+                            {filteredSafety.length > 0 ? (
+                                filteredSafety.map((safety: any) => (
                                     <div key={safety.id} className="p-3 border rounded-lg bg-orange-50/50 border-orange-100 flex flex-col gap-2">
                                         <div className="flex justify-between items-start">
                                             <Badge variant="outline" className={`
@@ -278,8 +287,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                             <CardDescription>{t.qaqcInfoDesc || 'Quality alerts and notices.'}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-4 space-y-4">
-                            {qaqcData && qaqcData.length > 0 ? (
-                                qaqcData.map((qaqc: any) => (
+                            {filteredQaqc.length > 0 ? (
+                                filteredQaqc.map((qaqc: any) => (
                                     <div key={qaqc.id} className="p-3 border rounded-lg bg-blue-50/50 border-blue-100 flex flex-col gap-2">
                                         <div className="flex justify-between items-start">
                                             <Badge variant="outline" className="border-blue-500 text-blue-700 bg-blue-50">
@@ -317,8 +326,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                             <CardDescription>Overdue and upcoming follow-ups.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
-                            {todoData && todoData.length > 0 ? (
-                                todoData.map((todo: any) => {
+                            {filteredTodo.length > 0 ? (
+                                filteredTodo.map((todo: any) => {
                                     const isOverdue = todo.deadline && new Date(todo.deadline) < new Date()
                                     return (
                                         <div key={todo.id} className={`p-3 border rounded-lg flex flex-col gap-2 ${isOverdue ? 'bg-red-50/50 border-red-100' : 'bg-slate-50 border-slate-100'}`}>

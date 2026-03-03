@@ -13,6 +13,7 @@ import { CheckCircle, Trash2, PlusCircle, AlertCircle, Edit2, Clock } from 'luci
 import { useAppContext } from '@/components/providers/app-provider'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
+import { filterByDateRange } from '@/lib/utils'
 
 interface TodoContentProps {
     todoData: any[]
@@ -22,7 +23,7 @@ interface TodoContentProps {
 }
 
 export function TodoContent({ todoData, user, profile, allProfiles }: TodoContentProps) {
-    const { t } = useAppContext()
+    const { t, dateRange } = useAppContext()
     const [loading, setLoading] = useState(false)
     const [newTaskText, setNewTaskText] = useState('')
 
@@ -148,8 +149,8 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {todoData.length > 0 ? (
-                                        todoData.map((todo: any) => {
+                                    {filterByDateRange(todoData, dateRange, 'created_at').length > 0 ? (
+                                        filterByDateRange(todoData, dateRange, 'created_at').map((todo: any) => {
                                             const isOwner = user?.id === todo.created_by_id
                                             const canManage = isHseAdmin || isOwner
                                             const isOverdue = todo.status === 'Pending' && todo.deadline && new Date(todo.deadline) < new Date()
