@@ -13,9 +13,6 @@ export function filterByDateRange(data: any[], range: string, dateField: string 
   let endDate: Date = now
 
   switch (range) {
-    case '24h':
-      startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-      break
     case 'Today':
       startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
       endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)

@@ -44,9 +44,6 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                 if (!isToday(issueDate)) return false
             } else if (dateRange === 'Yesterday') {
                 if (!isYesterday(issueDate)) return false
-            } else if (dateRange === '24h') {
-                const yesterdayTime = new Date().getTime() - (24 * 60 * 60 * 1000)
-                if (issueDate.getTime() < yesterdayTime) return false
             } else if (dateRange === '7days') {
                 const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
                 if (!isAfter(issueDate, sevenDaysAgo)) return false
