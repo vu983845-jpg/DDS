@@ -13,7 +13,7 @@ import { CheckCircle, Trash2, PlusCircle, AlertCircle, Edit2, Clock } from 'luci
 import { useAppContext } from '@/components/providers/app-provider'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
-import { filterByDateRange } from '@/lib/utils'
+import { filterByDateRange, formatDateString } from '@/lib/utils'
 
 interface TodoContentProps {
     todoData: any[]
@@ -158,7 +158,7 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                                             return (
                                                 <TableRow key={todo.id} className="hover:bg-slate-50 transition-colors">
                                                     <TableCell className="text-sm text-slate-500 whitespace-nowrap">
-                                                        {new Date(todo.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric' })}
+                                                        <span className="font-medium text-slate-800">{formatDateString(todo.created_at, false)}</span>
                                                         <div className="text-xs text-slate-400 mt-1">
                                                             {todo.creator?.name ? `By ${todo.creator.name.split(' ')[0]}` : ''}
                                                         </div>
@@ -181,7 +181,7 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                                                         {todo.deadline ? (
                                                             <div className={`flex items-center gap-1 ${isOverdue ? 'text-red-600 font-semibold' : 'text-slate-600'}`}>
                                                                 <Clock className="w-3 h-3" />
-                                                                {new Date(todo.deadline).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                                <span className="font-medium">{formatDateString(todo.deadline)}</span>
                                                                 {isOverdue && <span className="ml-1 text-[10px] uppercase bg-red-100 px-1 rounded">{t.overdue || 'Overdue'}</span>}
                                                             </div>
                                                         ) : (

@@ -171,14 +171,14 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
 
             const submitData = {
                 department: data.department,
-                start_time: data.start_time,
+                start_time: new Date(data.start_time).toISOString(),
                 is_ongoing: data.is_ongoing,
                 machine_area: data.machine_area,
                 reason_code: finalReason,
                 description: data.description,
                 impact_level: data.impact_level,
                 notes: data.notes,
-                end_time: data.is_ongoing ? null : data.end_time,
+                end_time: data.is_ongoing ? null : (data.end_time ? new Date(data.end_time).toISOString() : null),
                 duration_mins: data.is_ongoing ? null : duration,
                 status: data.is_ongoing ? 'Open' : 'Closed'
             }

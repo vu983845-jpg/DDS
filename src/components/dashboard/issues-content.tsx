@@ -11,7 +11,7 @@ import { Download, Search, Filter, BarChart2 } from 'lucide-react'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
 import { OverviewReportModal } from '@/components/modals/overview-report-modal'
 import { useAppContext } from '@/components/providers/app-provider'
-import { filterByDateRange } from '@/lib/utils'
+import { filterByDateRange, formatDateString } from '@/lib/utils'
 import * as XLSX from 'xlsx'
 
 interface IssuesContentProps {
@@ -56,8 +56,8 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
             'Reason': i.reason_code,
             'Status': i.status,
             'Impact': i.impact_level,
-            'Start Time': new Date(i.start_time).toLocaleString(),
-            'End Time': i.end_time ? new Date(i.end_time).toLocaleString() : 'Ongoing',
+            'Start Time': formatDateString(i.start_time),
+            'End Time': i.end_time ? formatDateString(i.end_time) : 'Ongoing',
             'Downtime (mins)': i.duration_mins,
             'Reporter': i.profiles?.name || 'Unknown'
         }))
@@ -189,11 +189,8 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                                         className="cursor-pointer hover:bg-slate-50 transition-colors"
                                         onClick={() => setSelectedIssue(issue)}
                                     >
-                                        <TableCell className="text-sm text-slate-600">
-                                            {new Date(issue.start_time).toLocaleString(undefined, {
-                                                year: 'numeric', month: '2-digit', day: '2-digit',
-                                                hour: '2-digit', minute: '2-digit'
-                                            })}
+                                        <TableCell>
+                                            <div className="text-sm font-medium">{formatDateString(issue.start_time)}</div>
                                         </TableCell>
                                         <TableCell className="font-medium text-slate-600">
                                             {issue.department}

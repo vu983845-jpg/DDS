@@ -8,7 +8,7 @@ import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronD
 import { useAppContext } from '@/components/providers/app-provider'
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { filterByDateRange } from '@/lib/utils'
+import { filterByDateRange, formatDateString } from '@/lib/utils'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -194,8 +194,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                                     <div className="font-medium text-slate-900">{issue.machine_area || t.generalArea}</div>
                                                     <div className="text-sm text-slate-500 truncate max-w-[200px]">{issue.description || issue.reason_code}</div>
                                                 </TableCell>
-                                                <TableCell className="text-sm text-slate-600 whitespace-nowrap">
-                                                    {new Date(issue.start_time).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                <TableCell className="text-sm font-medium whitespace-nowrap">
+                                                    {formatDateString(issue.start_time)}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Badge variant="outline" className={`

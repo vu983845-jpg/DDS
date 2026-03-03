@@ -8,11 +8,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { Clock, CheckCircle, Edit, Trash2, UserPlus, FileText, Factory } from 'lucide-react'
+import { Factory, Clock, AlertTriangle, FileText, CheckCircle, Trash2, Edit } from 'lucide-react'
 import { toast } from 'sonner'
 import { IssueFormModal } from './issue-form-modal' // Reuse for editing
 import { createClient } from '@/utils/supabase/client'
 import { useAppContext } from '@/components/providers/app-provider'
+import { formatDateString } from '@/lib/utils'
 
 interface IssueDetailModalProps {
     open: boolean
@@ -150,10 +151,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
         try {
             const supabase = createClient()
             const existingNotes = issue.notes ? issue.notes + '\n\n' : ''
-            const timestamp = new Date().toLocaleString(undefined, {
-                year: 'numeric', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit'
-            })
+            const timestamp = formatDateString(new Date())
             const userName = profile?.name || 'User'
             const addedNote = `${existingNotes}[${timestamp}] ${userName}: ${note.trim()}`
 
@@ -233,18 +231,12 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                     <div className="grid grid-cols-2 gap-2">
                                         <span className="text-slate-500">Started:</span>
                                         <span className="font-medium text-slate-800">
-                                            {new Date(issue.start_time).toLocaleString(undefined, {
-                                                year: 'numeric', month: '2-digit', day: '2-digit',
-                                                hour: '2-digit', minute: '2-digit'
-                                            })}
+                                            {formatDateString(issue.start_time)}
                                         </span>
 
                                         <span className="text-slate-500">Ended:</span>
                                         <span className="font-medium text-slate-800">
-                                            {issue.end_time ? new Date(issue.end_time).toLocaleString(undefined, {
-                                                year: 'numeric', month: '2-digit', day: '2-digit',
-                                                hour: '2-digit', minute: '2-digit'
-                                            }) : 'Ongoing'}
+                                            {issue.end_time ? formatDateString(issue.end_time) : 'Ongoing'}
                                         </span>
 
                                         <span className="text-slate-500">Downtime:</span>
@@ -337,10 +329,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                             <span className="font-medium text-right">
                                                 {issue.closed_by?.name || 'Unknown'} <br />
                                                 <span className="text-xs text-slate-400 font-normal">
-                                                    {issue.closed_at ? new Date(issue.closed_at).toLocaleString(undefined, {
-                                                        year: 'numeric', month: '2-digit', day: '2-digit',
-                                                        hour: '2-digit', minute: '2-digit'
-                                                    }) : ''}
+                                                    {issue.closed_at ? formatDateString(issue.closed_at) : ''}
                                                 </span>
                                             </span>
                                         </div>
