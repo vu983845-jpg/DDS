@@ -7,10 +7,12 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Download, Search, Filter } from 'lucide-react'
+import { Download, Search, Filter, BarChart2 } from 'lucide-react'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
+import { OverviewReportModal } from '@/components/modals/overview-report-modal'
 import { useAppContext } from '@/components/providers/app-provider'
 import { filterByDateRange } from '@/lib/utils'
+import * as XLSX from 'xlsx'
 
 interface IssuesContentProps {
     issuesData: any[]
@@ -24,6 +26,7 @@ const STATUSES = ['All', 'Open', 'Closed', 'In Progress']
 export function IssuesContent({ issuesData, user, profile }: IssuesContentProps) {
     const { t, dateRange } = useAppContext()
     const [selectedIssue, setSelectedIssue] = useState<any | null>(null)
+    const [isOverviewOpen, setIsOverviewOpen] = useState(false)
     const [search, setSearch] = useState('')
     const [deptFilter, setDeptFilter] = useState('All')
     const [statusFilter, setStatusFilter] = useState('All')
@@ -44,8 +47,71 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
     })
 
     const exportCSV = () => {
-        // Mock CSV Export logic
-        console.log("Exporting CSV")
+        if (!dateFilteredData || dateFilteredData.length === 0) return
+
+        // 1. Raw Data
+        const rawData = dateFilteredData.map(i => ({
+            'Department': i.department,
+            'Area': i.machine_area,
+            'Reason': i.reason_code,
+            'Status': i.status,
+            'Impact': i.impact_level,
+            'Start Time': new Date(i.start_time).toLocaleString(),
+            'End Time': i.end_time ? new Date(i.end_time).toLocaleString() : 'Ongoing',
+            'Downtime (mins)': i.duration_mins,
+            'Reporter': i.profiles?.name || 'Unknown'
+        }))
+
+        // Aggregation Maps
+        const yearlyMap: Record<string, { count: number, downtime: number }> = {}
+        const monthlyMap: Record<string, { count: number, downtime: number }> = {}
+
+        dateFilteredData.forEach(i => {
+            if (!i.created_at) return
+            const date = new Date(i.created_at)
+            const yearStr = date.getFullYear().toString()
+            const monthStr = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${yearStr}`
+            const dept = i.department || 'Unknown'
+
+            const yKey = `${dept} (${yearStr})`
+            const mKey = `${dept} (${monthStr})`
+
+            if (!yearlyMap[yKey]) yearlyMap[yKey] = { count: 0, downtime: 0 }
+            if (!monthlyMap[mKey]) monthlyMap[mKey] = { count: 0, downtime: 0 }
+
+            yearlyMap[yKey].count += 1
+            yearlyMap[yKey].downtime += (i.duration_mins || 0)
+
+            monthlyMap[mKey].count += 1
+            monthlyMap[mKey].downtime += (i.duration_mins || 0)
+        })
+
+        // 2. Yearly Overview
+        const yearlyData = Object.entries(yearlyMap).map(([key, val]) => ({
+            'Department (Year)': key,
+            'Total Incidents': val.count,
+            'Total Downtime (mins)': val.downtime
+        }))
+
+        // 3. Monthly Overview
+        const monthlyData = Object.entries(monthlyMap).map(([key, val]) => ({
+            'Department (Month)': key,
+            'Total Incidents': val.count,
+            'Total Downtime (mins)': val.downtime
+        }))
+
+        const wb = XLSX.utils.book_new()
+
+        const wsRaw = XLSX.utils.json_to_sheet(rawData)
+        XLSX.utils.book_append_sheet(wb, wsRaw, "Raw Issues")
+
+        const wsYearly = XLSX.utils.json_to_sheet(yearlyData)
+        XLSX.utils.book_append_sheet(wb, wsYearly, "Yearly Overview")
+
+        const wsMonthly = XLSX.utils.json_to_sheet(monthlyData)
+        XLSX.utils.book_append_sheet(wb, wsMonthly, "Monthly Overview")
+
+        XLSX.writeFile(wb, `Issues_Report_${new Date().toISOString().slice(0, 10)}.xlsx`)
     }
 
     return (
@@ -55,9 +121,14 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t.allIssues}</h1>
                     <p className="text-sm text-slate-500">{t.issuesDesc}</p>
                 </div>
-                <Button onClick={exportCSV} variant="outline" className="gap-2">
-                    <Download className="h-4 w-4" /> {t.exportCsv}
-                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={() => setIsOverviewOpen(true)} variant="outline" className="gap-2 border-slate-300">
+                        <BarChart2 className="h-4 w-4" /> {(t as any).overviewReport || 'Overview Report'}
+                    </Button>
+                    <Button onClick={exportCSV} variant="outline" className="gap-2 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800 border-green-200">
+                        <Download className="h-4 w-4" /> {(t as any).exportExcel || 'Export Excel'}
+                    </Button>
+                </div>
             </div>
 
             <Card className="shadow-sm border-slate-200">
@@ -156,12 +227,20 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                 </CardContent>
             </Card>
 
-            <IssueDetailModal
-                open={!!selectedIssue}
-                onOpenChange={(open) => !open && setSelectedIssue(null)}
-                issue={selectedIssue}
-                user={user}
-                profile={profile}
+            {selectedIssue && (
+                <IssueDetailModal
+                    open={!!selectedIssue}
+                    onOpenChange={(open) => !open && setSelectedIssue(null)}
+                    issue={selectedIssue}
+                    user={user}
+                    profile={profile}
+                />
+            )}
+
+            <OverviewReportModal
+                open={isOverviewOpen}
+                onOpenChange={setIsOverviewOpen}
+                issuesData={dateFilteredData}
             />
         </div>
     )
