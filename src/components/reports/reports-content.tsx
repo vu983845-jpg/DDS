@@ -22,14 +22,20 @@ const DEPARTMENTS = [
     'Packing',
 ]
 
+const REASONS = ['All', 'Man', 'Machine', 'Material', 'Method', 'Measurement', 'Other']
+
 export function ReportsContent({ initialIssues }: ReportsContentProps) {
     const { isTvMode, t, dateRange } = useAppContext()
     const [selectedDept, setSelectedDept] = useState<string>('All')
+    const [selectedReason, setSelectedReason] = useState<string>('All')
 
     const filteredIssues = useMemo(() => {
         return initialIssues.filter(issue => {
             // Apply Department Filter
             if (selectedDept !== 'All' && issue.department !== selectedDept) return false
+
+            // Apply Reason Filter
+            if (selectedReason !== 'All' && issue.reason_code !== selectedReason) return false
 
             // Apply Date Filter
             const issueDate = new Date(issue.created_at)
@@ -113,16 +119,27 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3 bg-white p-1 rounded-md border shadow-sm">
-                    <span className="text-sm text-slate-500 pl-3 font-medium">Department Filter:</span>
+                <div className="flex flex-wrap items-center gap-3 bg-white p-1 rounded-md border shadow-sm">
+                    <span className="text-sm text-slate-500 pl-3 font-medium">Filter:</span>
                     <Select value={selectedDept} onValueChange={setSelectedDept}>
-                        <SelectTrigger className="w-[180px] border-none shadow-none focus:ring-0">
+                        <SelectTrigger className="w-[160px] border-none shadow-none focus:ring-0">
                             <SelectValue placeholder="All Departments" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="All">{t.allDepts || 'All Departments'}</SelectItem>
                             {DEPARTMENTS.map(dept => (
                                 <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <div className="w-[1px] h-6 bg-slate-200"></div>
+                    <Select value={selectedReason} onValueChange={setSelectedReason}>
+                        <SelectTrigger className="w-[140px] border-none shadow-none focus:ring-0">
+                            <SelectValue placeholder="All Reasons" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {REASONS.map(reason => (
+                                <SelectItem key={reason} value={reason}>{reason === 'All' ? 'All Reasons' : reason}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
