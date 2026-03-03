@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
+import { useAppContext } from '@/components/providers/app-provider'
 
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
@@ -40,6 +41,7 @@ interface IssueFormModalProps {
 }
 
 export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps) {
+    const { t } = useAppContext()
     const [loading, setLoading] = useState(false)
     const isDeptUser = user?.user_metadata?.role === 'dept_user'
     const userDept = user?.user_metadata?.department
@@ -107,8 +109,8 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                 throw new Error("Failed to insert issue")
             }
 
-            toast.success('Issue logged successfully', {
-                description: 'The issue has been added to the dashboard.'
+            toast.success(t.issueLogged, {
+                description: t.issueLoggedDesc
             })
 
             onOpenChange(false)
@@ -119,7 +121,7 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
 
         } catch (error) {
             console.error(error)
-            toast.error('Failed to save issue')
+            toast.error(t.failedSaveIssue)
         } finally {
             setLoading(false)
         }
@@ -129,23 +131,23 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[600px] h-[90vh] overflow-y-auto w-11/12 max-w-full">
                 <DialogHeader>
-                    <DialogTitle>Log New Issue</DialogTitle>
+                    <DialogTitle>{t.logNewIssue}</DialogTitle>
                     <DialogDescription>
-                        Record downtime or production issues for your department.
+                        {t.logIssueDesc}
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Department</Label>
+                            <Label>{t.departmentFull}</Label>
                             <Controller
                                 control={control}
                                 name="department"
                                 render={({ field }) => (
                                     <Select onValueChange={field.onChange} value={field.value} disabled={isDeptUser}>
                                         <SelectTrigger className={errors.department ? 'border-red-500' : ''}>
-                                            <SelectValue placeholder="Select dept" />
+                                            <SelectValue placeholder={t.selectDept} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {DEPARTMENTS.map(dept => (
@@ -158,14 +160,14 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Machine / Area</Label>
-                            <Input {...form.register('machine_area')} placeholder="e.g. Line 1" />
+                            <Label>{t.machineArea}</Label>
+                            <Input {...form.register('machine_area')} placeholder={t.eGLine1} />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Start Time</Label>
+                            <Label>{t.startTime}</Label>
                             <Input
                                 type="datetime-local"
                                 {...form.register('start_time')}
@@ -175,10 +177,10 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center mb-1">
-                                <Label>End Time</Label>
+                                <Label>{t.endTime}</Label>
                                 <label className="text-xs flex items-center gap-1 cursor-pointer">
                                     <input type="checkbox" {...form.register('is_ongoing')} className="rounded border-slate-300 text-[#D83140] focus:ring-[#D83140]" />
-                                    Ongoing
+                                    {t.ongoing}
                                 </label>
                             </div>
                             <Input
@@ -191,20 +193,20 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                     </div>
 
                     <div className="bg-slate-50 p-3 rounded-md border text-sm flex justify-between items-center">
-                        <span className="text-slate-500">Calculated Downtime:</span>
-                        <span className="font-bold text-slate-800">{isOngoing ? 'Tracking...' : `${duration} mins`}</span>
+                        <span className="text-slate-500">{t.calculatedDowntime}</span>
+                        <span className="font-bold text-slate-800">{isOngoing ? t.tracking : `${duration} ${t.mins}`}</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Reason Code</Label>
+                            <Label>{t.reasonCode}</Label>
                             <Controller
                                 control={control}
                                 name="reason_code"
                                 render={({ field }) => (
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <SelectTrigger className={errors.reason_code ? 'border-red-500' : ''}>
-                                            <SelectValue placeholder="Select reason" />
+                                            <SelectValue placeholder={t.selectReason} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {REASON_CODES.map(code => (
@@ -216,14 +218,14 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>Impact Level</Label>
+                            <Label>{t.impactLevel}</Label>
                             <Controller
                                 control={control}
                                 name="impact_level"
                                 render={({ field }) => (
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select impact" />
+                                            <SelectValue placeholder={t.selectImpact} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {IMPACT_LEVELS.map(level => (
@@ -237,22 +239,22 @@ export function IssueFormModal({ open, onOpenChange, user }: IssueFormModalProps
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Short Description</Label>
-                        <Input {...form.register('description')} placeholder="Brief summary of what happened" />
+                        <Label>{t.shortDescription}</Label>
+                        <Input {...form.register('description')} placeholder={t.briefSummary} />
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Detailed Notes & Actions</Label>
-                        <Textarea {...form.register('notes')} placeholder="Any additional context or actions taken to resolve..." rows={3} />
+                        <Label>{t.detailedNotes}</Label>
+                        <Textarea {...form.register('notes')} placeholder={t.anyAdditionalContext} rows={3} />
                     </div>
 
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-                            Cancel
+                            {t.cancel}
                         </Button>
                         <Button type="submit" disabled={loading} className="bg-[#D83140] hover:bg-[#b02733] text-white">
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Issue
+                            {t.saveIssue}
                         </Button>
                     </DialogFooter>
                 </form>
