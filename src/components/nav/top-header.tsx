@@ -81,8 +81,10 @@ export function TopHeader({ user }: { user: any }) {
                                 <SelectValue placeholder="Date" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem value="24h">{t.last24h}</SelectItem>
                                 <SelectItem value="Yesterday">{t.yesterday}</SelectItem>
                                 <SelectItem value="Today">{t.today}</SelectItem>
+                                <SelectItem value="7days">{t.last7days}</SelectItem>
                                 <SelectItem value="Custom">{t.customRange}</SelectItem>
                             </SelectContent>
                         </Select>
