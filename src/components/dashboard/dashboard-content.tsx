@@ -137,6 +137,19 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
     const criticalCount = criticalIssues.length
     const criticalDepts = Array.from(new Set(criticalIssues.map(i => i.department))).join(', ')
 
+    const getDateRangeDesc = () => {
+        switch (dateRange) {
+            case 'Yesterday': return t.yesterday
+            case 'Today': return t.today
+            case '7days': return t.last7days
+            case '30days': return t.last30days
+            case '60days': return t.last60days
+            case '90days': return t.last90days
+            case 'Custom': return t.customRange
+            default: return t.issuesToReviewDesc
+        }
+    }
+
     return (
         <div className={`p-4 md:p-8 space-y-6 mx-auto ${isTvMode ? 'max-w-full p-8' : 'max-w-7xl'}`}>
             <div className="flex items-center justify-between">
@@ -167,7 +180,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                     <Badge variant="outline" className="bg-white">{t.open}</Badge>
                                 </div>
                             </div>
-                            <CardDescription>{t.issuesToReviewDesc}</CardDescription>
+                            <CardDescription>{getDateRangeDesc()}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>

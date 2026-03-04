@@ -21,6 +21,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const [isTvMode, setIsTvMode] = useState(false)
     const [dateRange, setDateRange] = useState<DateRangeType>('Today')
 
+    // On mount, check if there's a saved DateRange
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedRange = localStorage.getItem('dds_dateRange') as DateRangeType
+            if (savedRange) {
+                setDateRange(savedRange)
+            }
+        }
+    }, [])
+
+    // Update DateRange and persist to local storage
+    const handleSetDateRange = (range: DateRangeType) => {
+        setDateRange(range)
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('dds_dateRange', range)
+        }
+    }
+
     // Default language is Vietnamese
     const [lang, setLang] = useState<Language>('vi')
     const [t, setT] = useState<Dictionary>(dictionaries.vi)
@@ -37,7 +55,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 isTvMode,
                 toggleTvMode,
                 dateRange,
-                setDateRange,
+                setDateRange: handleSetDateRange,
                 lang,
                 setLang,
                 t
