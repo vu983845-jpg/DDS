@@ -50,12 +50,12 @@ export function DowntimeChart({ data, title, description }: DowntimeChartProps) 
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fill: '#64748b', fontSize: 12 }}
-                                tickFormatter={(value) => `${value}m`}
+                                tickFormatter={(value) => `${Math.round((value / 60) * 10) / 10}h`}
                             />
                             <Tooltip
                                 cursor={{ fill: '#f1f5f9' }}
                                 contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                formatter={(value: any) => [`${value} mins`, 'Downtime']}
+                                formatter={(value: any) => [`${Math.round((value / 60) * 10) / 10} h`, 'Downtime']}
                             />
                             <Bar dataKey="duration" radius={[4, 4, 0, 0]}>
                                 {data.map((entry, index) => (
