@@ -24,7 +24,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // On mount, check if there's a saved DateRange
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const savedRange = localStorage.getItem('dds_dateRange') as DateRangeType
+            const savedRange = localStorage.getItem('dds_dateRange_v2') as DateRangeType
             if (savedRange) {
                 setDateRange(savedRange)
             }
@@ -35,7 +35,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const handleSetDateRange = (range: DateRangeType) => {
         setDateRange(range)
         if (typeof window !== 'undefined') {
-            localStorage.setItem('dds_dateRange', range)
+            localStorage.setItem('dds_dateRange_v2', range)
         }
     }
 
