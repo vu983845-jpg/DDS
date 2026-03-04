@@ -18,7 +18,20 @@ export function KPICards({
     criticalIssuesCount,
     criticalDeptsStr,
 }: KPICardsProps) {
-    const { t } = useAppContext()
+    const { t, dateRange } = useAppContext()
+
+    const getDateRangeDesc = () => {
+        switch (dateRange) {
+            case 'Yesterday': return t.yesterday
+            case 'Today': return t.today
+            case '7days': return t.last7days
+            case '30days': return t.last30days
+            case '60days': return t.last60days
+            case '90days': return t.last90days
+            case 'Custom': return t.customRange
+            default: return t.kpiDowntimeDesc
+        }
+    }
 
     const cards = [
         {
@@ -32,7 +45,7 @@ export function KPICards({
             title: t.kpiDowntime,
             value: `${Math.round((totalDowntime / 60) * 10) / 10}h`,
             icon: Clock,
-            description: t.kpiDowntimeDesc,
+            description: getDateRangeDesc(),
             color: 'text-red-500',
         },
         {
