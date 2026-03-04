@@ -97,7 +97,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
     const filteredQaqc = useMemo(() => filterByDateRange(qaqcData || [], dateRange, 'created_at'), [qaqcData, dateRange])
     const filteredTodo = useMemo(() => filterByDateRange(todoData || [], dateRange, 'created_at'), [todoData, dateRange])
 
-    const totalIssues = filteredIssues.filter(i => i.status === 'Open').length
+    const totalIssues = (issuesData || []).filter(i => i.status === 'Open').length
 
     // Live Total Downtime calculation
     const [liveTotalDowntime, setLiveTotalDowntime] = useState(0)
