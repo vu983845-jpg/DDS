@@ -123,20 +123,7 @@ export function TopHeader({ user }: { user: any }) {
                             </SelectContent>
                         </Select>
 
-                        <Select value={dateRange} onValueChange={(val: any) => setDateRange(val)}>
-                            <SelectTrigger className="w-[120px] h-9">
-                                <SelectValue placeholder="Date" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Yesterday">{t.yesterday}</SelectItem>
-                                <SelectItem value="Today">{t.today}</SelectItem>
-                                <SelectItem value="7days">{t.last7days}</SelectItem>
-                                <SelectItem value="30days">{t.last30days}</SelectItem>
-                                <SelectItem value="60days">{t.last60days}</SelectItem>
-                                <SelectItem value="90days">{t.last90days}</SelectItem>
-                                <SelectItem value="Custom">{t.customRange}</SelectItem>
-                            </SelectContent>
-                        </Select>
+
 
                         <Button
                             variant="outline"

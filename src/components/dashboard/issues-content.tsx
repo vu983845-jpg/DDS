@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button'
 import { Download, Search, Filter, BarChart2 } from 'lucide-react'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
+import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { OverviewReportModal } from '@/components/modals/overview-report-modal'
 import { useAppContext } from '@/components/providers/app-provider'
 import { filterByDateRange, formatDateString } from '@/lib/utils'
@@ -141,7 +142,8 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t.allIssues}</h1>
                     <p className="text-sm text-slate-500">{t.issuesDesc}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                    <DateRangePicker />
                     <Button onClick={() => setIsOverviewOpen(true)} variant="outline" className="gap-2 border-slate-300">
                         <BarChart2 className="h-4 w-4" /> {(t as any).overviewReport || 'Overview Report'}
                     </Button>

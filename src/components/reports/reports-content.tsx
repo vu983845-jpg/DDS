@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { isAfter, isToday, isYesterday, subDays, startOfDay } from 'date-fns'
+import { DateRangePicker } from '@/components/shared/date-range-picker'
 
 interface ReportsContentProps {
     initialIssues: any[]
@@ -154,6 +155,8 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 bg-white p-1 rounded-md border shadow-sm">
+                    <DateRangePicker />
+                    <div className="w-[1px] h-6 bg-slate-200"></div>
                     <span className="text-sm text-slate-500 pl-3 font-medium">Filter:</span>
                     <Select value={selectedDept} onValueChange={setSelectedDept}>
                         <SelectTrigger className="w-[160px] border-none shadow-none focus:ring-0">

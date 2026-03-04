@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import { useAppContext } from '@/components/providers/app-provider'
 import { SafetyFormModal } from '@/components/modals/safety-form-modal'
 import { createClient } from '@/utils/supabase/client'
+import { DateRangePicker } from '@/components/shared/date-range-picker'
 
 interface SafetyContentProps {
     safetyData: any[]
@@ -71,7 +72,8 @@ export function SafetyContent({ safetyData: initialData, user }: SafetyContentPr
                     </h1>
                     <p className="text-sm text-slate-500 mt-1">{t.manageSafety}</p>
                 </div>
-                <div className="flex gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                    <DateRangePicker />
                     <Button variant="outline" className="gap-2">
                         <Download className="h-4 w-4" /> {t.exportCsv}
                     </Button>

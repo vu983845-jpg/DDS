@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { CheckCircle, Trash2, PlusCircle, AlertCircle, Edit2, Clock } from 'lucide-react'
 import { useAppContext } from '@/components/providers/app-provider'
 import { createClient } from '@/utils/supabase/client'
+import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { toast } from 'sonner'
 import { filterByDateRange, formatDateString } from '@/lib/utils'
 
@@ -131,6 +132,9 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t.todoList || 'TO-DO List'}</h1>
                     <p className="text-sm text-slate-500">{t.todoDesc || 'Follow-up actions and tasks from DDS meetings.'}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <DateRangePicker />
                 </div>
             </div>
 

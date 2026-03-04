@@ -3,6 +3,8 @@
 import { KPICards } from '@/components/dashboard/kpi-cards'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Label } from '@/components/ui/label'
+import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { Badge } from '@/components/ui/badge'
 import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronDown, ShieldAlert } from 'lucide-react'
 import { useAppContext } from '@/components/providers/app-provider'
@@ -152,10 +154,15 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
 
     return (
         <div className={`p-4 md:p-8 space-y-6 mx-auto ${isTvMode ? 'max-w-full p-8' : 'max-w-7xl'}`}>
-            <div className="flex items-center justify-between">
-                <h1 className={`${isTvMode ? 'text-4xl' : 'text-2xl'} font-bold tracking-tight text-slate-900`}>{t.dashboard}</h1>
-                <div className="text-sm text-slate-500 font-medium">
-                    {t.lastUpdated} {lastUpdated ? lastUpdated.toLocaleTimeString() : new Date().toLocaleTimeString()}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className={`${isTvMode ? 'text-4xl' : 'text-2xl'} font-bold tracking-tight text-slate-900`}>{t.dashboard}</h1>
+                    <div className="text-sm text-slate-500 font-medium mt-1">
+                        {t.lastUpdated} {lastUpdated ? lastUpdated.toLocaleTimeString() : new Date().toLocaleTimeString()}
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <DateRangePicker />
                 </div>
             </div>
 
