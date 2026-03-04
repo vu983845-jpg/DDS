@@ -11,9 +11,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, CalendarIcon } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useAppContext } from '@/components/providers/app-provider'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
 
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
@@ -276,19 +280,38 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
 
                                     return (
                                         <div className="flex gap-2 w-full">
-                                            <Input
-                                                type="date"
-                                                value={datePart}
-                                                onChange={(e) => {
-                                                    const newDate = e.target.value
-                                                    if (newDate) {
-                                                        field.onChange(`${newDate}T${timePart || '00:00'}`)
-                                                    } else {
-                                                        field.onChange('')
-                                                    }
-                                                }}
-                                                className={`flex-1 ${errors.start_time ? 'border-red-500' : ''}`}
-                                            />
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "flex-1 justify-start text-left font-normal px-3",
+                                                            !datePart && "text-muted-foreground",
+                                                            errors.start_time && "border-red-500"
+                                                        )}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {datePart ? format(new Date(datePart), "dd/MM/yyyy") : <span>Date</span>}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" align="start">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={datePart ? new Date(datePart) : undefined}
+                                                        onSelect={(date) => {
+                                                            if (date) {
+                                                                const y = date.getFullYear();
+                                                                const m = String(date.getMonth() + 1).padStart(2, '0');
+                                                                const d = String(date.getDate()).padStart(2, '0');
+                                                                field.onChange(`${y}-${m}-${d}T${timePart || '00:00'}`)
+                                                            } else {
+                                                                field.onChange('')
+                                                            }
+                                                        }}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                             <Input
                                                 type="time"
                                                 value={timePart}
@@ -319,20 +342,39 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
 
                                         return (
                                             <div className="flex gap-2 w-full">
-                                                <Input
-                                                    type="date"
-                                                    value={datePart}
-                                                    disabled={isOngoing}
-                                                    onChange={(e) => {
-                                                        const newDate = e.target.value
-                                                        if (newDate) {
-                                                            field.onChange(`${newDate}T${timePart || '00:00'}`)
-                                                        } else {
-                                                            field.onChange('')
-                                                        }
-                                                    }}
-                                                    className={`flex-1 ${errors.end_time ? 'border-red-500' : ''}`}
-                                                />
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant={"outline"}
+                                                            disabled={isOngoing}
+                                                            className={cn(
+                                                                "flex-1 justify-start text-left font-normal px-3",
+                                                                !datePart && "text-muted-foreground",
+                                                                errors.end_time && "border-red-500"
+                                                            )}
+                                                        >
+                                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                                            {datePart ? format(new Date(datePart), "dd/MM/yyyy") : <span>Date</span>}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={datePart ? new Date(datePart) : undefined}
+                                                            onSelect={(date) => {
+                                                                if (date) {
+                                                                    const y = date.getFullYear();
+                                                                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                                                                    const d = String(date.getDate()).padStart(2, '0');
+                                                                    field.onChange(`${y}-${m}-${d}T${timePart || '00:00'}`)
+                                                                } else {
+                                                                    field.onChange('')
+                                                                }
+                                                            }}
+                                                            initialFocus
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
                                                 <Input
                                                     type="time"
                                                     value={timePart}
