@@ -60,6 +60,7 @@ const issueSchema = z.object({
     impact_level: z.string().min(1, 'Impact level is required'),
     notes: z.string().optional().nullable(),
     other_reason: z.string().optional().nullable(),
+    is_downtime: z.boolean(),
 })
 
 type IssueFormData = z.infer<typeof issueSchema>
@@ -103,6 +104,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
             impact_level: initialData?.impact_level || 'Medium',
             notes: initialData?.notes || '',
             other_reason: !isStandardReason && initialData ? initialReasonCode : '',
+            is_downtime: initialData && initialData.is_downtime !== undefined ? initialData.is_downtime : true,
         },
     })
 
@@ -180,7 +182,8 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                 notes: data.notes,
                 end_time: data.is_ongoing ? null : (data.end_time ? new Date(data.end_time).toISOString() : null),
                 duration_mins: data.is_ongoing ? null : duration,
-                status: data.is_ongoing ? 'Open' : 'Closed'
+                status: data.is_ongoing ? 'Open' : 'Closed',
+                is_downtime: data.is_downtime
             }
 
             let error;
@@ -270,20 +273,27 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-center mb-1">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
                                 <Label>{t.endTime}</Label>
-                                <label className="text-xs flex items-center gap-1 cursor-pointer">
-                                    <input type="checkbox" {...form.register('is_ongoing')} className="rounded border-slate-300 text-[#D83140] focus:ring-[#D83140]" />
+                                <Input
+                                    type="datetime-local"
+                                    {...form.register('end_time')}
+                                    disabled={isOngoing}
+                                    className="w-full"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-md">
+                                <label className="text-sm flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+                                    <input type="checkbox" {...form.register('is_ongoing')} className="rounded border-slate-300 w-4 h-4 text-[#D83140] focus:ring-[#D83140]" />
                                     {t.ongoing}
                                 </label>
+                                <label className="text-sm flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+                                    <input type="checkbox" {...form.register('is_downtime')} className="rounded border-slate-300 w-4 h-4 text-[#D83140] focus:ring-[#D83140]" />
+                                    {t.excludeDowntime || 'Không tính Downtime'}
+                                </label>
+                                <p className="text-xs text-slate-500 ml-6">{t.excludeDowntimeDesc || 'Chỉ ghi nhận sự cố, không cộng vào tổng thời gian dừng máy.'}</p>
                             </div>
-                            <Input
-                                type="datetime-local"
-                                {...form.register('end_time')}
-                                disabled={isOngoing}
-                                className="w-full"
-                            />
                         </div>
                     </div>
 

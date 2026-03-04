@@ -68,6 +68,7 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
         const acc = {} as Record<string, number>
 
         const getIssueDuration = (issue: any) => {
+            if (issue.is_downtime === false) return 0
             if (issue.status === 'Closed') return issue.duration_mins || 0
             if (issue.status === 'Open' && issue.start_time) {
                 const start = new Date(issue.start_time).getTime()
@@ -117,6 +118,7 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
         const acc = {} as Record<string, number>
 
         const getIssueDuration = (issue: any) => {
+            if (issue.is_downtime === false) return 0
             if (issue.status === 'Closed') return issue.duration_mins || 0
             if (issue.status === 'Open' && issue.start_time) {
                 const start = new Date(issue.start_time).getTime()

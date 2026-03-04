@@ -110,6 +110,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
             let total = 0
             const now = new Date().getTime()
             filteredIssues.forEach((issue: any) => {
+                if (issue.is_downtime === false) return // Skip if exclude downtime is checked
+
                 if (issue.status === 'Closed') {
                     total += (issue.duration_mins || 0)
                 } else if (issue.start_time) {
@@ -211,8 +213,10 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right font-medium text-slate-700">
-                                                    {issue.status === 'Closed' ? (
-                                                        `${issue.duration_mins || 0}m`
+                                                    {issue.is_downtime === false ? (
+                                                        <span className="text-slate-400">-</span>
+                                                    ) : issue.status === 'Closed' ? (
+                                                        `${Math.round(((issue.duration_mins || 0) / 60) * 10) / 10}h`
                                                     ) : (
                                                         <LiveDuration startTime={issue.start_time} />
                                                     )}

@@ -135,6 +135,8 @@ export const dictionaries = {
         impactMedium: 'Trung bình',
         impactHigh: 'Cao',
         impactCritical: 'Rất nghiêm trọng',
+        excludeDowntime: 'Không tính Downtime',
+        excludeDowntimeDesc: 'Chỉ ghi nhận sự cố, không cộng vào tổng thời gian dừng máy.',
 
         // Global
         close: 'Đóng',
@@ -299,6 +301,8 @@ export const dictionaries = {
         impactMedium: 'Medium',
         impactHigh: 'High',
         impactCritical: 'Critical',
+        excludeDowntime: 'Exclude from Downtime',
+        excludeDowntimeDesc: 'Log the issue for info only, do not add to total downtime.',
 
         // Global
         close: 'Close',
