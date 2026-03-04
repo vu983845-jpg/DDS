@@ -117,7 +117,7 @@ export function OverviewReportModal({ open, onOpenChange, issuesData }: Overview
                                         {viewMode === 'Monthly' && `${t.dept} / ${(t as any).month || 'Month'}`}
                                         {viewMode === 'ByReason' && t.reason}
                                     </TableHead>
-                                    <TableHead className="text-right">{(t as any).totalIncidents || 'Total Incidents'}</TableHead>
+                                    <TableHead className="text-right">{(t as any).totalIncidents || 'Total Issues'}</TableHead>
                                     <TableHead className="text-right">{t.downtime} (h)</TableHead>
                                 </TableRow>
                             </TableHeader>
