@@ -266,21 +266,88 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>{t.startTime}</Label>
-                            <Input
-                                type="datetime-local"
-                                {...form.register('start_time')}
-                                className={`w-full ${errors.start_time ? 'border-red-500' : ''}`}
+                            <Controller
+                                control={control}
+                                name="start_time"
+                                render={({ field }) => {
+                                    const datetimeStr = field.value || ''
+                                    const datePart = datetimeStr ? datetimeStr.split('T')[0] : ''
+                                    const timePart = datetimeStr && datetimeStr.includes('T') ? datetimeStr.split('T')[1].slice(0, 5) : ''
+
+                                    return (
+                                        <div className="flex gap-2 w-full">
+                                            <Input
+                                                type="date"
+                                                value={datePart}
+                                                onChange={(e) => {
+                                                    const newDate = e.target.value
+                                                    if (newDate) {
+                                                        field.onChange(`${newDate}T${timePart || '00:00'}`)
+                                                    } else {
+                                                        field.onChange('')
+                                                    }
+                                                }}
+                                                className={`flex-1 ${errors.start_time ? 'border-red-500' : ''}`}
+                                            />
+                                            <Input
+                                                type="time"
+                                                value={timePart}
+                                                onChange={(e) => {
+                                                    const newTime = e.target.value
+                                                    if (datePart && newTime) {
+                                                        field.onChange(`${datePart}T${newTime}`)
+                                                    }
+                                                }}
+                                                className={`flex-1 ${errors.start_time ? 'border-red-500' : ''}`}
+                                            />
+                                        </div>
+                                    )
+                                }}
                             />
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label>{t.endTime}</Label>
-                                <Input
-                                    type="datetime-local"
-                                    {...form.register('end_time')}
-                                    disabled={isOngoing}
-                                    className="w-full"
+                                <Controller
+                                    control={control}
+                                    name="end_time"
+                                    render={({ field }) => {
+                                        const datetimeStr = field.value || ''
+                                        const datePart = datetimeStr ? datetimeStr.split('T')[0] : ''
+                                        const timePart = datetimeStr && datetimeStr.includes('T') ? datetimeStr.split('T')[1].slice(0, 5) : ''
+
+                                        return (
+                                            <div className="flex gap-2 w-full">
+                                                <Input
+                                                    type="date"
+                                                    value={datePart}
+                                                    disabled={isOngoing}
+                                                    onChange={(e) => {
+                                                        const newDate = e.target.value
+                                                        if (newDate) {
+                                                            field.onChange(`${newDate}T${timePart || '00:00'}`)
+                                                        } else {
+                                                            field.onChange('')
+                                                        }
+                                                    }}
+                                                    className={`flex-1 ${errors.end_time ? 'border-red-500' : ''}`}
+                                                />
+                                                <Input
+                                                    type="time"
+                                                    value={timePart}
+                                                    disabled={isOngoing}
+                                                    onChange={(e) => {
+                                                        const newTime = e.target.value
+                                                        if (datePart && newTime) {
+                                                            field.onChange(`${datePart}T${newTime}`)
+                                                        }
+                                                    }}
+                                                    className={`flex-1 ${errors.end_time ? 'border-red-500' : ''}`}
+                                                />
+                                            </div>
+                                        )
+                                    }}
                                 />
                             </div>
                             <div className="flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-md">
