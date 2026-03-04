@@ -3,6 +3,7 @@ import { AlertCircle, Clock, Factory, ShieldAlert } from 'lucide-react'
 
 interface KPICardsProps {
     totalIssues: number
+    openIssues: number
     totalDowntime: number // in minutes
     topDept: string
     criticalIssuesCount: number
@@ -13,6 +14,7 @@ import { useAppContext } from '@/components/providers/app-provider'
 
 export function KPICards({
     totalIssues,
+    openIssues,
     totalDowntime,
     topDept,
     criticalIssuesCount,
@@ -38,7 +40,7 @@ export function KPICards({
             title: t.kpiTotalIssues,
             value: totalIssues.toString(),
             icon: AlertCircle,
-            description: t.kpiTotalIssuesDesc,
+            description: `${openIssues} ${(t as any).openIssuesDesc || 'Open / Pending'}`,
             color: 'text-orange-500',
         },
         {
