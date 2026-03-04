@@ -52,7 +52,7 @@ export function KPICards({
             title: t.kpiTopDept,
             value: topDept || 'N/A',
             icon: Factory,
-            description: t.kpiTopDeptDesc,
+            description: getDateRangeDesc(),
             color: 'text-blue-500',
         },
         {
