@@ -64,7 +64,7 @@ const issueSchema = z.object({
     impact_level: z.string().min(1, 'Impact level is required'),
     notes: z.string().optional().nullable(),
     other_reason: z.string().optional().nullable(),
-    is_downtime: z.boolean(),
+    exclude_downtime: z.boolean(),
 })
 
 type IssueFormData = z.infer<typeof issueSchema>
@@ -108,7 +108,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
             impact_level: initialData?.impact_level || 'Medium',
             notes: initialData?.notes || '',
             other_reason: !isStandardReason && initialData ? initialReasonCode : '',
-            is_downtime: initialData && initialData.is_downtime !== undefined ? initialData.is_downtime : true,
+            exclude_downtime: initialData && initialData.is_downtime !== undefined ? !initialData.is_downtime : false,
         },
     })
 
@@ -187,7 +187,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                 end_time: data.is_ongoing ? null : (data.end_time ? new Date(data.end_time).toISOString() : null),
                 duration_mins: data.is_ongoing ? null : duration,
                 status: data.is_ongoing ? 'Open' : 'Closed',
-                is_downtime: data.is_downtime
+                is_downtime: !data.exclude_downtime
             }
 
             let error;
@@ -268,6 +268,68 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>{t.reasonCode}</Label>
+                            <Controller
+                                control={control}
+                                name="reason_code"
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger className={errors.reason_code ? 'border-red-500' : ''}>
+                                            <SelectValue placeholder={t.selectReason} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {REASON_CODES.map(code => (
+                                                <SelectItem key={code} value={code}>
+                                                    {(t as any)[getReasonKey(code)] as string || code}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            {selectedReason === 'Other' && (
+                                <Input
+                                    {...form.register('other_reason')}
+                                    placeholder={t.typeOtherReason || 'Specify reason...'}
+                                    className="mt-2"
+                                />
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label>{t.impactLevel}</Label>
+                            <Controller
+                                control={control}
+                                name="impact_level"
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={t.selectImpact} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {IMPACT_LEVELS.map(level => (
+                                                <SelectItem key={level} value={level}>
+                                                    {t[getImpactKey(level)] as string || level}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>{t.shortDescription}</Label>
+                        <Input {...form.register('description')} placeholder={t.briefSummary} />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>{t.detailedNotes}</Label>
+                        <Textarea {...form.register('notes')} placeholder={t.anyAdditionalContext} rows={3} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                         <div className="space-y-2">
                             <Label>{t.startTime}</Label>
                             <Controller
@@ -398,7 +460,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                                     {t.ongoing}
                                 </label>
                                 <label className="text-sm flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-                                    <input type="checkbox" {...form.register('is_downtime')} className="rounded border-slate-300 w-4 h-4 text-[#D83140] focus:ring-[#D83140]" />
+                                    <input type="checkbox" {...form.register('exclude_downtime')} className="rounded border-slate-300 w-4 h-4 text-[#D83140] focus:ring-[#D83140]" />
                                     {t.excludeDowntime || 'Không tính Downtime'}
                                 </label>
                                 <p className="text-xs text-slate-500 ml-6">{t.excludeDowntimeDesc || 'Chỉ ghi nhận sự cố, không cộng vào tổng thời gian dừng máy.'}</p>
@@ -406,71 +468,9 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                         </div>
                     </div>
 
-                    <div className="bg-slate-50 p-3 rounded-md border text-sm flex justify-between items-center">
+                    <div className="bg-slate-50 p-3 rounded-md border text-sm flex justify-between items-center mb-4">
                         <span className="text-slate-500">{t.calculatedDowntime}</span>
                         <span className="font-bold text-slate-800">{isOngoing ? t.tracking : `${duration} ${t.mins}`}</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>{t.reasonCode}</Label>
-                            <Controller
-                                control={control}
-                                name="reason_code"
-                                render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger className={errors.reason_code ? 'border-red-500' : ''}>
-                                            <SelectValue placeholder={t.selectReason} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {REASON_CODES.map(code => (
-                                                <SelectItem key={code} value={code}>
-                                                    {(t as any)[getReasonKey(code)] as string || code}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                            {selectedReason === 'Other' && (
-                                <Input
-                                    {...form.register('other_reason')}
-                                    placeholder={t.typeOtherReason || 'Specify reason...'}
-                                    className="mt-2"
-                                />
-                            )}
-                        </div>
-                        <div className="space-y-2">
-                            <Label>{t.impactLevel}</Label>
-                            <Controller
-                                control={control}
-                                name="impact_level"
-                                render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t.selectImpact} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {IMPACT_LEVELS.map(level => (
-                                                <SelectItem key={level} value={level}>
-                                                    {t[getImpactKey(level)] as string || level}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>{t.shortDescription}</Label>
-                        <Input {...form.register('description')} placeholder={t.briefSummary} />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>{t.detailedNotes}</Label>
-                        <Textarea {...form.register('notes')} placeholder={t.anyAdditionalContext} rows={3} />
                     </div>
 
                     <DialogFooter>
