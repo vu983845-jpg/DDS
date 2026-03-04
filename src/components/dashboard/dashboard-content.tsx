@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Label } from '@/components/ui/label'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { Badge } from '@/components/ui/badge'
-import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronDown, ShieldAlert } from 'lucide-react'
+import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronDown, ShieldAlert, ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react'
 import { useAppContext } from '@/components/providers/app-provider'
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
@@ -101,6 +101,22 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
 
     const totalIssues = filteredIssues.length
     const openIssues = filteredIssues.filter(i => i.status === 'Open').length
+    const [sortOrder, setSortOrder] = useState<'desc' | 'asc' | null>('desc')
+
+    const sortedFilteredIssues = useMemo(() => {
+        return [...filteredIssues].sort((a, b) => {
+            if (!sortOrder) return 0
+            const dateA = new Date(a.start_time || a.created_at).getTime()
+            const dateB = new Date(b.start_time || b.created_at).getTime()
+            return sortOrder === 'desc' ? dateB - dateA : dateA - dateB
+        })
+    }, [filteredIssues, sortOrder])
+
+    const toggleSort = () => {
+        if (sortOrder === 'desc') setSortOrder('asc')
+        else if (sortOrder === 'asc') setSortOrder(null)
+        else setSortOrder('desc')
+    }
 
     // Live Total Downtime calculation
     const [liveTotalDowntime, setLiveTotalDowntime] = useState(0)
@@ -197,15 +213,26 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                     <TableRow>
                                         <TableHead className="w-[100px]">{t.dept}</TableHead>
                                         <TableHead>{t.issue}</TableHead>
-                                        <TableHead>{t.dateTime}</TableHead>
+                                        <TableHead className="w-[140px]">
+                                            <Button variant="ghost" className="-ml-3 h-8 data-[state=open]:bg-accent text-slate-900 font-semibold" onClick={toggleSort}>
+                                                <span>{t.dateTime}</span>
+                                                {sortOrder === 'desc' ? (
+                                                    <ArrowDown className="ml-2 h-4 w-4" />
+                                                ) : sortOrder === 'asc' ? (
+                                                    <ArrowUp className="ml-2 h-4 w-4" />
+                                                ) : (
+                                                    <ArrowUpDown className="ml-2 h-4 w-4 text-slate-400" />
+                                                )}
+                                            </Button>
+                                        </TableHead>
                                         <TableHead>{t.impactLevel}</TableHead>
                                         <TableHead>{t.status}</TableHead>
                                         <TableHead className="text-right">{t.downtime}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredIssues.length > 0 ? (
-                                        filteredIssues.map((issue: any) => (
+                                    {sortedFilteredIssues.length > 0 ? (
+                                        sortedFilteredIssues.map((issue: any) => (
                                             <TableRow
                                                 key={issue.id}
                                                 className="cursor-pointer hover:bg-slate-50 transition-colors"
