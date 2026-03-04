@@ -194,7 +194,9 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                 <Card>
                     <CardHeader className="pb-2">
                         <CardDescription>Total Downtime</CardDescription>
-                        <CardTitle className="text-3xl text-slate-800">{totalDowntime} <span className="text-lg font-normal text-slate-500">mins</span></CardTitle>
+                        <CardTitle className="text-3xl text-slate-800">
+                            {Math.round((totalDowntime / 60) * 10) / 10} <span className="text-lg font-normal text-slate-500">h</span>
+                        </CardTitle>
                     </CardHeader>
                 </Card>
                 <Card>
