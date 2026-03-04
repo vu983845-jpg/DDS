@@ -19,7 +19,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export function AppProvider({ children }: { children: ReactNode }) {
     const [isTvMode, setIsTvMode] = useState(false)
-    const [dateRange, setDateRange] = useState<DateRangeType>('Today')
+    const [dateRange, setDateRange] = useState<DateRangeType>('7days')
 
     // On mount, check if there's a saved DateRange
     useEffect(() => {
