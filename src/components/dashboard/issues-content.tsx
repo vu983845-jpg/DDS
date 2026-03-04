@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Download, Search, Filter, BarChart2 } from 'lucide-react'
+import { Download, Search, Filter, BarChart2, ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { OverviewReportModal } from '@/components/modals/overview-report-modal'
@@ -33,6 +33,7 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
     const [deptFilter, setDeptFilter] = useState('All')
     const [statusFilter, setStatusFilter] = useState('All')
     const [reasonFilter, setReasonFilter] = useState('All')
+    const [sortOrder, setSortOrder] = useState<'desc' | 'asc' | null>('desc')
 
     const dateFilteredData = filterByDateRange(issuesData, dateRange, 'start_time')
 
@@ -48,7 +49,18 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
         const matchesReason = reasonFilter === 'All' || issue.reason_code === reasonFilter
 
         return matchesSearch && matchesDept && matchesStatus && matchesReason
+    }).sort((a, b) => {
+        if (!sortOrder) return 0
+        const dateA = new Date(a.start_time || a.created_at).getTime()
+        const dateB = new Date(b.start_time || b.created_at).getTime()
+        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB
     })
+
+    const toggleSort = () => {
+        if (sortOrder === 'desc') setSortOrder('asc')
+        else if (sortOrder === 'asc') setSortOrder(null)
+        else setSortOrder('desc')
+    }
 
     const exportCSV = () => {
         if (!dateFilteredData || dateFilteredData.length === 0) return
@@ -204,7 +216,18 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                     <Table>
                         <TableHeader className="bg-slate-50 sticky top-0">
                             <TableRow>
-                                <TableHead className="w-[120px]">{t.dateTime}</TableHead>
+                                <TableHead className="w-[140px]">
+                                    <Button variant="ghost" className="-ml-3 h-8 data-[state=open]:bg-accent text-slate-900 font-semibold" onClick={toggleSort}>
+                                        <span>{t.dateTime}</span>
+                                        {sortOrder === 'desc' ? (
+                                            <ArrowDown className="ml-2 h-4 w-4" />
+                                        ) : sortOrder === 'asc' ? (
+                                            <ArrowUp className="ml-2 h-4 w-4" />
+                                        ) : (
+                                            <ArrowUpDown className="ml-2 h-4 w-4 text-slate-400" />
+                                        )}
+                                    </Button>
+                                </TableHead>
                                 <TableHead className="w-[120px]">{t.dept}</TableHead>
                                 <TableHead>{t.machineArea}</TableHead>
                                 <TableHead>{t.reason}</TableHead>
