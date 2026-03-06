@@ -13,7 +13,7 @@ import { toast } from 'sonner'
 import { IssueFormModal } from './issue-form-modal' // Reuse for editing
 import { createClient } from '@/utils/supabase/client'
 import { useAppContext } from '@/components/providers/app-provider'
-import { formatDateString } from '@/lib/utils'
+import { formatDateString, formatDuration } from '@/lib/utils'
 
 interface IssueDetailModalProps {
     open: boolean
@@ -239,8 +239,8 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                             {issue.end_time ? formatDateString(issue.end_time) : 'Ongoing'}
                                         </span>
 
-                                        <span className="text-slate-500">Downtime:</span>
-                                        <span className="font-medium text-slate-800">{issue.duration_mins ? `${issue.duration_mins} mins` : '-'}</span>
+                                        <span className="text-slate-500">{issue.is_downtime === false ? 'Duration:' : 'Downtime:'}</span>
+                                        <span className="font-medium text-slate-800">{formatDuration(issue.duration_mins, issue.is_downtime !== false)}</span>
                                     </div>
                                 </div>
                             </div>

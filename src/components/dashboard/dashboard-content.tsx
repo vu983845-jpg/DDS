@@ -10,7 +10,7 @@ import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronD
 import { useAppContext } from '@/components/providers/app-provider'
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { filterByDateRange, formatDateString } from '@/lib/utils'
+import { filterByDateRange, formatDateString, formatDuration } from '@/lib/utils'
 import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -28,7 +28,7 @@ interface DashboardContentProps {
     profile: any
 }
 
-function LiveDuration({ startTime }: { startTime: string }) {
+function LiveDuration({ startTime, isDowntime = true }: { startTime: string, isDowntime?: boolean }) {
     const [elapsed, setElapsed] = useState<number>(0)
 
     useEffect(() => {
@@ -42,7 +42,7 @@ function LiveDuration({ startTime }: { startTime: string }) {
         return () => clearInterval(interval)
     }, [startTime])
 
-    return <span className="text-[#D83140] font-bold animate-pulse">{elapsed}m</span>
+    return <span className={`${isDowntime ? 'text-[#D83140] font-bold animate-pulse' : 'text-amber-600 font-medium'}`}>{formatDuration(elapsed, isDowntime)}</span>
 }
 
 export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, todoData, user, profile }: DashboardContentProps) {
@@ -227,6 +227,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                         </TableHead>
                                         <TableHead>{t.impactLevel}</TableHead>
                                         <TableHead>{t.status}</TableHead>
+                                        <TableHead className="text-center">{(t as any).isDowntime || 'Tính Downtime?'}</TableHead>
                                         <TableHead className="text-right">{t.downtime}</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -261,20 +262,27 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                                         {issue.status}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell className="text-right font-medium text-slate-700">
+                                                <TableCell className="text-center">
                                                     {issue.is_downtime === false ? (
-                                                        <span className="text-slate-400">-</span>
-                                                    ) : issue.status === 'Closed' ? (
-                                                        `${Math.round(((issue.duration_mins || 0) / 60) * 10) / 10}h`
+                                                        <Badge variant="outline" className="text-amber-600 border-amber-500 bg-amber-50 text-xs">Không</Badge>
                                                     ) : (
-                                                        <LiveDuration startTime={issue.start_time} />
+                                                        <Badge variant="outline" className="text-green-600 border-green-500 bg-green-50 text-xs text-nowrap">Có (Downtime)</Badge>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right font-medium text-slate-700">
+                                                    {issue.status === 'Closed' ? (
+                                                        <span className={issue.is_downtime === false ? "text-amber-600" : ""}>
+                                                            {formatDuration(issue.duration_mins, issue.is_downtime !== false)}
+                                                        </span>
+                                                    ) : (
+                                                        <LiveDuration startTime={issue.start_time} isDowntime={issue.is_downtime !== false} />
                                                     )}
                                                 </TableCell>
                                             </TableRow>
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="h-24 text-center text-slate-500">
+                                            <TableCell colSpan={7} className="h-24 text-center text-slate-500">
                                                 {t.noIssuesRange}
                                             </TableCell>
                                         </TableRow>

@@ -62,3 +62,13 @@ export function formatDateString(dateInput: string | Date | null | undefined, in
   const mins = d.getMinutes().toString().padStart(2, '0')
   return `${day}/${month}/${year} ${hours}:${mins}`
 }
+
+export function formatDuration(minutes: number | null | undefined, isDowntime: boolean = true): string {
+  if (minutes === null || minutes === undefined) return '-'
+  if (isDowntime) {
+    return `${Math.round(minutes)}m`
+  }
+  // isDowntime === false -> hours
+  const hours = (minutes / 60).toFixed(1)
+  return `${hours.endsWith('.0') ? parseInt(hours) : hours}h`
+}

@@ -12,7 +12,7 @@ import { IssueDetailModal } from '@/components/modals/issue-detail-modal'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { OverviewReportModal } from '@/components/modals/overview-report-modal'
 import { useAppContext } from '@/components/providers/app-provider'
-import { filterByDateRange, formatDateString } from '@/lib/utils'
+import { filterByDateRange, formatDateString, formatDuration } from '@/lib/utils'
 import * as XLSX from 'xlsx'
 
 interface IssuesContentProps {
@@ -284,11 +284,11 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                                         <TableCell className="text-right font-medium">
                                             {issue.status === 'Closed' ? (
                                                 <span className={issue.is_downtime === false ? "text-amber-600" : ""}>
-                                                    {issue.duration_mins ? `${issue.duration_mins}m` : '-'}
+                                                    {formatDuration(issue.duration_mins, issue.is_downtime !== false)}
                                                 </span>
                                             ) : (
                                                 <span className={issue.is_downtime === false ? "text-amber-600 font-medium" : "text-[#D83140] font-bold animate-pulse"}>
-                                                    {Math.round(Math.max(0, new Date().getTime() - new Date(issue.start_time).getTime()) / 60000)}m
+                                                    {formatDuration(Math.round(Math.max(0, new Date().getTime() - new Date(issue.start_time).getTime()) / 60000), issue.is_downtime !== false)}
                                                 </span>
                                             )}
                                         </TableCell>

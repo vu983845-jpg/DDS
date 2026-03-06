@@ -17,7 +17,7 @@ import { useAppContext } from '@/components/providers/app-provider'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { format } from 'date-fns'
-import { cn } from '@/lib/utils'
+import { cn, formatDuration } from '@/lib/utils'
 
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
@@ -467,7 +467,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
 
                     <div className="bg-slate-50 p-3 rounded-md border text-sm flex justify-between items-center mb-4">
                         <span className="text-slate-500">{t.calculatedDowntime}</span>
-                        <span className="font-bold text-slate-800">{isOngoing ? t.tracking : `${duration} ${t.mins}`}</span>
+                        <span className="font-bold text-slate-800">{isOngoing ? t.tracking : formatDuration(duration, !watch('exclude_downtime'))}</span>
                     </div>
 
                     <DialogFooter>
