@@ -135,17 +135,7 @@ export function TopHeader({ user }: { user: any }) {
                         </Link>
                     ))}
                 </nav>
-
-                {/* Global Search */}
-                <div className="hidden md:flex relative w-full max-w-sm ml-auto">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder={t.searchPlaceholder}
-                        className="w-full pl-8 bg-slate-50 border-slate-200 focus-visible:ring-[#D83140]"
-                    />
-                </div>
-
+                {/* Global Search removed per user request */}
                 {/* Controls */}
                 <div className="flex items-center gap-3">
                     <div className="hidden sm:flex items-center gap-2 border-r pr-3 border-slate-200">
@@ -158,18 +148,6 @@ export function TopHeader({ user }: { user: any }) {
                                 <SelectItem value="en">EN</SelectItem>
                             </SelectContent>
                         </Select>
-
-
-
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={toggleTvMode}
-                            className="h-9 gap-2 text-slate-600 hover:text-slate-900"
-                        >
-                            <MonitorPlay className="h-4 w-4" />
-                            <span className="hidden xl:inline">{t.tvMode}</span>
-                        </Button>
                     </div>
 
                     <div className="flex-shrink-0">
