@@ -65,10 +65,6 @@ export function formatDateString(dateInput: string | Date | null | undefined, in
 
 export function formatDuration(minutes: number | null | undefined, isDowntime: boolean = true): string {
   if (minutes === null || minutes === undefined) return '-'
-  if (isDowntime) {
-    return `${Math.round(minutes)}m`
-  }
-  // isDowntime === false -> hours
   const hours = (minutes / 60).toFixed(1)
   return `${hours.endsWith('.0') ? parseInt(hours) : hours}h`
 }
