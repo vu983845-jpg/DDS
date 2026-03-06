@@ -49,7 +49,7 @@ export function TopHeader({ user }: { user: any }) {
         if (!email) {
             // Nếu người dùng đang là Guest (không Login), mình sẽ chuyển họ qua trang chủ 
             // web Dashboard Sản lượng để họ tự đăng nhập hoặc xem tuỳ ý bên đó
-            window.location.href = "https://dashboard-viccla.vercel.app/login";
+            window.location.href = "https://dashboard-viccla.vercel.app/dashboard";
             return;
         }
 
@@ -63,7 +63,7 @@ export function TopHeader({ user }: { user: any }) {
         const token = btoa(`${email}:${SECRET_KEY}`);
 
         // Chuyển người dùng sang link mới của app Dashboard Sản Lượng
-        const dashboardUrl = `https://dashboard-viccla.vercel.app/auto-login?token=${token}`;
+        const dashboardUrl = `https://dashboard-viccla.vercel.app/dashboard?token=${token}`;
 
         window.location.href = dashboardUrl;
     }
