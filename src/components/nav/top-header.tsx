@@ -42,7 +42,31 @@ export function TopHeader({ user }: { user: any }) {
         { name: t.todoList || 'TO-DO List', href: '/todo', icon: CheckSquare },
         { name: 'Reports', href: '/reports', icon: BarChart },
     ]
+    const handleChuyenSangDashboard = () => {
+        // Lấy email từ đối tượng user hiện tại của app (từ Supabase)
+        const email = user?.email || "";
 
+        if (!email) {
+            // Nếu người dùng đang là Guest (không Login), mình sẽ chuyển họ qua trang chủ 
+            // web Dashboard Sản lượng để họ tự đăng nhập hoặc xem tuỳ ý bên đó
+            window.location.href = "https://dashboard-viccla.vercel.app/login";
+            return;
+        }
+
+        // BẮT BUỘC: Supabase (hoặc bất kỳ hệ thống Auth nào) không bao giờ cho phép 
+        // Frontend lấy được Mật khẩu (Password) thật của user sau khi đã đăng nhập.
+        // Do đó thay vì gửi password, 2 app sẽ thống nhất dùng chung một SECRET_KEY
+        // Hãy nhắn team App Dashboard lưu ý check SECRET_KEY này thay vì password thật.
+        const SECRET_KEY = "AppSanLuongSSO_2026";
+
+        // Cấu trúc token: mã hoá base64 chuỗi "email:SECRET_KEY"
+        const token = btoa(`${email}:${SECRET_KEY}`);
+
+        // Chuyển người dùng sang link mới của app Dashboard Sản Lượng
+        const dashboardUrl = `https://dashboard-viccla.vercel.app/auto-login?token=${token}`;
+
+        window.location.href = dashboardUrl;
+    }
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
             <div className="flex h-16 items-center px-4 md:px-6 gap-4">
@@ -72,6 +96,17 @@ export function TopHeader({ user }: { user: any }) {
                                         {item.name}
                                     </Link>
                                 ))}
+
+                                {/* Thêm nút Mở Dashboard riêng cho menu Mobile */}
+                                <div className="mt-4 pt-4 border-t border-slate-100">
+                                    <Button
+                                        className="w-full justify-start gap-3 bg-blue-600 hover:bg-blue-700 text-white h-12"
+                                        onClick={handleChuyenSangDashboard}
+                                    >
+                                        <LayoutDashboard className="h-5 w-5" />
+                                        Mở Dashboard Sản Lượng
+                                    </Button>
+                                </div>
                             </nav>
                         </SheetContent>
                     </Sheet>
@@ -136,6 +171,13 @@ export function TopHeader({ user }: { user: any }) {
                         </Button>
                     </div>
 
+                    <div className="flex-shrink-0">
+                        <Button size="sm" onClick={handleChuyenSangDashboard} className="h-9 gap-2 bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap">
+                            <LayoutDashboard className="h-4 w-4" />
+                            <span>Mở Dashboard Sản Lượng</span>
+                        </Button>
+                    </div>
+
                     {user && (
                         <>
                             <Button size="sm" onClick={() => setIsModalOpen(true)} className="h-9 gap-2 bg-[#D83140] hover:bg-[#b02733] text-white">
@@ -188,6 +230,6 @@ export function TopHeader({ user }: { user: any }) {
                     </DropdownMenu>
                 </div>
             </div>
-        </header>
+        </header >
     )
 }
