@@ -22,25 +22,33 @@ import { cn } from '@/lib/utils'
 // Mock sub-data for now since DB might not be populated
 const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 const REASON_CODES = [
-    'Man',
-    'Machine',
-    'Material',
-    'Method',
-    'Measurement',
-    'Other'
+    { code: 'D01', label: 'D01 – Planned Maintenance', desc: 'Dừng máy theo kế hoạch để bảo trì hoặc kiểm tra định kỳ' },
+    { code: 'D02', label: 'D02 – Unplanned Breakdown', desc: 'Dừng máy đột xuất do hỏng hóc hoặc sự cố kỹ thuật' },
+    { code: 'D03', label: 'D03 – Changeover / Setup', desc: 'Thời gian chuyển đổi sản phẩm hoặc điều chỉnh thiết bị' },
+    { code: 'D04', label: 'D04 – Material Shortage', desc: 'Dừng máy do thiếu nguyên liệu hoặc linh kiện' },
+    { code: 'D05', label: 'D05 – Quality Hold', desc: 'Dừng máy để kiểm tra chất lượng hoặc xử lý sản phẩm lỗi' },
+    { code: 'D06', label: 'D06 – Utility Loss', desc: 'Dừng máy do mất điện, nước, khí nén hoặc tiện ích khác' },
+    { code: 'D07', label: 'D07 – Operator Absence', desc: 'Dừng máy vì không có nhân công vận hành' },
+    { code: 'D08', label: 'D08 – IT / System Failure', desc: 'Dừng máy do lỗi hệ thống quản lý hoặc phần mềm điều khiển' },
+    { code: 'D09', label: 'D09 – Safety Incident', desc: 'Dừng máy vì sự cố an toàn hoặc nguy cơ tai nạn' },
+    { code: 'D10', label: 'D10 – External Factors', desc: 'Dừng máy do yếu tố bên ngoài không kiểm soát được' },
 ]
 const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
 
-const getReasonKey = (code: string) => {
-    switch (code) {
-        case 'Man': return 'reasonMan'
-        case 'Machine': return 'reasonMachine'
-        case 'Material': return 'reasonMaterial'
-        case 'Method': return 'reasonMethod'
-        case 'Measurement': return 'reasonMeasurement'
-        case 'Other': return 'reasonOther'
-        default: return 'reasonMachine'
-    }
+// Map legacy reason codes to nearest D-code
+const LEGACY_TO_DCODE: Record<string, string> = {
+    'Man': 'D07',
+    'Machine': 'D02',
+    'Material': 'D04',
+    'Method': 'D03',
+    'Measurement': 'D05',
+    'Other': 'D10',
+}
+
+const normalizeLegacyReasonCode = (code: string) => {
+    if (!code) return ''
+    if (REASON_CODES.find(r => r.code === code)) return code
+    return LEGACY_TO_DCODE[code] || code
 }
 
 const getImpactKey = (level: string) => {
@@ -91,9 +99,9 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
         return d.toISOString().slice(0, 16)
     }
 
-    // Determine initial reason code. If it's a previously custom typed "Other" reason, we set reason_code to 'Other' and populate other_reason
-    const initialReasonCode = initialData?.reason_code || ''
-    const isStandardReason = REASON_CODES.includes(initialReasonCode)
+    // Normalize legacy reason codes (Man/Machine/etc.) to D-codes
+    const initialReasonCode = normalizeLegacyReasonCode(initialData?.reason_code || '')
+    const isStandardReason = !!REASON_CODES.find(r => r.code === initialReasonCode)
 
     const form = useForm<IssueFormData>({
         resolver: zodResolver(issueSchema),
@@ -103,11 +111,11 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
             end_time: initialData?.end_time ? formatDateTimeLocal(new Date(initialData.end_time)) : formatDateTimeLocal(new Date()),
             is_ongoing: initialData ? initialData.is_ongoing : false,
             machine_area: initialData?.machine_area || '',
-            reason_code: isStandardReason ? initialReasonCode : (initialData ? 'Other' : ''),
+            reason_code: initialReasonCode || '',
             description: initialData?.description || '',
             impact_level: initialData?.impact_level || 'Medium',
             notes: initialData?.notes || '',
-            other_reason: !isStandardReason && initialData ? initialReasonCode : '',
+            other_reason: '',
             exclude_downtime: initialData && initialData.is_downtime !== undefined ? !initialData.is_downtime : false,
         },
     })
@@ -162,18 +170,10 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
             }
         }
 
-        if (data.reason_code === 'Other' && !data.other_reason?.trim()) {
-            toast.error(t.typeOtherReason)
-            return
-        }
-
         setLoading(true)
         try {
             const supabase = createClient()
-            let finalReason = data.reason_code
-            if (finalReason === 'Other' && data.other_reason) {
-                finalReason = data.other_reason
-            }
+            const finalReason = data.reason_code
 
             const submitData = {
                 department: data.department,
@@ -267,56 +267,53 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>{t.reasonCode}</Label>
-                            <Controller
-                                control={control}
-                                name="reason_code"
-                                render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger className={errors.reason_code ? 'border-red-500' : ''}>
-                                            <SelectValue placeholder={t.selectReason} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {REASON_CODES.map(code => (
-                                                <SelectItem key={code} value={code}>
-                                                    {(t as any)[getReasonKey(code)] as string || code}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                            {selectedReason === 'Other' && (
-                                <Input
-                                    {...form.register('other_reason')}
-                                    placeholder={t.typeOtherReason || 'Specify reason...'}
-                                    className="mt-2"
-                                />
+                    {/* Impact Level – shown ABOVE reason code to avoid dropdown overlap */}
+                    <div className="space-y-2">
+                        <Label>{t.impactLevel}</Label>
+                        <Controller
+                            control={control}
+                            name="impact_level"
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder={t.selectImpact} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {IMPACT_LEVELS.map(level => (
+                                            <SelectItem key={level} value={level}>
+                                                {t[getImpactKey(level)] as string || level}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             )}
-                        </div>
-                        <div className="space-y-2">
-                            <Label>{t.impactLevel}</Label>
-                            <Controller
-                                control={control}
-                                name="impact_level"
-                                render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={t.selectImpact} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {IMPACT_LEVELS.map(level => (
-                                                <SelectItem key={level} value={level}>
-                                                    {t[getImpactKey(level)] as string || level}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                        </div>
+                        />
+                    </div>
+
+                    {/* Reason Code – D01 to D10 */}
+                    <div className="space-y-2">
+                        <Label>{t.reasonCode}</Label>
+                        <Controller
+                            control={control}
+                            name="reason_code"
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger className={errors.reason_code ? 'border-red-500' : ''}>
+                                        <SelectValue placeholder={t.selectReason} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {REASON_CODES.map(({ code, label, desc }) => (
+                                            <SelectItem key={code} value={code}>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{label}</span>
+                                                    <span className="text-xs text-muted-foreground">{desc}</span>
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
                     </div>
 
                     <div className="space-y-2">
