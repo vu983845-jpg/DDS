@@ -23,7 +23,19 @@ interface IssuesContentProps {
 
 const DEPARTMENTS = ['All', 'Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 const STATUSES = ['All', 'Open', 'Closed', 'In Progress']
-const REASONS = ['All', 'Man', 'Machine', 'Material', 'Method', 'Measurement', 'Other']
+const REASONS = [
+    'All',
+    'D01',
+    'D02',
+    'D03',
+    'D04',
+    'D05',
+    'D06',
+    'D07',
+    'D08',
+    'D09',
+    'D10'
+]
 
 export function IssuesContent({ issuesData, user, profile }: IssuesContentProps) {
     const { t, dateRange } = useAppContext()
@@ -232,6 +244,7 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                                 <TableHead>{t.machineArea}</TableHead>
                                 <TableHead>{t.reason}</TableHead>
                                 <TableHead>{t.status}</TableHead>
+                                <TableHead className="text-center">{(t as any).isDowntime || 'Tính Downtime?'}</TableHead>
                                 <TableHead className="text-right">{t.downtime}</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -261,8 +274,23 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                                                 {issue.status}
                                             </Badge>
                                         </TableCell>
+                                        <TableCell className="text-center">
+                                            {issue.is_downtime === false ? (
+                                                <Badge variant="outline" className="text-amber-600 border-amber-500 bg-amber-50 text-xs">Không</Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="text-green-600 border-green-500 bg-green-50 text-xs text-nowrap">Có (Downtime)</Badge>
+                                            )}
+                                        </TableCell>
                                         <TableCell className="text-right font-medium">
-                                            {issue.duration_mins ? `${issue.duration_mins}m` : '-'}
+                                            {issue.status === 'Closed' ? (
+                                                <span className={issue.is_downtime === false ? "text-amber-600" : ""}>
+                                                    {issue.duration_mins ? `${issue.duration_mins}m` : '-'}
+                                                </span>
+                                            ) : (
+                                                <span className={issue.is_downtime === false ? "text-amber-600 font-medium" : "text-[#D83140] font-bold animate-pulse"}>
+                                                    {Math.round(Math.max(0, new Date().getTime() - new Date(issue.start_time).getTime()) / 60000)}m
+                                                </span>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))

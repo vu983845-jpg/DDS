@@ -23,7 +23,19 @@ const DEPARTMENTS = [
     'Packing',
 ]
 
-const REASONS = ['All', 'Man', 'Machine', 'Material', 'Method', 'Measurement', 'Other']
+const REASONS = [
+    'All',
+    'D01',
+    'D02',
+    'D03',
+    'D04',
+    'D05',
+    'D06',
+    'D07',
+    'D08',
+    'D09',
+    'D10'
+]
 
 export function ReportsContent({ initialIssues }: ReportsContentProps) {
     const { isTvMode, t, dateRange } = useAppContext()
@@ -142,6 +154,22 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
     }, [filteredIssues])
 
     const totalDowntime = downtimeByDept.reduce((sum, item) => sum + item.duration, 0)
+    const downtimeIssues = filteredIssues.filter(i => i.is_downtime !== false)
+    const totalDowntimeCount = downtimeIssues.length
+
+    const nonDowntimeIssues = filteredIssues.filter(i => i.is_downtime === false)
+    const totalNonDowntimeIssuesCount = nonDowntimeIssues.length
+
+    const totalNonDowntimeDurationMins = nonDowntimeIssues.reduce((sum, issue) => {
+        if (issue.status === 'Closed') return sum + (issue.duration_mins || 0)
+        if (issue.status === 'Open' && issue.start_time) {
+            const start = new Date(issue.start_time).getTime()
+            const now = new Date().getTime()
+            return sum + Math.max(0, Math.round((now - start) / 60000))
+        }
+        return sum
+    }, 0)
+
     const totalIssues = filteredIssues.length
 
     return (
@@ -184,18 +212,32 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
             </div>
 
             {/* KPI Summary Strip */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 <Card>
                     <CardHeader className="pb-2">
                         <CardDescription>Total Issues</CardDescription>
                         <CardTitle className="text-3xl text-slate-800">{totalIssues}</CardTitle>
                     </CardHeader>
                 </Card>
-                <Card>
+                <Card className="border-l-4 border-l-[#D83140]">
                     <CardHeader className="pb-2">
                         <CardDescription>Total Downtime</CardDescription>
-                        <CardTitle className="text-3xl text-slate-800">
-                            {Math.round((totalDowntime / 60) * 10) / 10} <span className="text-lg font-normal text-slate-500">h</span>
+                        <CardTitle className="text-3xl text-[#D83140]">
+                            {Math.round((totalDowntime / 60) * 10) / 10} <span className="text-lg font-normal">h</span>
+                        </CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card className="border-l-4 border-l-amber-500">
+                    <CardHeader className="pb-2">
+                        <CardDescription>Non-Downtime Issues</CardDescription>
+                        <CardTitle className="text-3xl text-amber-600">{totalNonDowntimeIssuesCount}</CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card className="border-l-4 border-l-amber-500">
+                    <CardHeader className="pb-2">
+                        <CardDescription>Non-Downtime Tracking</CardDescription>
+                        <CardTitle className="text-3xl text-amber-600">
+                            {Math.round((totalNonDowntimeDurationMins / 60) * 10) / 10} <span className="text-lg font-normal">h</span>
                         </CardTitle>
                     </CardHeader>
                 </Card>
@@ -234,7 +276,7 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                     <DowntimeChart
                         data={downtimeByReason}
                         title="Downtime by Reason Code"
-                        description="Total accumulated downtime separated by 5M methodology codes."
+                        description="Total accumulated downtime separated by D01-D10 reason codes."
                     />
                 </div>
             </div>
