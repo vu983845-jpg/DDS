@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Label } from '@/components/ui/label'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { Badge } from '@/components/ui/badge'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Activity, Clock, LogOut, CheckCircle, Save, FileText, Monitor, ChevronDown, ShieldAlert, ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react'
 import { useAppContext } from '@/components/providers/app-provider'
 import { useEffect, useState, useMemo } from 'react'
@@ -118,6 +119,17 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
         else setSortOrder('desc')
     }
 
+    // Group issues by department
+    const groupedIssues = useMemo(() => {
+        const groups: Record<string, any[]> = {}
+        sortedFilteredIssues.forEach(issue => {
+            const dept = issue.department || 'Unknown'
+            if (!groups[dept]) groups[dept] = []
+            groups[dept].push(issue)
+        })
+        return groups
+    }, [sortedFilteredIssues])
+
     // Live Total Downtime calculation
     const [liveTotalDowntime, setLiveTotalDowntime] = useState(0)
     useEffect(() => {
@@ -208,87 +220,113 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                             <CardDescription>{getDateRangeDesc()}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
-                            <Table>
-                                <TableHeader className="bg-slate-50 sticky top-0">
-                                    <TableRow>
-                                        <TableHead className="w-[100px]">{t.dept}</TableHead>
-                                        <TableHead>{t.issue}</TableHead>
-                                        <TableHead className="w-[140px]">
-                                            <Button variant="ghost" className="-ml-3 h-8 data-[state=open]:bg-accent text-slate-900 font-semibold" onClick={toggleSort}>
-                                                <span>{t.dateTime}</span>
-                                                {sortOrder === 'desc' ? (
-                                                    <ArrowDown className="ml-2 h-4 w-4" />
-                                                ) : sortOrder === 'asc' ? (
-                                                    <ArrowUp className="ml-2 h-4 w-4" />
-                                                ) : (
-                                                    <ArrowUpDown className="ml-2 h-4 w-4 text-slate-400" />
-                                                )}
-                                            </Button>
-                                        </TableHead>
-                                        <TableHead>{t.impactLevel}</TableHead>
-                                        <TableHead>{t.status}</TableHead>
-                                        <TableHead className="text-center">{(t as any).isDowntime || 'Tính Downtime?'}</TableHead>
-                                        <TableHead className="text-right">{t.downtime}</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {sortedFilteredIssues.length > 0 ? (
-                                        sortedFilteredIssues.map((issue: any) => (
-                                            <TableRow
-                                                key={issue.id}
-                                                className="cursor-pointer hover:bg-slate-50 transition-colors"
-                                                onClick={() => setSelectedIssue(issue)}
-                                            >
-                                                <TableCell className="font-medium text-slate-600">
-                                                    {issue.department}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="font-medium text-slate-900">{issue.machine_area || t.generalArea}</div>
-                                                    <div className="text-sm text-slate-500 truncate max-w-[200px]">{issue.description || issue.reason_code}</div>
-                                                </TableCell>
-                                                <TableCell className="text-sm font-medium whitespace-nowrap">
-                                                    {formatDateString(issue.start_time)}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className={`
-                                                        ${issue.impact_level === 'Critical' ? 'border-red-500 text-red-700 bg-red-50' : ''}
-                                                        ${issue.impact_level === 'High' ? 'border-orange-500 text-orange-700 bg-orange-50' : ''}
-                                                        ${issue.impact_level === 'Medium' ? 'border-yellow-500 text-yellow-700 bg-yellow-50' : ''}
-                                                        ${issue.impact_level === 'Low' ? 'border-blue-500 text-blue-700 bg-blue-50' : ''}
-                                                    `}>{issue.impact_level}</Badge>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#D83140]' : ''}>
-                                                        {issue.status}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-center">
-                                                    {issue.is_downtime === false ? (
-                                                        <Badge variant="outline" className="text-amber-600 border-amber-500 bg-amber-50 text-xs">Không</Badge>
-                                                    ) : (
-                                                        <Badge variant="outline" className="text-green-600 border-green-500 bg-green-50 text-xs text-nowrap">Có (Downtime)</Badge>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="text-right font-medium text-slate-700">
-                                                    {issue.status === 'Closed' ? (
-                                                        <span className={issue.is_downtime === false ? "text-amber-600" : ""}>
-                                                            {formatDuration(issue.duration_mins, issue.is_downtime !== false)}
-                                                        </span>
-                                                    ) : (
-                                                        <LiveDuration startTime={issue.start_time} isDowntime={issue.is_downtime !== false} />
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={7} className="h-24 text-center text-slate-500">
-                                                {t.noIssuesRange}
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
+                            {Object.keys(groupedIssues).length > 0 ? (
+                                <Accordion type="multiple" className="w-full" defaultValue={Object.keys(groupedIssues)}>
+                                    {Object.entries(groupedIssues).map(([dept, issues]) => {
+                                        const deptOpenCount = issues.filter(i => i.status === 'Open').length
+                                        const deptDowntime = issues.reduce((acc, issue) => {
+                                            if (issue.is_downtime === false) return acc;
+                                            if (issue.status === 'Closed') return acc + (issue.duration_mins || 0);
+                                            if (issue.start_time) {
+                                                const start = new Date(issue.start_time).getTime();
+                                                const now = new Date().getTime();
+                                                return acc + Math.round(Math.max(0, now - start) / 60000);
+                                            }
+                                            return acc;
+                                        }, 0)
+
+                                        return (
+                                            <AccordionItem value={dept} key={dept} className="border-b-0">
+                                                <AccordionTrigger className="px-4 py-3 bg-white border-b hover:bg-slate-50 transition-colors data-[state=open]:bg-slate-50">
+                                                    <div className="flex items-center justify-between w-full pr-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="font-semibold text-slate-800">{dept}</span>
+                                                            <Badge variant="secondary" className="bg-slate-100 text-slate-600">{issues.length} {t.issue || 'Issues'}</Badge>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            {deptOpenCount > 0 && (
+                                                                <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full">{deptOpenCount} Open</span>
+                                                            )}
+                                                            <span className="text-sm font-medium text-slate-500 w-[100px] text-right">
+                                                                {formatDuration(deptDowntime, true)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </AccordionTrigger>
+                                                <AccordionContent className="p-0 border-b border-slate-100">
+                                                    <Table>
+                                                        <TableHeader className="bg-slate-50/50">
+                                                            <TableRow className="hover:bg-transparent">
+                                                                <TableHead className="w-[180px] pl-4">{t.issue}</TableHead>
+                                                                <TableHead className="w-[140px]">
+                                                                    <div className="flex items-center cursor-pointer hover:text-slate-900 group" onClick={toggleSort}>
+                                                                        <span>{t.dateTime}</span>
+                                                                        <ArrowUpDown className="ml-1.5 h-3.5 w-3.5 text-slate-400 group-hover:text-slate-600" />
+                                                                    </div>
+                                                                </TableHead>
+                                                                <TableHead className="w-[100px]">{t.impactLevel}</TableHead>
+                                                                <TableHead className="w-[100px]">{t.status}</TableHead>
+                                                                <TableHead className="w-[120px] text-center">{(t as any).isDowntime || 'Tính Downtime?'}</TableHead>
+                                                                <TableHead className="w-[100px] text-right pr-4">{t.downtime}</TableHead>
+                                                            </TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {issues.map((issue: any) => (
+                                                                <TableRow
+                                                                    key={issue.id}
+                                                                    className="cursor-pointer hover:bg-slate-50 transition-colors"
+                                                                    onClick={() => setSelectedIssue(issue)}
+                                                                >
+                                                                    <TableCell className="pl-4">
+                                                                        <div className="font-medium text-slate-900">{issue.machine_area || t.generalArea}</div>
+                                                                        <div className="text-sm text-slate-500 truncate max-w-[200px]">{issue.description || issue.reason_code}</div>
+                                                                    </TableCell>
+                                                                    <TableCell className="text-sm font-medium whitespace-nowrap text-slate-600">
+                                                                        {formatDateString(issue.start_time)}
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <Badge variant="outline" className={`
+                                                                            ${issue.impact_level === 'Critical' ? 'border-red-500 text-red-700 bg-red-50' : ''}
+                                                                            ${issue.impact_level === 'High' ? 'border-orange-500 text-orange-700 bg-orange-50' : ''}
+                                                                            ${issue.impact_level === 'Medium' ? 'border-yellow-500 text-yellow-700 bg-yellow-50' : ''}
+                                                                            ${issue.impact_level === 'Low' ? 'border-blue-500 text-blue-700 bg-blue-50' : ''}
+                                                                        `}>{issue.impact_level}</Badge>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#D83140]' : ''}>
+                                                                            {issue.status}
+                                                                        </Badge>
+                                                                    </TableCell>
+                                                                    <TableCell className="text-center">
+                                                                        {issue.is_downtime === false ? (
+                                                                            <Badge variant="outline" className="text-amber-600 border-amber-500 bg-amber-50 text-[11px]">Không</Badge>
+                                                                        ) : (
+                                                                            <Badge variant="outline" className="text-green-600 border-green-500 bg-green-50 text-[11px] text-nowrap">Có</Badge>
+                                                                        )}
+                                                                    </TableCell>
+                                                                    <TableCell className="text-right font-medium text-slate-700 pr-4">
+                                                                        {issue.status === 'Closed' ? (
+                                                                            <span className={issue.is_downtime === false ? "text-amber-600" : ""}>
+                                                                                {formatDuration(issue.duration_mins, issue.is_downtime !== false)}
+                                                                            </span>
+                                                                        ) : (
+                                                                            <LiveDuration startTime={issue.start_time} isDowntime={issue.is_downtime !== false} />
+                                                                        )}
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        )
+                                    })}
+                                </Accordion>
+                            ) : (
+                                <div className="h-32 flex items-center justify-center text-slate-500">
+                                    {t.noIssuesRange}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
