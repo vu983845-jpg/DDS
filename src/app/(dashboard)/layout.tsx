@@ -17,6 +17,9 @@ export default async function DashboardLayout({
                 <main className="flex-1 overflow-auto">
                     {children}
                 </main>
+                <div className="fixed bottom-2 left-2 text-[10px] text-slate-400 opacity-50 pointer-events-none select-none z-50">
+                    V.H
+                </div>
             </div>
         </AppProvider>
     )
