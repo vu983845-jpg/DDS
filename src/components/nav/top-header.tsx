@@ -73,7 +73,7 @@ export function TopHeader({ user }: { user: any }) {
                 <div className="flex items-center gap-2">
                     <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="outline" size="icon" className="lg:hidden shrink-0 bg-white">
+                            <Button variant="outline" size="icon" className="xl:hidden shrink-0 bg-white">
                                 <Menu className="h-5 w-5" />
                                 <span className="sr-only">Toggle navigation menu</span>
                             </Button>
@@ -121,16 +121,17 @@ export function TopHeader({ user }: { user: any }) {
                 </div>
 
                 {/* Desktop Navigation */}
-                <nav className="hidden xl:flex items-center space-x-1 lg:space-x-2 mr-auto">
+                <nav className="hidden xl:flex items-center space-x-1 2xl:space-x-2 mr-auto">
                     {navItems.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-2 px-2 lg:px-3 py-2 text-[13px] lg:text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0
+                            title={item.name}
+                            className={`flex items-center gap-1 2xl:gap-2 px-2 2xl:px-3 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0
                 ${pathname === item.href ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                         >
                             <item.icon className="h-4 w-4 shrink-0" />
-                            <span>{item.name}</span>
+                            <span className="hidden 2xl:inline">{item.name}</span>
                         </Link>
                     ))}
                 </nav>
