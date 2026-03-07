@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DepartmentSummaryTable } from '@/components/dashboard/department-summary-table'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
@@ -104,6 +105,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
     const totalIssues = filteredIssues.length
     const openIssues = filteredIssues.filter(i => i.status === 'Open').length
     const [sortOrder, setSortOrder] = useState<'desc' | 'asc' | null>('desc')
+    const [showHighImpactOnly, setShowHighImpactOnly] = useState(true)
 
     const sortedFilteredIssues = useMemo(() => {
         return [...filteredIssues].sort((a, b) => {
@@ -215,19 +217,36 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                 <div className="lg:col-span-2 space-y-4">
                     <Card className="shadow-sm border-slate-200 h-full">
                         <CardHeader className="border-b bg-slate-50/50 pb-4">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-lg">{t.issuesToReview}</CardTitle>
-                                <div className="flex gap-2">
-                                    <Badge variant="outline" className="bg-white">{t.allDepts}</Badge>
-                                    <Badge variant="outline" className="bg-white">{t.open}</Badge>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div className="flex items-center gap-2">
+                                    <CardTitle className="text-lg">{t.issuesToReview}</CardTitle>
+                                    <div className="flex gap-2 ml-2">
+                                        <Badge variant="outline" className="bg-white">{t.allDepts}</Badge>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2 mr-2">
+                                    <Switch
+                                        id="high-impact"
+                                        checked={showHighImpactOnly}
+                                        onCheckedChange={setShowHighImpactOnly}
+                                    />
+                                    <Label htmlFor="high-impact" className="text-sm font-medium text-slate-600 cursor-pointer">
+                                        {(t as any).highImpactOnly || 'High & Critical Only'}
+                                    </Label>
                                 </div>
                             </div>
-                            <CardDescription>{getDateRangeDesc()}</CardDescription>
+                            <CardDescription className="mt-1">{getDateRangeDesc()}</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             {Object.keys(groupedIssues).length > 0 ? (
                                 <Accordion type="multiple" className="w-full" defaultValue={Object.keys(groupedIssues)}>
-                                    {Object.entries(groupedIssues).map(([dept, issues]) => {
+                                    {Object.entries(groupedIssues).map(([dept, allIssues]) => {
+                                        const issues = showHighImpactOnly
+                                            ? allIssues.filter(i => i.impact_level === 'High' || i.impact_level === 'Critical')
+                                            : allIssues
+
+                                        if (issues.length === 0) return null
+
                                         const deptOpenCount = issues.filter(i => i.status === 'Open').length
                                         const deptDowntime = issues.reduce((acc, issue) => {
                                             if (issue.is_downtime === false) return acc;
