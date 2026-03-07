@@ -8,34 +8,11 @@ import { useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { isAfter, isToday, isYesterday, subDays, startOfDay } from 'date-fns'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
+import { DEPARTMENTS, REASON_CODES } from '@/components/modals/issue-form-modal'
 
 interface ReportsContentProps {
     initialIssues: any[]
 }
-
-const DEPARTMENTS = [
-    'Steaming',
-    'Shelling',
-    'Borma',
-    'Peeling MC',
-    'ColorSorter',
-    'HandPeeling',
-    'Packing',
-]
-
-const REASONS = [
-    'All',
-    'D01',
-    'D02',
-    'D03',
-    'D04',
-    'D05',
-    'D06',
-    'D07',
-    'D08',
-    'D09',
-    'D10'
-]
 
 export function ReportsContent({ initialIssues }: ReportsContentProps) {
     const { isTvMode, t, dateRange } = useAppContext()
@@ -142,11 +119,14 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
         }
 
         filteredIssues.forEach(issue => {
-            const reason = issue.reason_code || 'Other'
+            const rawReason = issue.reason_code || 'Other'
+            const foundReason = REASON_CODES.find(r => r.code === rawReason)
+            const mappedReason = foundReason ? foundReason.label : rawReason
+
             const duration = getIssueDuration(issue)
             if (duration > 0) {
-                if (!acc[reason]) acc[reason] = 0
-                acc[reason] += duration
+                if (!acc[mappedReason]) acc[mappedReason] = 0
+                acc[mappedReason] += duration
             }
         })
 
@@ -199,12 +179,15 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                     </Select>
                     <div className="w-[1px] h-6 bg-slate-200"></div>
                     <Select value={selectedReason} onValueChange={setSelectedReason}>
-                        <SelectTrigger className="w-[140px] border-none shadow-none focus:ring-0">
+                        <SelectTrigger className="w-[180px] border-none shadow-none focus:ring-0">
                             <SelectValue placeholder="All Reasons" />
                         </SelectTrigger>
                         <SelectContent>
-                            {REASONS.map(reason => (
-                                <SelectItem key={reason} value={reason}>{reason === 'All' ? 'All Reasons' : reason}</SelectItem>
+                            <SelectItem value="All">All Reasons</SelectItem>
+                            {REASON_CODES.map(rc => (
+                                <SelectItem key={rc.code} value={rc.code} title={rc.label}>
+                                    {rc.code} - {rc.label.split('–')[1]?.trim() || rc.label}
+                                </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>

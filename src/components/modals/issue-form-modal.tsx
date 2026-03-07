@@ -20,8 +20,8 @@ import { format } from 'date-fns'
 import { cn, formatDuration } from '@/lib/utils'
 
 // Mock sub-data for now since DB might not be populated
-const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
-const REASON_CODES = [
+export const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
+export const REASON_CODES = [
     { code: 'D01', label: 'D01 – Planned Maintenance', desc: 'Dừng máy theo kế hoạch để bảo trì hoặc kiểm tra định kỳ' },
     { code: 'D02', label: 'D02 – Unplanned Breakdown', desc: 'Dừng máy đột xuất do hỏng hóc hoặc sự cố kỹ thuật' },
     { code: 'D03', label: 'D03 – Changeover / Setup', desc: 'Thời gian chuyển đổi sản phẩm hoặc điều chỉnh thiết bị' },
@@ -33,7 +33,7 @@ const REASON_CODES = [
     { code: 'D09', label: 'D09 – Safety Incident', desc: 'Dừng máy vì sự cố an toàn hoặc nguy cơ tai nạn' },
     { code: 'D10', label: 'D10 – External Factors', desc: 'Dừng máy do yếu tố bên ngoài không kiểm soát được' },
 ]
-const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
+export const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
 
 // Map legacy reason codes to nearest D-code
 const LEGACY_TO_DCODE: Record<string, string> = {
