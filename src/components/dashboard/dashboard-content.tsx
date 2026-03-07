@@ -260,8 +260,8 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                         }, 0)
 
                                         return (
-                                            <AccordionItem value={dept} key={dept} className="border-b-0">
-                                                <AccordionTrigger className="px-4 py-3 bg-white border-b hover:bg-slate-50 transition-colors data-[state=open]:bg-slate-50">
+                                            <AccordionItem value={dept} key={dept} className="border border-slate-300 rounded-lg mb-4 bg-white shadow-sm overflow-hidden">
+                                                <AccordionTrigger className="px-4 py-3 hover:bg-slate-50 transition-colors data-[state=open]:bg-slate-50 data-[state=open]:border-b border-slate-200">
                                                     <div className="flex items-center justify-between w-full pr-4">
                                                         <div className="flex items-center gap-3">
                                                             <span className="font-semibold text-slate-800">{dept}</span>
@@ -277,7 +277,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                                         </div>
                                                     </div>
                                                 </AccordionTrigger>
-                                                <AccordionContent className="p-0 border-b border-slate-100">
+                                                <AccordionContent className="p-0">
                                                     <Table>
                                                         <TableHeader className="bg-slate-50/50">
                                                             <TableRow className="hover:bg-transparent">
