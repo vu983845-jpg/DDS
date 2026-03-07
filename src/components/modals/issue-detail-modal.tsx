@@ -39,6 +39,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
     // Can edit if Admin, OR if dept user and issue created within last 24h
     const within24h = issue && new Date().getTime() - new Date(issue.created_at).getTime() < 24 * 60 * 60 * 1000
     const canEdit = isHseAdmin || (isDeptUser && within24h && issue?.department === profile?.department)
+    const canClose = isHseAdmin || (isDeptUser && issue?.department === profile?.department)
 
     if (!issue) return null
 
@@ -277,7 +278,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                                 <h3 className="font-medium text-sm text-slate-500 uppercase tracking-wide">Quick Actions</h3>
                                 <div className="flex flex-col gap-2">
 
-                                    {(isHseAdmin || canEdit) && issue.status === 'Open' && (
+                                    {canClose && issue.status === 'Open' && (
                                         <Button size="sm" variant="outline" className="justify-start gap-2 border-green-500 text-green-700 hover:bg-green-50" onClick={() => {
                                             setCloseEndTime(new Date().toISOString().slice(0, 16)) // Default to now
                                             setIsCloseModalOpen(true)
