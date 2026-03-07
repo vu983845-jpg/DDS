@@ -3,6 +3,7 @@
 import { KPICards } from '@/components/dashboard/kpi-cards'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DepartmentSummaryTable } from '@/components/dashboard/department-summary-table'
 import { Label } from '@/components/ui/label'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
 import { Badge } from '@/components/ui/badge'
@@ -203,6 +204,10 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                 criticalIssuesCount={criticalCount}
                 criticalDeptsStr={criticalDepts}
             />
+
+            <div className="w-full">
+                <DepartmentSummaryTable issues={filteredIssues} />
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
