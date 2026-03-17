@@ -1,0 +1,1 @@
+const fs = require('fs'); let f = 'src/components/dashboard/kpi-cards.tsx'; let c = fs.readFileSync(f, 'utf8'); c = c.replace('value: \$$'+'{totalDowntime} min\', 'value: \$$'+'{Math.round((totalDowntime / 60) * 10) / 10}h\'); fs.writeFileSync(f, c); console.log('Done!');

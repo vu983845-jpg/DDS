@@ -38,8 +38,9 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
 
     // Can edit if Admin, OR if dept user and issue created within last 24h
     const within24h = issue && new Date().getTime() - new Date(issue.created_at).getTime() < 24 * 60 * 60 * 1000
-    const canEdit = isHseAdmin || (isDeptUser && within24h && issue?.department === profile?.department)
-    const canClose = isHseAdmin || (isDeptUser && issue?.department === profile?.department)
+    const sameDept = issue?.department?.toLowerCase() === profile?.department?.toLowerCase()
+    const canEdit = isHseAdmin || (isDeptUser && within24h && sameDept)
+    const canClose = isHseAdmin || (isDeptUser && sameDept)
 
     if (!issue) return null
 

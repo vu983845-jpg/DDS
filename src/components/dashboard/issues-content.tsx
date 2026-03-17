@@ -87,7 +87,11 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
             'Start Time': formatDateString(i.start_time),
             'End Time': i.end_time ? formatDateString(i.end_time) : 'Ongoing',
             'Downtime (mins)': i.duration_mins,
-            'Reporter': i.profiles?.name || 'Unknown'
+            'Reporter': i.profiles?.name || 'Unknown',
+            'Closed By': i.closed_by?.name || '',
+            'Closed At': i.closed_at ? formatDateString(i.closed_at) : '',
+            'Description': i.description || '',
+            'Notes': i.notes || ''
         }))
 
         // Aggregation Maps
