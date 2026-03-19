@@ -55,18 +55,18 @@ export function ReasonPieChart({ data, title = 'Root Cause Distribution', descri
             </CardHeader>
             <CardContent>
                 {!hasData ? (
-                    <div className="h-[320px] flex items-center justify-center text-slate-500">
+                    <div className="h-[380px] flex items-center justify-center text-slate-500">
                         No downtime data available.
                     </div>
                 ) : (
-                    <div className="h-[320px] w-full">
+                    <div className="h-[380px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
+                            <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                                 <Pie
                                     data={chartData}
                                     cx="50%"
-                                    cy="50%"
-                                    outerRadius={110}
+                                    cy="45%"
+                                    outerRadius={90}
                                     dataKey="duration"
                                     labelLine={false}
                                     label={renderCustomLabel}
@@ -87,9 +87,10 @@ export function ReasonPieChart({ data, title = 'Root Cause Distribution', descri
                                 />
                                 <Legend
                                     verticalAlign="bottom"
+                                    align="center"
                                     iconType="circle"
-                                    iconSize={10}
-                                    wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                                    iconSize={9}
+                                    wrapperStyle={{ fontSize: '11px', paddingTop: '12px', lineHeight: '20px' }}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
