@@ -3,6 +3,7 @@
 import { useAppContext } from '@/components/providers/app-provider'
 import { DowntimeChart } from '@/components/reports/downtime-chart'
 import { IssueStatusChart } from '@/components/reports/issue-status-chart'
+import { ReasonPieChart } from '@/components/reports/reason-pie-chart'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useMemo, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -254,12 +255,19 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
             </div>
 
             {/* Reason Chart Row */}
-            <div className="grid grid-cols-1 gap-6">
-                <div className="shadow-sm rounded-xl">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 shadow-sm rounded-xl">
                     <DowntimeChart
                         data={downtimeByReason}
                         title="Downtime by Reason Code"
                         description="Total accumulated downtime separated by D01-D10 reason codes."
+                    />
+                </div>
+                <div className="shadow-sm rounded-xl">
+                    <ReasonPieChart
+                        data={downtimeByReason}
+                        title="Root Cause Distribution"
+                        description="Tỷ lệ % thời gian downtime theo từng nguyên nhân."
                     />
                 </div>
             </div>
