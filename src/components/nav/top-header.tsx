@@ -43,29 +43,7 @@ export function TopHeader({ user }: { user: any }) {
         { name: 'Reports', href: '/reports', icon: BarChart },
     ]
     const handleChuyenSangDashboard = () => {
-        // Lấy email từ đối tượng user hiện tại của app (từ Supabase)
-        const email = user?.email || "";
-
-        if (!email) {
-            // Nếu người dùng đang là Guest (không Login), mình sẽ chuyển họ qua trang chủ 
-            // web Dashboard Sản lượng để họ tự đăng nhập hoặc xem tuỳ ý bên đó
-            window.open("https://dashboard-viccla.vercel.app/login", '_blank');
-            return;
-        }
-
-        // BẮT BUỘC: Supabase (hoặc bất kỳ hệ thống Auth nào) không bao giờ cho phép 
-        // Frontend lấy được Mật khẩu (Password) thật của user sau khi đã đăng nhập.
-        // Do đó thay vì gửi password, 2 app sẽ thống nhất dùng chung một SECRET_KEY
-        // Hãy nhắn team App Dashboard lưu ý check SECRET_KEY này thay vì password thật.
-        const SECRET_KEY = "AppSanLuongSSO_2026";
-
-        // Cấu trúc token: mã hoá base64 chuỗi "email:SECRET_KEY"
-        const tokenToPass = btoa(`${email}:${SECRET_KEY}`);
-
-        // Chuyển người dùng sang link mới của app Dashboard Sản Lượng
-        const dashboardUrl = `https://dashboard-viccla.vercel.app/auto-login?token=${tokenToPass}`;
-
-        window.open(dashboardUrl, '_blank');
+        window.open("https://www.intersnack.online", '_blank');
     }
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
