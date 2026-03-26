@@ -46,7 +46,7 @@ export function TopHeader({ user }: { user: any }) {
         window.open("https://www.intersnack.online", '_blank');
     }
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
+        <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/90 backdrop-blur-md shadow-sm">
             <div className="flex h-16 items-center px-4 md:px-6 gap-4">
                 <div className="flex items-center gap-2">
                     <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -68,7 +68,7 @@ export function TopHeader({ user }: { user: any }) {
                                         href={item.href}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors
-                                        ${pathname === item.href ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50'}`}
+                                        ${pathname === item.href ? 'bg-indigo-500/10 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
                                     >
                                         <item.icon className="h-5 w-5" />
                                         {item.name}
@@ -90,11 +90,13 @@ export function TopHeader({ user }: { user: any }) {
                     </Sheet>
 
                     <Link href="/" className="flex items-center gap-2 mr-6 hidden sm:flex">
-                        <img
-                            src="/logo.jpg"
-                            alt="Intersnack Logo"
-                            className="h-10 w-auto object-contain"
-                        />
+                        <div className="bg-white rounded-md p-1">
+                            <img
+                                src="/logo.jpg"
+                                alt="Intersnack Logo"
+                                className="h-8 w-auto object-contain"
+                            />
+                        </div>
                     </Link>
                 </div>
 
@@ -106,7 +108,7 @@ export function TopHeader({ user }: { user: any }) {
                             href={item.href}
                             title={item.name}
                             className={`flex items-center gap-1 2xl:gap-2 px-2 2xl:px-3 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0
-                ${pathname === item.href ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                ${pathname === item.href ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'}`}
                         >
                             <item.icon className="h-4 w-4 shrink-0" />
                             <span className="hidden 2xl:inline">{item.name}</span>
@@ -116,9 +118,9 @@ export function TopHeader({ user }: { user: any }) {
                 {/* Global Search removed per user request */}
                 {/* Controls */}
                 <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-2 border-r pr-3 border-slate-200">
+                    <div className="hidden sm:flex items-center gap-2 border-r pr-3 border-slate-700">
                         <Select value={lang} onValueChange={(val: any) => setLang(val)}>
-                            <SelectTrigger className="w-[80px] h-9 bg-slate-50 border-slate-200">
+                            <SelectTrigger className="w-[80px] h-9 bg-slate-800 border-slate-700 text-slate-200">
                                 <SelectValue placeholder="Lang" />
                             </SelectTrigger>
                             <SelectContent>
@@ -137,7 +139,7 @@ export function TopHeader({ user }: { user: any }) {
 
                     {user && (
                         <>
-                            <Button size="sm" onClick={() => setIsModalOpen(true)} className="h-9 gap-2 bg-[#D83140] hover:bg-[#b02733] text-white">
+                            <Button size="sm" onClick={() => setIsModalOpen(true)} className="h-9 gap-2 bg-[#4F46E5] hover:bg-[#4338CA] text-white">
                                 <PlusCircle className="h-4 w-4" />
                                 <span className="hidden sm:inline">{t.addIssue}</span>
                             </Button>
@@ -148,8 +150,8 @@ export function TopHeader({ user }: { user: any }) {
                     {/* User Menu */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 bg-slate-100">
-                                <User className="h-5 w-5 text-slate-600" />
+                            <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 bg-slate-800 hover:bg-slate-700">
+                                <User className="h-5 w-5 text-slate-300" />
                                 <span className="sr-only">Toggle user menu</span>
                             </Button>
                         </DropdownMenuTrigger>

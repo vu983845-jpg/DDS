@@ -67,7 +67,7 @@ export function SafetyContent({ safetyData: initialData, user }: SafetyContentPr
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                        <ShieldAlert className="h-6 w-6 text-[#D83140]" />
+                        <ShieldAlert className="h-6 w-6 text-[#4F46E5]" />
                         {t.safetyLogs}
                     </h1>
                     <p className="text-sm text-slate-500 mt-1">{t.manageSafety}</p>
@@ -78,7 +78,7 @@ export function SafetyContent({ safetyData: initialData, user }: SafetyContentPr
                         <Download className="h-4 w-4" /> {t.exportCsv}
                     </Button>
                     {isHseAdmin && (
-                        <Button className="bg-[#D83140] hover:bg-[#b02733] text-white" onClick={() => setIsModalOpen(true)}>
+                        <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white" onClick={() => setIsModalOpen(true)}>
                             {t.reportSafety}
                         </Button>
                     )}
@@ -157,7 +157,7 @@ export function SafetyContent({ safetyData: initialData, user }: SafetyContentPr
                                             <p className="text-sm text-slate-600">{safety.action_required || '-'}</p>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={safety.status === 'Open' ? 'destructive' : 'secondary'} className={safety.status === 'Open' ? 'bg-[#D83140]' : ''}>
+                                            <Badge variant={safety.status === 'Open' ? 'destructive' : 'secondary'} className={safety.status === 'Open' ? 'bg-[#4F46E5]' : ''}>
                                                 {safety.status}
                                             </Badge>
                                         </TableCell>

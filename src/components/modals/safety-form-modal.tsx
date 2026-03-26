@@ -131,7 +131,7 @@ export function SafetyFormModal({ open, onOpenChange, user }: SafetyFormModalPro
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
                             {t.cancel}
                         </Button>
-                        <Button type="submit" disabled={loading} className="bg-[#D83140] hover:bg-[#b02733] text-white">
+                        <Button type="submit" disabled={loading} className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Post Announcement
                         </Button>

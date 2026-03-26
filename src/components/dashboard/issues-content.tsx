@@ -274,7 +274,7 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                                             <Badge variant="outline" className="bg-white">{issue.reason_code}</Badge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#D83140]' : ''}>
+                                            <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#4F46E5]' : ''}>
                                                 {issue.status}
                                             </Badge>
                                         </TableCell>
@@ -291,7 +291,7 @@ export function IssuesContent({ issuesData, user, profile }: IssuesContentProps)
                                                     {formatDuration(issue.duration_mins, issue.is_downtime !== false)}
                                                 </span>
                                             ) : (
-                                                <span className={issue.is_downtime === false ? "text-amber-600 font-medium" : "text-[#D83140] font-bold animate-pulse"}>
+                                                <span className={issue.is_downtime === false ? "text-amber-600 font-medium" : "text-[#4F46E5] font-bold animate-pulse"}>
                                                     {formatDuration(Math.round(Math.max(0, new Date().getTime() - new Date(issue.start_time).getTime()) / 60000), issue.is_downtime !== false)}
                                                 </span>
                                             )}

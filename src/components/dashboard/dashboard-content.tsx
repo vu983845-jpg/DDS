@@ -45,7 +45,7 @@ function LiveDuration({ startTime, isDowntime = true }: { startTime: string, isD
         return () => clearInterval(interval)
     }, [startTime])
 
-    return <span className={`${isDowntime ? 'text-[#D83140] font-bold animate-pulse' : 'text-amber-600 font-medium'}`}>{formatDuration(elapsed, isDowntime)}</span>
+    return <span className={`${isDowntime ? 'text-[#4F46E5] font-bold animate-pulse' : 'text-amber-600 font-medium'}`}>{formatDuration(elapsed, isDowntime)}</span>
 }
 
 export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, todoData, user, profile }: DashboardContentProps) {
@@ -317,7 +317,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                                                         `}>{issue.impact_level}</Badge>
                                                                     </TableCell>
                                                                     <TableCell>
-                                                                        <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#D83140]' : ''}>
+                                                                        <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#4F46E5]' : ''}>
                                                                             {issue.status}
                                                                         </Badge>
                                                                     </TableCell>
@@ -359,7 +359,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                 <div className="space-y-6">
                     <Card className="shadow-sm border-slate-200">
                         <CardHeader className="border-b bg-slate-50/50 pb-4">
-                            <CardTitle className="flex items-center gap-2 text-lg text-[#D83140]">
+                            <CardTitle className="flex items-center gap-2 text-lg text-[#4F46E5]">
                                 <ShieldAlert className="h-5 w-5" />
                                 {t.safetyTriggers}
                             </CardTitle>
@@ -495,7 +495,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                     />
                                     <div className="flex gap-2 justify-end">
                                         <Button variant="outline" size="sm" onClick={() => setIsEditingNote(false)}>Cancel</Button>
-                                        <Button size="sm" onClick={handleSaveNote} disabled={isSavingNote} className="bg-[#D83140] hover:bg-[#b02733] text-white">Save</Button>
+                                        <Button size="sm" onClick={handleSaveNote} disabled={isSavingNote} className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">Save</Button>
                                     </div>
                                 </div>
                             ) : (
@@ -506,7 +506,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                                         <p className="text-slate-600 italic">{t.noNotes}</p>
                                     )}
                                     {user ? (
-                                        <button onClick={() => setIsEditingNote(true)} className="text-sm text-[#D83140] hover:underline font-medium">
+                                        <button onClick={() => setIsEditingNote(true)} className="text-sm text-[#4F46E5] hover:underline font-medium">
                                             {ddsNote?.notes ? 'Edit Note' : t.addNote}
                                         </button>
                                     ) : (
@@ -524,7 +524,7 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <ShieldAlert className="h-5 w-5 text-[#D83140]" />
+                            <ShieldAlert className="h-5 w-5 text-[#4F46E5]" />
                             {selectedAnnouncement?.severity} Announcement
                         </DialogTitle>
                         <DialogDescription>

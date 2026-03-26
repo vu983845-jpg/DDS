@@ -78,7 +78,7 @@ export function QaqcContent({ qaqcData: initialData, user }: QaqcContentProps) {
                         <Download className="h-4 w-4" /> {t.exportCsv}
                     </Button>
                     {isQaqcAdmin && (
-                        <Button className="bg-[#D83140] hover:bg-[#b02733] text-white" onClick={() => setIsModalOpen(true)}>
+                        <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white" onClick={() => setIsModalOpen(true)}>
                             {t.reportQaqc}
                         </Button>
                     )}
@@ -156,7 +156,7 @@ export function QaqcContent({ qaqcData: initialData, user }: QaqcContentProps) {
                                             <p className="text-sm text-slate-600">{qaqc.action_required || '-'}</p>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={qaqc.status === 'Open' ? 'destructive' : 'secondary'} className={qaqc.status === 'Open' ? 'bg-[#D83140]' : ''}>
+                                            <Badge variant={qaqc.status === 'Open' ? 'destructive' : 'secondary'} className={qaqc.status === 'Open' ? 'bg-[#4F46E5]' : ''}>
                                                 {qaqc.status}
                                             </Badge>
                                         </TableCell>

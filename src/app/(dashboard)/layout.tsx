@@ -12,9 +12,9 @@ export default async function DashboardLayout({
 
     return (
         <AppProvider>
-            <div className="flex min-h-screen w-full flex-col bg-slate-50">
+            <div className="flex min-h-screen w-full flex-col bg-slate-100">
                 <TopHeader user={user} />
-                <main className="flex-1 overflow-auto">
+                <main className="flex-1 overflow-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
                     {children}
                 </main>
                 <div className="fixed bottom-2 left-2 text-[10px] text-slate-400 opacity-50 pointer-events-none select-none z-50">

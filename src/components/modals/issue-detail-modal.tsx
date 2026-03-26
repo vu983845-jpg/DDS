@@ -203,7 +203,7 @@ export function IssueDetailModal({ open, onOpenChange, issue, user, profile }: I
                             <div>
                                 <DialogTitle className="text-xl flex items-center gap-2">
                                     {issue.machine_area || 'General Area'}
-                                    <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#D83140]' : ''}>
+                                    <Badge variant={issue.status === 'Open' ? 'destructive' : 'secondary'} className={issue.status === 'Open' ? 'bg-[#4F46E5]' : ''}>
                                         {issue.status}
                                     </Badge>
                                 </DialogTitle>

@@ -127,7 +127,7 @@ export function OverviewReportModal({ open, onOpenChange, issuesData }: Overview
                                         <TableRow key={row.label}>
                                             <TableCell className="font-medium text-slate-700">{row.label}</TableCell>
                                             <TableCell className="text-right">{row.incidentCount}</TableCell>
-                                            <TableCell className="text-right text-[#D83140] font-semibold">{Math.round((row.downtimeMins / 60) * 10) / 10}</TableCell>
+                                            <TableCell className="text-right text-[#4F46E5] font-semibold">{Math.round((row.downtimeMins / 60) * 10) / 10}</TableCell>
                                         </TableRow>
                                     ))
                                 ) : (

@@ -37,7 +37,7 @@ export default async function LoginPage({
                 <div className="relative z-10 max-w-lg mt-auto mb-8">
                     <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl mb-6">
                         Production Efficiency <br/>
-                        <span className="text-[#D83140]">At Your Fingertips</span>
+                        <span className="text-[#4F46E5]">At Your Fingertips</span>
                     </h1>
                     <p className="text-lg text-slate-300">
                         Record downtime events, streamline daily direction setting, and maintain peak manufacturing performance with our integrated dashboard.
@@ -58,7 +58,7 @@ export default async function LoginPage({
                     <div className="h-8 w-8 flex items-center justify-center bg-white rounded-md shadow-sm border">
                         <img src="/logo.jpg" alt="Logo" className="h-6 object-contain" />
                     </div>
-                    <span className="text-lg font-bold text-slate-900 tracking-tight text-[#D83140]">DDS Meeting</span>
+                    <span className="text-lg font-bold text-slate-900 tracking-tight text-[#4F46E5]">DDS Meeting</span>
                 </div>
 
                 <div className="mx-auto w-full max-w-sm sm:max-w-md mt-16 lg:mt-0">
@@ -90,7 +90,7 @@ export default async function LoginPage({
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <Label htmlFor="password" className="text-slate-700 font-medium">Password</Label>
-                                    <a href="#" className="text-sm font-medium text-[#D83140] hover:underline">Forgot password?</a>
+                                    <a href="#" className="text-sm font-medium text-[#4F46E5] hover:underline">Forgot password?</a>
                                 </div>
                                 <Input 
                                     id="password" 
@@ -111,7 +111,7 @@ export default async function LoginPage({
                     <div className="mt-8 pt-8 border-t border-slate-100">
                         <p className="text-center text-sm text-slate-500">
                             Need just view-only access?{' '}
-                            <a href="/" className="font-medium text-[#D83140] hover:text-[#b02733] hover:underline inline-flex items-center gap-1 transition-colors">
+                            <a href="/" className="font-medium text-[#4F46E5] hover:text-[#4338CA] hover:underline inline-flex items-center gap-1 transition-colors">
                                 Continue as Guest <ArrowRight className="h-3 w-3" />
                             </a>
                         </p>

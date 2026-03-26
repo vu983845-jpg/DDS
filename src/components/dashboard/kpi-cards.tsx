@@ -62,7 +62,7 @@ export function KPICards({
             value: criticalIssuesCount.toString(),
             icon: ShieldAlert,
             description: criticalIssuesCount > 0 ? criticalDeptsStr : t.kpiSafetyDesc,
-            color: criticalIssuesCount > 0 ? 'text-[#D83140]' : 'text-green-500',
+            color: criticalIssuesCount > 0 ? 'text-[#4F46E5]' : 'text-green-500',
         },
     ]
 

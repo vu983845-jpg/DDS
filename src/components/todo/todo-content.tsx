@@ -351,7 +351,7 @@ export function TodoContent({ todoData, user, profile, allProfiles }: TodoConten
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setSelectedTodo(null)} disabled={loading}>{t.cancel || 'Cancel'}</Button>
-                        <Button className="bg-[#D83140] hover:bg-[#b02733]" onClick={handleUpdateTodo} disabled={loading}>{t.update || 'Update'}</Button>
+                        <Button className="bg-[#4F46E5] hover:bg-[#4338CA]" onClick={handleUpdateTodo} disabled={loading}>{t.update || 'Update'}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

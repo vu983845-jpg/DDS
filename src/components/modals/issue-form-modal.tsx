@@ -467,11 +467,11 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                             </div>
                             <div className="flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-md">
                                 <label className="text-sm flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-                                    <input type="checkbox" {...form.register('is_ongoing')} className="rounded border-slate-300 w-4 h-4 text-[#D83140] focus:ring-[#D83140]" />
+                                    <input type="checkbox" {...form.register('is_ongoing')} className="rounded border-slate-300 w-4 h-4 text-[#4F46E5] focus:ring-[#4F46E5]" />
                                     {t.ongoing}
                                 </label>
                                 <label className="text-sm flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-                                    <input type="checkbox" {...form.register('exclude_downtime')} className="rounded border-slate-300 w-4 h-4 text-[#D83140] focus:ring-[#D83140]" />
+                                    <input type="checkbox" {...form.register('exclude_downtime')} className="rounded border-slate-300 w-4 h-4 text-[#4F46E5] focus:ring-[#4F46E5]" />
                                     {t.excludeDowntime || 'Không tính Downtime'}
                                 </label>
                                 <p className="text-xs text-slate-500 ml-6">{t.excludeDowntimeDesc || 'Chỉ ghi nhận sự cố, không cộng vào tổng thời gian dừng máy.'}</p>
@@ -488,7 +488,7 @@ export function IssueFormModal({ open, onOpenChange, user, profile, initialData 
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
                             {t.cancel}
                         </Button>
-                        <Button type="submit" disabled={loading} className="bg-[#D83140] hover:bg-[#b02733] text-white">
+                        <Button type="submit" disabled={loading} className="bg-[#4F46E5] hover:bg-[#4338CA] text-white">
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {t.saveIssue}
                         </Button>

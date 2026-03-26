@@ -124,7 +124,7 @@ export function DepartmentSummaryTable({ issues }: DepartmentSummaryTableProps) 
                                 <TableCell className="text-right font-medium">{row.total}</TableCell>
                                 <TableCell className="text-right">
                                     {row.open > 0 ? (
-                                        <Badge variant="destructive" className="bg-[#D83140] hover:bg-[#D83140]">{row.open}</Badge>
+                                        <Badge variant="destructive" className="bg-[#4F46E5] hover:bg-[#4F46E5]">{row.open}</Badge>
                                     ) : (
                                         <span className="text-slate-400">0</span>
                                     )}

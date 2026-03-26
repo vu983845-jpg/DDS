@@ -10,7 +10,7 @@ interface IssueStatusChartProps {
     description?: string
 }
 
-const COLORS = ['#D83140', '#10b981'] // Red for Open, Green for Closed
+const COLORS = ['#4F46E5', '#10b981'] // Red for Open, Green for Closed
 
 export function IssueStatusChart({ openCount, closedCount, title, description }: IssueStatusChartProps) {
     const data = [

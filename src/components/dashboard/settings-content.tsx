@@ -30,7 +30,7 @@ export function SettingsContent({ profiles: initialProfiles }: SettingsContentPr
         <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
             <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                    <Settings2 className="h-6 w-6 text-[#D83140]" />
+                    <Settings2 className="h-6 w-6 text-[#4F46E5]" />
                     Admin Settings
                 </h1>
                 <p className="text-sm text-slate-500 mt-1">Manage users, roles, and system reference data.</p>
@@ -38,10 +38,10 @@ export function SettingsContent({ profiles: initialProfiles }: SettingsContentPr
 
             <Tabs defaultValue="users" className="space-y-4">
                 <TabsList className="bg-slate-100 border-b w-full justify-start rounded-none h-auto p-0 border-slate-200 gap-4">
-                    <TabsTrigger value="users" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#D83140] data-[state=active]:text-[#D83140] rounded-none py-3 relative -bottom-[1px]">
+                    <TabsTrigger value="users" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#4F46E5] data-[state=active]:text-[#4F46E5] rounded-none py-3 relative -bottom-[1px]">
                         <Users className="h-4 w-4 mr-2" /> User Management
                     </TabsTrigger>
-                    <TabsTrigger value="system" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#D83140] data-[state=active]:text-[#D83140] rounded-none py-3 relative -bottom-[1px]">
+                    <TabsTrigger value="system" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-[#4F46E5] data-[state=active]:text-[#4F46E5] rounded-none py-3 relative -bottom-[1px]">
                         <List className="h-4 w-4 mr-2" /> System Data
                     </TabsTrigger>
                 </TabsList>
@@ -53,7 +53,7 @@ export function SettingsContent({ profiles: initialProfiles }: SettingsContentPr
                                 <CardTitle>Users & Roles</CardTitle>
                                 <CardDescription>Grant or revoke access to the DDS dashboard.</CardDescription>
                             </div>
-                            <Button size="sm" className="bg-[#D83140] hover:bg-[#b02733] text-white gap-2">
+                            <Button size="sm" className="bg-[#4F46E5] hover:bg-[#4338CA] text-white gap-2">
                                 <Plus className="h-4 w-4" /> Add User
                             </Button>
                         </CardHeader>
@@ -84,7 +84,7 @@ export function SettingsContent({ profiles: initialProfiles }: SettingsContentPr
                                             <TableRow key={user.id}>
                                                 <TableCell className="font-medium">{user.name || 'Unnamed User'}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline" className={user.role === 'hse_admin' ? 'border-[#D83140] text-[#D83140]' : ''}>
+                                                    <Badge variant="outline" className={user.role === 'hse_admin' ? 'border-[#4F46E5] text-[#4F46E5]' : ''}>
                                                         {user.role === 'hse_admin' && <Shield className="h-3 w-3 mr-1" />}
                                                         {user.role}
                                                     </Badge>

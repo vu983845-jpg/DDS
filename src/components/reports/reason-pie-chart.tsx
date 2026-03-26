@@ -10,7 +10,7 @@ interface ReasonPieChartProps {
 }
 
 const PIE_COLORS = [
-    '#D83140',
+    '#4F46E5',
     '#f59e0b',
     '#3b82f6',
     '#10b981',

@@ -59,7 +59,7 @@ export function DowntimeChart({ data, title, description }: DowntimeChartProps) 
                             />
                             <Bar dataKey="duration" radius={[4, 4, 0, 0]}>
                                 {data.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={'#D83140'} />
+                                    <Cell key={`cell-${index}`} fill={'#4F46E5'} />
                                 ))}
                             </Bar>
                         </BarChart>
