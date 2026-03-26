@@ -4,6 +4,8 @@ import { KPICards } from '@/components/dashboard/kpi-cards'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DepartmentSummaryTable } from '@/components/dashboard/department-summary-table'
+import { DowntimeChart } from '@/components/reports/downtime-chart'
+import { ReasonPieChart } from '@/components/reports/reason-pie-chart'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { DateRangePicker } from '@/components/shared/date-range-picker'
@@ -160,6 +162,52 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
         return () => clearInterval(interval)
     }, [filteredIssues])
 
+    const downtimeByReason = useMemo(() => {
+        const result: Record<string, number> = {}
+        const now = new Date().getTime()
+        filteredIssues.forEach(issue => {
+            if (issue.is_downtime === false) return
+            let duration = 0
+            if (issue.status === 'Closed') {
+                duration = issue.duration_mins || 0
+            } else if (issue.start_time) {
+                const start = new Date(issue.start_time).getTime()
+                duration = Math.round(Math.max(0, now - start) / 60000)
+            }
+            if (duration > 0) {
+                const reason = issue.reason_code || 'Other'
+                result[reason] = (result[reason] || 0) + duration
+            }
+        })
+        return Object.entries(result)
+            .map(([name, duration]) => ({ name, duration }))
+            .sort((a, b) => b.duration - a.duration)
+    }, [filteredIssues])
+
+    const downtimeByDept = useMemo(() => {
+        const result: Record<string, number> = {}
+        const now = new Date().getTime()
+        filteredIssues.forEach(issue => {
+            if (issue.is_downtime === false) return
+            let duration = 0
+            if (issue.status === 'Closed') {
+                duration = issue.duration_mins || 0
+            } else if (issue.start_time) {
+                const start = new Date(issue.start_time).getTime()
+                duration = Math.round(Math.max(0, now - start) / 60000)
+            }
+            if (duration > 0) {
+                const dept = issue.department || 'Unknown'
+                result[dept] = (result[dept] || 0) + duration
+            }
+        })
+        return Object.entries(result)
+            .map(([name, duration]) => ({ name, duration }))
+            .sort((a, b) => b.duration - a.duration)
+            .slice(0, 5) // Top 5
+    }, [filteredIssues])
+
+
     // Find the latest issue department
     const latestIssue = filteredIssues.length > 0
         ? [...filteredIssues].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
@@ -198,20 +246,31 @@ export function DashboardContent({ issuesData, safetyData, qaqcData, ddsNote, to
                 </div>
             </div>
 
-            <KPICards
-                totalIssues={totalIssues}
-                openIssues={openIssues}
-                totalDowntime={liveTotalDowntime}
-                topDept={latestDept}
-                criticalIssuesCount={criticalCount}
-                criticalDeptsStr={criticalDepts}
-            />
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 fill-mode-both">
+                <KPICards
+                    totalIssues={totalIssues}
+                    openIssues={openIssues}
+                    totalDowntime={liveTotalDowntime}
+                    topDept={latestDept}
+                    criticalIssuesCount={criticalCount}
+                    criticalDeptsStr={criticalDepts}
+                />
+            </div>
 
-            <div className="w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200 fill-mode-both">
+                <div className="h-full">
+                    <ReasonPieChart data={downtimeByReason} title={(t as any).reasonDistribution || "Root Cause Distribution"} />
+                </div>
+                <div className="h-full">
+                    <DowntimeChart data={downtimeByDept} title={(t as any).downtimeByDept || "Downtime by Area"} />
+                </div>
+            </div>
+
+            <div className="w-full animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 fill-mode-both">
                 <DepartmentSummaryTable issues={filteredIssues} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-500 fill-mode-both">
 
                 {/* Main Section: Issues Table */}
                 <div className="lg:col-span-2 space-y-4">
