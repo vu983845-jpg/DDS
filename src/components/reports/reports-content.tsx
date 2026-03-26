@@ -260,7 +260,7 @@ export function ReportsContent({ initialIssues }: ReportsContentProps) {
                     <DowntimeChart
                         data={downtimeByReason}
                         title="Downtime by Reason Code"
-                        description="Total accumulated downtime separated by D01-D10 reason codes."
+                        description="Total accumulated downtime separated by reason codes."
                     />
                 </div>
                 <div className="shadow-sm rounded-xl">

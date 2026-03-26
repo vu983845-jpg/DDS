@@ -22,33 +22,47 @@ import { cn, formatDuration } from '@/lib/utils'
 // Mock sub-data for now since DB might not be populated
 export const DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 export const REASON_CODES = [
-    { code: 'D01', label: 'D01 – Planned Maintenance', desc: 'Dừng máy theo kế hoạch để bảo trì hoặc kiểm tra định kỳ' },
-    { code: 'D02', label: 'D02 – Unplanned Breakdown', desc: 'Dừng máy đột xuất do hỏng hóc hoặc sự cố kỹ thuật' },
-    { code: 'D03', label: 'D03 – Changeover / Setup', desc: 'Thời gian chuyển đổi sản phẩm hoặc điều chỉnh thiết bị' },
-    { code: 'D04', label: 'D04 – Material Shortage', desc: 'Dừng máy do thiếu nguyên liệu hoặc linh kiện' },
-    { code: 'D05', label: 'D05 – Quality Hold', desc: 'Dừng máy để kiểm tra chất lượng hoặc xử lý sản phẩm lỗi' },
-    { code: 'D06', label: 'D06 – Utility Loss', desc: 'Dừng máy do mất điện, nước, khí nén hoặc tiện ích khác' },
-    { code: 'D07', label: 'D07 – Operator Absence', desc: 'Dừng máy vì không có nhân công vận hành' },
-    { code: 'D08', label: 'D08 – IT / System Failure', desc: 'Dừng máy do lỗi hệ thống quản lý hoặc phần mềm điều khiển' },
-    { code: 'D09', label: 'D09 – Safety Incident', desc: 'Dừng máy vì sự cố an toàn hoặc nguy cơ tai nạn' },
-    { code: 'D10', label: 'D10 – External Factors', desc: 'Dừng máy do yếu tố bên ngoài không kiểm soát được' },
+    { code: 'BD', label: 'BD – Breakdown', desc: 'Không kế hoạch - Hư hỏng sửa chữa' },
+    { code: 'BL', label: 'BL – Blocked', desc: 'Không có kế hoạch - Bị chặn' },
+    { code: 'BT', label: 'BT – Breaktime', desc: 'Có kế hoạch - Dừng nghỉ' },
+    { code: 'CIL', label: 'CIL – Cleaning', desc: 'Có kế hoạch - Vệ sinh' },
+    { code: 'LU', label: 'LU – Lack of Utility', desc: 'Không có kế hoạch - Thiếu nguồn lực' },
+    { code: 'MP', label: 'MP – Maintenance Plan', desc: 'Có kế hoạch - Bảo dưỡng' },
+    { code: 'MS', label: 'MS – Minor Stop', desc: 'Không có kế hoạch - Lỗi dừng nhỏ' },
+    { code: 'PF', label: 'PF – Process Failures', desc: 'Không có kế hoạch - Lỗi quy trình' },
+    { code: 'PT', label: 'PT – Pit Stop', desc: 'Có kế hoạch - Pit Stop' },
+    { code: 'PW', label: 'PW – Project Work', desc: 'Có kế hoạch - Thực hiện dự án' },
+    { code: 'SP', label: 'SP – Sampling', desc: 'Không có kế hoạch - Lấy mẫu' },
+    { code: 'TP', label: 'TP – Trial Plan', desc: 'Có kế hoạch - Thử nghiệm' },
+    { code: 'TT', label: 'TT – Training Time', desc: 'Có kế hoạch - Đào tạo' },
+    { code: 'WT', label: 'WT – Waiting', desc: 'Không có kế hoạch - Chờ đợi' },
 ]
 export const IMPACT_LEVELS = ['Low', 'Medium', 'High', 'Critical']
 
-// Map legacy reason codes to nearest D-code
-const LEGACY_TO_DCODE: Record<string, string> = {
-    'Man': 'D07',
-    'Machine': 'D02',
-    'Material': 'D04',
-    'Method': 'D03',
-    'Measurement': 'D05',
-    'Other': 'D10',
+// Map legacy reason codes to nearest new code
+const LEGACY_TO_NEW_CODE: Record<string, string> = {
+    'D01': 'MP',
+    'D02': 'BD',
+    'D03': 'PT',
+    'D04': 'WT',
+    'D05': 'SP',
+    'D06': 'LU',
+    'D07': 'LU',
+    'D08': 'BD',
+    'D09': 'BL',
+    'D10': 'BL',
+    'Man': 'WT',
+    'Machine': 'BD',
+    'Material': 'WT',
+    'Method': 'PT',
+    'Measurement': 'SP',
+    'Other': 'BL',
 }
 
 const normalizeLegacyReasonCode = (code: string) => {
     if (!code) return ''
     if (REASON_CODES.find(r => r.code === code)) return code
-    return LEGACY_TO_DCODE[code] || code
+    return LEGACY_TO_NEW_CODE[code] || code
 }
 
 const getImpactKey = (level: string) => {

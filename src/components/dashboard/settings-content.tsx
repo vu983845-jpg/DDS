@@ -9,8 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Settings2, Users, List, Plus, Trash2, Shield, Search } from 'lucide-react'
 
-// Dummy Data for Settings
-const DUMMY_REASON_CODES = ['Machine Breakdown', 'Belt Snapped', 'Power Outage', 'Raw Material Shortage', 'Quality Hold']
+const DUMMY_REASON_CODES = ['Breakdown', 'Blocked', 'Breaktime', 'Cleaning', 'Lack of Utility', 'Maintenance Plan', 'Minor Stop', 'Process Failures', 'Pit Stop', 'Project Work', 'Sampling', 'Trial Plan', 'Training Time', 'Waiting']
 const DUMMY_DEPARTMENTS = ['Steaming', 'Shelling', 'Borma', 'Peeling MC', 'ColorSorter', 'HandPeeling', 'Packing']
 
 interface SettingsContentProps {
