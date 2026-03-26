@@ -35,24 +35,9 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    const protectedPaths = ['/', '/issues', '/safety', '/qaqc', '/admin', '/reports', '/todo', '/settings']
-    const isProtectedPath = protectedPaths.some((p) =>
-        p === '/' ? request.nextUrl.pathname === '/' : request.nextUrl.pathname.startsWith(p)
-    )
+    // System migration: all routes now serve notice/redirect content
+    // No auth blocking needed anymore
 
-    if (!user && isProtectedPath) {
-        // no user, redirect to the login page
-        const url = request.nextUrl.clone()
-        url.pathname = '/login'
-        return NextResponse.redirect(url)
-    }
-
-    // If user is logged in and trying to access /login, redirect to /
-    if (user && request.nextUrl.pathname.startsWith('/login')) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/'
-        return NextResponse.redirect(url)
-    }
 
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
     // creating a new response object with NextResponse.next() make sure to:
